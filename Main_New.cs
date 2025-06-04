@@ -18,13 +18,17 @@ using System.Text.Json;
 using Excel;
 using TestApp.FUNCTION;
 using Keysight.KtNA;
+using TestApp.DAL.Dapper;
+using TestApp.MODEL;
+using TestApp.DAL;
 
 namespace TestApp
 {
     public partial class Main_New : Form
     {
-        string excelPath;
-        string vnaPath;
+        string excelPath = "";
+        string vnaPath = "";
+        string excelMobanPath = "";
         static string ifaceName = @"\Device\NPF_{3A0CA248-4796-4CBA-B275-E9C8E0A766CF}"; // 注意：需要和系统中接口名称完全匹配
         static string dstMacStr = "00:0a:35:01:fe:c0";
         static string srcMacStr; //上位机MAC地址
@@ -38,6 +42,7 @@ namespace TestApp
         byte[] modelValue = StringToByteArray("01 03 02 00");
         byte[] emptyValue = StringToByteArray("00 00 00 00 00 00 00 00");
         private AxFramerControl _axFramerControl;
+        private Main_DAL main_DAL = new Main_DAL();
 
         public Main_New()
         {
@@ -72,10 +77,25 @@ namespace TestApp
 
             string json = File.ReadAllText(filePath);
             var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
             data.TryGetValue("textBox6", out object value);
-            excelPath = value.ToString();
-            data.TryGetValue("textBox6", out object value2);
-            vnaPath = value2.ToString();
+            if (value != null)
+            {
+                excelPath = value.ToString();
+            }
+
+            data.TryGetValue("textBox1", out object value2);
+            if (value2 != null)
+            {
+                vnaPath = value2.ToString();
+            }
+
+            data.TryGetValue("textBox7", out object value3);
+            if (value3 != null)
+            {
+                excelMobanPath = value3.ToString();
+            }
+
         }
         private void InitializeDSO()
         {
@@ -91,7 +111,7 @@ namespace TestApp
                 _axFramerControl.Titlebar = false;
 
                 //string excelPath = "C:\\Users\\Administrator\\Desktop\\test.xlsx";
-                excelPath = Path.Combine(excelPath, "test.xlsx");
+                excelPath = Path.Combine(excelPath, "test.xls");
                 if (File.Exists(excelPath))
                 {
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
@@ -206,7 +226,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void manualSend_button_Click(object sender, EventArgs e)
         {
-            Form form = new ManualSend_Form();
+            Form form = new ManualSend_Form(this);
             form.ShowDialog();
         }
         /// <summary>
@@ -227,11 +247,6 @@ namespace TestApp
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             Form form = new DeviceManage_Form(this);
-            form.ShowDialog();
-        }
-        private void toolStripButton3_Click(object sender, EventArgs e)
-        {
-            Form form = new ChargeControl_Form(this);
             form.ShowDialog();
         }
         #endregion
@@ -399,28 +414,6 @@ namespace TestApp
 
         }
 
-        /*        private async void button2_Click(object sender, EventArgs e)
-                {
-                    string visaAddress = "TCPIP0::Lucky::hislip_PXI10_CHASSIS1_SLOT1_INDEX0::INSTR";
-
-                    ScpiDevice scpiDevice = new ScpiDevice();
-
-                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                    if (!connected)
-                    {
-                        LogToConsole("连接失败");
-                        return;
-                    }
-                    await scpiDevice.LoadStateFile();
-                    double? gain = await scpiDevice.GetGainAsync();               // 增益（dB）
-                    double? initial = await scpiDevice.GetInitialPhaseAsync();
-                    double? inputVswr = await scpiDevice.GetInputVSWRAsync();     // 输入驻波比
-                    double? outputVswr = await scpiDevice.GetOutputVSWRAsync();   // 输出驻波比
-
-                    LogToConsole($"增益: {gain:F2} dB, 初相: {initial:F2} °, 输入驻波: {inputVswr:F2}, 输出驻波: {outputVswr:F2}");
-
-                    scpiDevice.Disconnect(); // 释放资源
-                }*/
         private async void button2_Click(object sender, EventArgs e)
         {
             string visaAddress = "TCPIP0::Lucky::hislip_PXI10_CHASSIS1_SLOT1_INDEX0::INSTR";
@@ -438,6 +431,11 @@ namespace TestApp
             string[] initial = await scpiDevice.GetInitialPhaseStringAsync();    // 初相（°）
             string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
             string[] outputVswr = await scpiDevice.GetOutputVSWRStringAsync();   // 输出驻波比
+/*            string[] gain = { "1.12", "2.222", "3.333" };               // 增益（dB）
+            string[] initial = { "1.12", "2.222", "3.333" };    // 初相（°）
+            string[] inputVswr = { "1.12", "2.222", "3.333" };      // 输入驻波比
+            string[] outputVswr = { "1.12", "2.222", "3.333" };    // 输出驻波比*/
+
 
             LogToConsole($"数据读取完成");
             LogToConsole("开始写入 Excel...");
@@ -445,7 +443,43 @@ namespace TestApp
             WriteArrayToExcelColumn(initial, 3);     // C列
             WriteArrayToExcelColumn(inputVswr, 4);   // D列
             WriteArrayToExcelColumn(outputVswr, 5);  // E列
-            LogToConsole("写入完成");
+            LogToConsole("写入Excel完成");
+
+            // 写入数据库
+            LogToConsole("开始写入数据库...");
+            try
+            {
+                int batchId = main_DAL.GetBatchId();
+
+                var batch = new MeasurementBatch
+                {
+                    Operator = "操作员",
+                    Description = "自动测试批次",
+                    UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                };
+                main_DAL.InsertTestBatch_DT(batch);
+
+                for (int i = 0; i < gain.Length; i++)
+                {
+                    var result = new MeasurementResult
+                    {
+                        BatchId = batchId+1,
+                        PointIndex = i,
+                        Gain = gain[i],
+                        InitialPhase = initial[i],
+                        InputVSWR = inputVswr[i],
+                        OutputVSWR = outputVswr[i],
+                    };
+
+                    main_DAL.InsertTestData_DT(result);
+                }
+                LogToConsole("写入数据库完成");
+            }
+            catch (Exception ex)
+            {
+                LogToConsole("写入数据库出错: " + ex.Message);
+            }
+
             scpiDevice.Disconnect(); // 释放资源
         }
 
@@ -521,5 +555,40 @@ namespace TestApp
 
             scpiDevice.Disconnect();
         }
+        /// <summary>
+        /// 新建Excel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists(excelMobanPath))
+            {
+                MessageBox.Show("模板文件不存在，请检查路径。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                string now = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                dialog.Title = "保存新建的 Excel 文件";
+                dialog.Filter = "Excel 文件 (*.xlsx)|*.xlsx";
+                dialog.FileName = "测试结果"+ now +".xlsx";
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        File.Copy(excelMobanPath, dialog.FileName, overwrite: true);
+                        MessageBox.Show("Excel 文件已成功创建。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"创建 Excel 文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
     }
 }

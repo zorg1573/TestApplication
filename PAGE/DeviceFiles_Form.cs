@@ -109,10 +109,40 @@ namespace TestApp.PAGE
                 }
             }
         }
+        /*        private void button3_Click(object sender, EventArgs e)
+                {
+                    using (OpenFileDialog dialog = new OpenFileDialog())
+                    {
+                        dialog.Title = "请选择一个 Excel 文件";
+                        dialog.Filter = "Excel 文件 (*.xlsx;*.xls)|*.xlsx;*.xls|所有文件 (*.*)|*.*";
+                        dialog.Multiselect = false;
+
+                        if (dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.FileName))
+                        {
+                            textBox6.Text = dialog.FileName;
+                        }
+                    }
+                }*/
+
 
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Title = "请选择一个 Excel 模板";
+                dialog.Filter = "Excel 模板 (*.xlt)|*.xlt|所有文件 (*.*)|*.*";
+                dialog.Multiselect = false;
+
+                if (dialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.FileName))
+                {
+                    textBox7.Text = dialog.FileName;
+                }
+            }
         }
     }
 }

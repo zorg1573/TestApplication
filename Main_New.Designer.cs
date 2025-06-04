@@ -35,15 +35,16 @@
             this.deviceFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vnaFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.ChargeSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RecievePower_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SendPower_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Close_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.ch1_checkBox = new System.Windows.Forms.CheckBox();
             this.ch2_checkBox = new System.Windows.Forms.CheckBox();
             this.ch3_checkBox = new System.Windows.Forms.CheckBox();
@@ -54,7 +55,6 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.Close_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -63,16 +63,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
-            this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripDropDownButton2});
+            this.toolStripDropDownButton2,
+            this.toolStripButton1,
+            this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1289, 25);
@@ -121,16 +121,6 @@
             this.vnaFile_ToolStripMenuItem.Text = "矢网文件设置";
             this.vnaFile_ToolStripMenuItem.Click += new System.EventHandler(this.vnaFile_ToolStripMenuItem_Click);
             // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(65, 22);
-            this.toolStripButton1.Text = "打开Excel";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -139,6 +129,7 @@
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(60, 22);
             this.toolStripButton2.Text = "设备管理";
+            this.toolStripButton2.Visible = false;
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripDropDownButton2
@@ -158,23 +149,50 @@
             // ChargeSet_ToolStripMenuItem
             // 
             this.ChargeSet_ToolStripMenuItem.Name = "ChargeSet_ToolStripMenuItem";
-            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.ChargeSet_ToolStripMenuItem.Text = "参数设置";
             this.ChargeSet_ToolStripMenuItem.Click += new System.EventHandler(this.ChargeSet_ToolStripMenuItem_Click);
             // 
             // RecievePower_ToolStripMenuItem
             // 
             this.RecievePower_ToolStripMenuItem.Name = "RecievePower_ToolStripMenuItem";
-            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.RecievePower_ToolStripMenuItem.Text = "接收加电";
             this.RecievePower_ToolStripMenuItem.Click += new System.EventHandler(this.RecievePower_ToolStripMenuItem_Click);
             // 
             // SendPower_ToolStripMenuItem
             // 
             this.SendPower_ToolStripMenuItem.Name = "SendPower_ToolStripMenuItem";
-            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.SendPower_ToolStripMenuItem.Text = "发射加电";
             this.SendPower_ToolStripMenuItem.Click += new System.EventHandler(this.SendPower_ToolStripMenuItem_Click);
+            // 
+            // Close_ToolStripMenuItem
+            // 
+            this.Close_ToolStripMenuItem.Name = "Close_ToolStripMenuItem";
+            this.Close_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.Close_ToolStripMenuItem.Text = "关电";
+            this.Close_ToolStripMenuItem.Click += new System.EventHandler(this.Close_ToolStripMenuItem_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(65, 22);
+            this.toolStripButton1.Text = "打开Excel";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(65, 22);
+            this.toolStripButton3.Text = "新建Excel";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // splitContainer1
             // 
@@ -203,38 +221,28 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.flowLayoutPanel1);
+            this.splitContainer2.Panel1.Controls.Add(this.ch1_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.ch2_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.ch3_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.ch4_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.sendTest_button);
+            this.splitContainer2.Panel1.Controls.Add(this.receiveTest_button);
+            this.splitContainer2.Panel1.Controls.Add(this.manualSend_button);
+            this.splitContainer2.Panel1.Controls.Add(this.button2);
+            this.splitContainer2.Panel1.Controls.Add(this.button1);
             this.splitContainer2.Size = new System.Drawing.Size(1289, 570);
-            this.splitContainer2.SplitterDistance = 54;
+            this.splitContainer2.SplitterDistance = 59;
             this.splitContainer2.TabIndex = 0;
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.flowLayoutPanel1.Controls.Add(this.ch1_checkBox);
-            this.flowLayoutPanel1.Controls.Add(this.ch2_checkBox);
-            this.flowLayoutPanel1.Controls.Add(this.ch3_checkBox);
-            this.flowLayoutPanel1.Controls.Add(this.ch4_checkBox);
-            this.flowLayoutPanel1.Controls.Add(this.sendTest_button);
-            this.flowLayoutPanel1.Controls.Add(this.receiveTest_button);
-            this.flowLayoutPanel1.Controls.Add(this.manualSend_button);
-            this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1289, 54);
-            this.flowLayoutPanel1.TabIndex = 6;
             // 
             // ch1_checkBox
             // 
             this.ch1_checkBox.AutoSize = true;
             this.ch1_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch1_checkBox.Location = new System.Drawing.Point(10, 15);
+            this.ch1_checkBox.Location = new System.Drawing.Point(12, 15);
             this.ch1_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.ch1_checkBox.Name = "ch1_checkBox";
             this.ch1_checkBox.Size = new System.Drawing.Size(50, 20);
-            this.ch1_checkBox.TabIndex = 6;
+            this.ch1_checkBox.TabIndex = 15;
             this.ch1_checkBox.Text = "CH1";
             this.ch1_checkBox.UseVisualStyleBackColor = true;
             // 
@@ -242,11 +250,11 @@
             // 
             this.ch2_checkBox.AutoSize = true;
             this.ch2_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch2_checkBox.Location = new System.Drawing.Point(66, 15);
+            this.ch2_checkBox.Location = new System.Drawing.Point(68, 15);
             this.ch2_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch2_checkBox.Name = "ch2_checkBox";
             this.ch2_checkBox.Size = new System.Drawing.Size(50, 20);
-            this.ch2_checkBox.TabIndex = 7;
+            this.ch2_checkBox.TabIndex = 16;
             this.ch2_checkBox.Text = "CH2";
             this.ch2_checkBox.UseVisualStyleBackColor = true;
             // 
@@ -254,11 +262,11 @@
             // 
             this.ch3_checkBox.AutoSize = true;
             this.ch3_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch3_checkBox.Location = new System.Drawing.Point(122, 15);
+            this.ch3_checkBox.Location = new System.Drawing.Point(124, 15);
             this.ch3_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch3_checkBox.Name = "ch3_checkBox";
             this.ch3_checkBox.Size = new System.Drawing.Size(50, 20);
-            this.ch3_checkBox.TabIndex = 8;
+            this.ch3_checkBox.TabIndex = 17;
             this.ch3_checkBox.Text = "CH3";
             this.ch3_checkBox.UseVisualStyleBackColor = true;
             // 
@@ -266,22 +274,22 @@
             // 
             this.ch4_checkBox.AutoSize = true;
             this.ch4_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch4_checkBox.Location = new System.Drawing.Point(178, 15);
+            this.ch4_checkBox.Location = new System.Drawing.Point(180, 15);
             this.ch4_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch4_checkBox.Name = "ch4_checkBox";
             this.ch4_checkBox.Size = new System.Drawing.Size(50, 20);
-            this.ch4_checkBox.TabIndex = 9;
+            this.ch4_checkBox.TabIndex = 18;
             this.ch4_checkBox.Text = "CH4";
             this.ch4_checkBox.UseVisualStyleBackColor = true;
             // 
             // sendTest_button
             // 
             this.sendTest_button.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.sendTest_button.Location = new System.Drawing.Point(234, 6);
+            this.sendTest_button.Location = new System.Drawing.Point(236, 6);
             this.sendTest_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.sendTest_button.Name = "sendTest_button";
             this.sendTest_button.Size = new System.Drawing.Size(83, 39);
-            this.sendTest_button.TabIndex = 10;
+            this.sendTest_button.TabIndex = 19;
             this.sendTest_button.Text = "发射测试";
             this.sendTest_button.UseVisualStyleBackColor = true;
             this.sendTest_button.Click += new System.EventHandler(this.sendTest_button_Click);
@@ -289,11 +297,11 @@
             // receiveTest_button
             // 
             this.receiveTest_button.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.receiveTest_button.Location = new System.Drawing.Point(323, 6);
+            this.receiveTest_button.Location = new System.Drawing.Point(325, 6);
             this.receiveTest_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.receiveTest_button.Name = "receiveTest_button";
             this.receiveTest_button.Size = new System.Drawing.Size(83, 39);
-            this.receiveTest_button.TabIndex = 11;
+            this.receiveTest_button.TabIndex = 20;
             this.receiveTest_button.Text = "接收测试";
             this.receiveTest_button.UseVisualStyleBackColor = true;
             this.receiveTest_button.Click += new System.EventHandler(this.receiveTest_button_Click);
@@ -301,11 +309,11 @@
             // manualSend_button
             // 
             this.manualSend_button.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.manualSend_button.Location = new System.Drawing.Point(412, 6);
+            this.manualSend_button.Location = new System.Drawing.Point(414, 6);
             this.manualSend_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.manualSend_button.Name = "manualSend_button";
             this.manualSend_button.Size = new System.Drawing.Size(83, 39);
-            this.manualSend_button.TabIndex = 12;
+            this.manualSend_button.TabIndex = 21;
             this.manualSend_button.Text = "手动发码";
             this.manualSend_button.UseVisualStyleBackColor = true;
             this.manualSend_button.Click += new System.EventHandler(this.manualSend_button_Click);
@@ -313,23 +321,24 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(501, 6);
+            this.button2.Location = new System.Drawing.Point(503, 6);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(83, 39);
-            this.button2.TabIndex = 14;
-            this.button2.Text = "读取矢网";
+            this.button2.Size = new System.Drawing.Size(121, 39);
+            this.button2.TabIndex = 23;
+            this.button2.Text = "调用矢网文件";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(590, 3);
+            this.button1.Location = new System.Drawing.Point(630, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 13;
+            this.button1.TabIndex = 22;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // console_textBox
@@ -341,13 +350,6 @@
             this.console_textBox.Name = "console_textBox";
             this.console_textBox.Size = new System.Drawing.Size(1289, 62);
             this.console_textBox.TabIndex = 1;
-            // 
-            // Close_ToolStripMenuItem
-            // 
-            this.Close_ToolStripMenuItem.Name = "Close_ToolStripMenuItem";
-            this.Close_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.Close_ToolStripMenuItem.Text = "关电";
-            this.Close_ToolStripMenuItem.Click += new System.EventHandler(this.Close_ToolStripMenuItem_Click);
             // 
             // Main_New
             // 
@@ -368,10 +370,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -386,24 +387,24 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TextBox console_textBox;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem testSet_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripMenuItem vnaFile_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
+        private System.Windows.Forms.ToolStripMenuItem ChargeSet_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RecievePower_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SendPower_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem Close_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.CheckBox ch1_checkBox;
         private System.Windows.Forms.CheckBox ch2_checkBox;
         private System.Windows.Forms.CheckBox ch3_checkBox;
         private System.Windows.Forms.CheckBox ch4_checkBox;
         private System.Windows.Forms.Button sendTest_button;
         private System.Windows.Forms.Button receiveTest_button;
-        private System.Windows.Forms.ToolStripMenuItem testSet_ToolStripMenuItem;
         private System.Windows.Forms.Button manualSend_button;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripMenuItem vnaFile_ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
-        private System.Windows.Forms.ToolStripMenuItem ChargeSet_ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem RecievePower_ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem SendPower_ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem Close_ToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
     }
 }
