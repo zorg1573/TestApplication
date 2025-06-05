@@ -101,9 +101,5 @@ namespace TestApp.PAGE
             MessageBox.Show("设备地址已保存！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void setPower_button_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

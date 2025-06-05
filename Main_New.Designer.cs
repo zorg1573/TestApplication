@@ -68,11 +68,11 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1,
             this.toolStripButton2,
-            this.toolStripDropDownButton2,
             this.toolStripButton1,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.toolStripDropDownButton1,
+            this.toolStripDropDownButton2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1289, 25);
@@ -96,28 +96,28 @@
             // device_ToolStripMenuItem
             // 
             this.device_ToolStripMenuItem.Name = "device_ToolStripMenuItem";
-            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.device_ToolStripMenuItem.Text = "仪表地址设置";
             this.device_ToolStripMenuItem.Click += new System.EventHandler(this.device_ToolStripMenuItem_Click);
             // 
             // deviceFile_ToolStripMenuItem
             // 
             this.deviceFile_ToolStripMenuItem.Name = "deviceFile_ToolStripMenuItem";
-            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deviceFile_ToolStripMenuItem.Text = "仪表文件设置";
             this.deviceFile_ToolStripMenuItem.Click += new System.EventHandler(this.deviceFile_ToolStripMenuItem_Click);
             // 
             // testSet_ToolStripMenuItem
             // 
             this.testSet_ToolStripMenuItem.Name = "testSet_ToolStripMenuItem";
-            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.testSet_ToolStripMenuItem.Text = "测试设置";
             this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
             // 
             // vnaFile_ToolStripMenuItem
             // 
             this.vnaFile_ToolStripMenuItem.Name = "vnaFile_ToolStripMenuItem";
-            this.vnaFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.vnaFile_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.vnaFile_ToolStripMenuItem.Text = "矢网文件设置";
             this.vnaFile_ToolStripMenuItem.Click += new System.EventHandler(this.vnaFile_ToolStripMenuItem_Click);
             // 
@@ -149,28 +149,28 @@
             // ChargeSet_ToolStripMenuItem
             // 
             this.ChargeSet_ToolStripMenuItem.Name = "ChargeSet_ToolStripMenuItem";
-            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ChargeSet_ToolStripMenuItem.Text = "参数设置";
             this.ChargeSet_ToolStripMenuItem.Click += new System.EventHandler(this.ChargeSet_ToolStripMenuItem_Click);
             // 
             // RecievePower_ToolStripMenuItem
             // 
             this.RecievePower_ToolStripMenuItem.Name = "RecievePower_ToolStripMenuItem";
-            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.RecievePower_ToolStripMenuItem.Text = "接收加电";
             this.RecievePower_ToolStripMenuItem.Click += new System.EventHandler(this.RecievePower_ToolStripMenuItem_Click);
             // 
             // SendPower_ToolStripMenuItem
             // 
             this.SendPower_ToolStripMenuItem.Name = "SendPower_ToolStripMenuItem";
-            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SendPower_ToolStripMenuItem.Text = "发射加电";
             this.SendPower_ToolStripMenuItem.Click += new System.EventHandler(this.SendPower_ToolStripMenuItem_Click);
             // 
             // Close_ToolStripMenuItem
             // 
             this.Close_ToolStripMenuItem.Name = "Close_ToolStripMenuItem";
-            this.Close_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.Close_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.Close_ToolStripMenuItem.Text = "关电";
             this.Close_ToolStripMenuItem.Click += new System.EventHandler(this.Close_ToolStripMenuItem_Click);
             // 

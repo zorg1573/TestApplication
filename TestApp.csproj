@@ -148,13 +148,21 @@
     <Compile Include="DAL\Dapper\Log.cs" />
     <Compile Include="DAL\Dapper\SqlUtil.cs" />
     <Compile Include="DAL\Main_DAL.cs" />
+    <Compile Include="DAL\OperateLog_DAL.cs" />
     <Compile Include="MODEL\MeasurementBatch.cs" />
     <Compile Include="MODEL\MeasurementResult.cs" />
+    <Compile Include="MODEL\OperateLog.cs" />
     <Compile Include="PAGE\ChargeControl_Form.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="PAGE\ChargeControl_Form.Designer.cs">
       <DependentUpon>ChargeControl_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PAGE\DeviceAddressNew_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\DeviceAddressNew_Form.Designer.cs">
+      <DependentUpon>DeviceAddressNew_Form.cs</DependentUpon>
     </Compile>
     <Compile Include="PAGE\DeviceList_Add_Form.cs">
       <SubType>Form</SubType>
@@ -274,6 +282,9 @@
     </Compile>
     <EmbeddedResource Include="PAGE\ChargeControl_Form.resx">
       <DependentUpon>ChargeControl_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PAGE\DeviceAddressNew_Form.resx">
+      <DependentUpon>DeviceAddressNew_Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PAGE\DeviceList_Add_Form.resx">
       <DependentUpon>DeviceList_Add_Form.cs</DependentUpon>
