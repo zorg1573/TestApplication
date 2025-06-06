@@ -14,9 +14,9 @@ namespace TestApp.MODEL
         public int Id { get; set; }
         public int BatchId { get; set; }
         public int PointIndex { get; set; }
-        public string Gain { get; set; }
-        public string InitialPhase { get; set; }
-        public string InputVSWR { get; set; }
-        public string OutputVSWR { get; set; }
+        public double Gain { get; set; }
+        public double InitialPhase { get; set; }
+        public double InputVSWR { get; set; }
+        public double OutputVSWR { get; set; }
     }
 }

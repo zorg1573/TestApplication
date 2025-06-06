@@ -166,6 +166,7 @@
             this.Controls.Add(this.voltage_textBox);
             this.Controls.Add(this.label1);
             this.Name = "ChargeControl_Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "电源控制";
             this.ResumeLayout(false);
             this.PerformLayout();

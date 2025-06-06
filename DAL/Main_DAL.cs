@@ -25,10 +25,10 @@ namespace TestApp.DAL
         }
         public int GetBatchId()
         {
-            string sql = $@"select id from test_batch order by id desc";
+            string sql = "SELECT TOP 1 id FROM test_batch ORDER BY id DESC";
             Dapper.SqlUtil Sqlutil = new Dapper.SqlUtil();
-            var result = Sqlutil.Query<int>(sql).FirstOrDefault();
-            return result;
+            var result = Sqlutil.Query<MeasurementBatch>(sql);
+            return result.First().Id;
         }
     }
 }

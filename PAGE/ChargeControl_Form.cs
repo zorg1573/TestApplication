@@ -17,32 +17,41 @@ namespace TestApp.PAGE
     public partial class ChargeControl_Form : Form
     {
         private Main_New mainForm;
-        string deviceAddress = "TCPIP0::192.168.0.8::INSTR";
-        public ChargeControl_Form()
-        {
-            InitializeComponent();
-            //this.Load += ChargeControl_Form_Load;
-        }
-        private void ChargeControl_Form_Load(object sender, EventArgs e)
-        {
-            //GetDeviceAddress();
-        }
-/*        private void GetDeviceAddress()
-        {
-            string filePath = "DeviceFiles.json";
-            if (!File.Exists(filePath))
-                return;
-
-            string json = File.ReadAllText(filePath);
-            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-            data.TryGetValue("textBox6", out object value);
-
-        }*/
+        string deviceAddress = "";
         public ChargeControl_Form(Main_New mainForm)
         {
             InitializeComponent();
+            this.Load += ChargeControl_Form_Load;
             this.mainForm = mainForm;
         }
+        private void ChargeControl_Form_Load(object sender, EventArgs e)
+        {
+            GetAddress();
+        }
+        private void GetAddress()
+        {
+            try
+            {
+                string filePath = "DeviceAddressNew.json";
+                if (!File.Exists(filePath))
+                    return;
+
+                string json = File.ReadAllText(filePath);
+                var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                data.TryGetValue("charge_textBox", out object charge);
+                if (charge != null)
+                {
+                    deviceAddress = charge.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载DeviceAddress.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
         private async void start_output_button_Click(object sender, EventArgs e)
         {
             ScpiDevice scpiDevice = new ScpiDevice();

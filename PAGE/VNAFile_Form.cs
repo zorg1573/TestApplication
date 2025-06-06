@@ -9,11 +9,14 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TestApp.FUNCTION;
 
 namespace TestApp.PAGE
 {
     public partial class VNAFile_Form : Form
     {
+        string vnaAddress = "";
+        string vnaFilePath = "";
         public VNAFile_Form()
         {
             InitializeComponent();
@@ -22,6 +25,8 @@ namespace TestApp.PAGE
         private void VNAFile_Form_Load(object sender, EventArgs e)
         {
             LoadFromJson();
+            GetAddress();
+            GetDeviceFilesJson();
         }
         private IEnumerable<Control> GetAllControls(Control parent)
         {
@@ -31,6 +36,52 @@ namespace TestApp.PAGE
 
                 foreach (var child in GetAllControls(ctrl))
                     yield return child;
+            }
+        }
+        private void GetAddress()
+        {
+            try
+            {
+                string filePath = "DeviceAddressNew.json";
+                if (!File.Exists(filePath))
+                    return;
+
+                string json = File.ReadAllText(filePath);
+                var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                data.TryGetValue("shiwang_textBox", out object shiwang);
+                if (shiwang != null)
+                {
+                    vnaAddress = shiwang.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载DeviceAddress.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+        private void GetDeviceFilesJson()
+        {
+            try
+            {
+                string filePath = "DeviceFiles.json";
+                if (!File.Exists(filePath))
+                    return;
+
+                string json = File.ReadAllText(filePath);
+                var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                data.TryGetValue("textBox1", out object value2);
+                if (value2 != null)
+                {
+                    vnaFilePath = value2.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载DeviceFiles.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void SaveToJson()
@@ -113,8 +164,21 @@ namespace TestApp.PAGE
                 }
             }
         }
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            if (!connected)
+            {
+                MessageBox.Show("连接失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            await scpiDevice.SetPointCount(int.Parse(pointCount_textBox.Text));
+            await scpiDevice.SaveStateFile(vnaFilePath);
+
+            scpiDevice.Disconnect(); // 释放资源
+
             SaveToJson();
             MessageBox.Show("保存成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

@@ -34,7 +34,8 @@ namespace TestApp.PAGE
         static ushort dstPort = 8080;
         // byte[] headValue = StringToByteArray("00 0a 35 01 fe c0 00 2b 67 f1 71 51 08 00 45 00 b4 68 00 00 80 11 00 00 c0 a8 00 03 c0 a8 00 02 1f 90 1f 90 00 23 81 70");
         byte[] headValue;
-        byte[] modelValue = StringToByteArray("01 03 02 00");
+        //byte[] modelValue = StringToByteArray("01 03 01 00");
+        byte[] modelValue;
         byte[] emptyValue = StringToByteArray("00 00 00 00 00 00 00 00");
         private Main_New mainForm;
         string ch1Yixiang = "000000";
@@ -138,12 +139,12 @@ namespace TestApp.PAGE
                     string ch2send = checkBox2.Checked ? "0" : "1";
                     string ch3send = checkBox3.Checked ? "0" : "1";
                     string ch4send = checkBox4.Checked ? "0" : "1";
-                    string ch1 = ch1send + ch1Yixiang + "000000" + ch1Shuaijian + "000000" + "1";
-                    string ch2 = ch2send + ch2Yixiang + "000000" + ch2Shuaijian + "000000" + "1";
-                    string ch3 = ch3send + ch3Yixiang + "000000" + ch3Shuaijian + "000000" + "1";
-                    string ch4 = ch4send + ch4Yixiang + "000000" + ch4Shuaijian + "000000" + "1";
+                    string ch1 = "1" + ch1Yixiang + "000000" + ch1Shuaijian + "000000" + ch1send;
+                    string ch2 = "1" + ch2Yixiang + "000000" + ch2Shuaijian + "000000" + ch2send;
+                    string ch3 = "1" + ch3Yixiang + "000000" + ch3Shuaijian + "000000" + ch3send;
+                    string ch4 = "1" + ch4Yixiang + "000000" + ch4Shuaijian + "000000" + ch4send;
                     string ch5 = new string('0', 16);
-
+                    modelValue = StringToByteArray("01 03 01 00");
                     var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
@@ -161,11 +162,25 @@ namespace TestApp.PAGE
                     string ch3 = ch3recive + "000000" + ch3Yixiang + "000000" + ch3Shuaijian + "1";
                     string ch4 = ch4recive + "000000" + ch4Yixiang + "000000" + ch4Shuaijian + "1";
                     string ch5 = new string('0', 16);
-
+                    modelValue = StringToByteArray("01 03 02 00");
                     var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
                     operateLog_DAL.InsertOperateLog_DT("手动发码|接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
+                }
+                else if (radioButton3.Checked)
+                {
+                    mainForm.LogToConsole("负载模式");
+                    string ch1 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch2 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch3 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch4 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch5 = new string('0', 16);
+                    modelValue = StringToByteArray("01 03 03 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+
+                    SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                    operateLog_DAL.InsertOperateLog_DT("负载模式","");
                 }
             }
             catch(Exception ex)

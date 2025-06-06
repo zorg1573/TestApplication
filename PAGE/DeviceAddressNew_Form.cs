@@ -117,6 +117,14 @@ namespace TestApp.PAGE
             {
                 chargeName_textBox.Text = await TryConnectAndGetIdnAsync(charge_textBox.Text);
             }
+            if (!string.IsNullOrEmpty(gonglv_textBox.Text))
+            {
+                gonglvName_textBox.Text = await TryConnectAndGetIdnAsync(gonglv_textBox.Text);
+            }
+            if (!string.IsNullOrEmpty(xinhao_textBox.Text))
+            {
+                xinhaoName_textBox.Text = await TryConnectAndGetIdnAsync(xinhao_textBox.Text);
+            }
         }
     }
 }

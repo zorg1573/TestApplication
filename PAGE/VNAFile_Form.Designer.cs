@@ -32,6 +32,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.panel20 = new System.Windows.Forms.Panel();
             this.radioButton9 = new System.Windows.Forms.RadioButton();
             this.radioButton10 = new System.Windows.Forms.RadioButton();
@@ -92,7 +93,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.pointCount_textBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -228,12 +229,12 @@
             this.label82 = new System.Windows.Forms.Label();
             this.comboBox28 = new System.Windows.Forms.ComboBox();
             this.label83 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.panel20.SuspendLayout();
             this.panel19.SuspendLayout();
             this.panel18.SuspendLayout();
@@ -256,7 +257,6 @@
             this.panel13.SuspendLayout();
             this.panel14.SuspendLayout();
             this.panel15.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -328,6 +328,14 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(807, 118);
             this.panel3.TabIndex = 2;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.numericUpDown1.Location = new System.Drawing.Point(718, 8);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(64, 26);
+            this.numericUpDown1.TabIndex = 54;
             // 
             // panel20
             // 
@@ -809,7 +817,7 @@
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.textBox4);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.textBox3);
+            this.panel1.Controls.Add(this.pointCount_textBox);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.textBox2);
             this.panel1.Controls.Add(this.label3);
@@ -960,13 +968,13 @@
             this.label5.TabIndex = 7;
             this.label5.Text = "压缩点数：";
             // 
-            // textBox3
+            // pointCount_textBox
             // 
-            this.textBox3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox3.Location = new System.Drawing.Point(97, 77);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(81, 26);
-            this.textBox3.TabIndex = 6;
+            this.pointCount_textBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.pointCount_textBox.Location = new System.Drawing.Point(97, 77);
+            this.pointCount_textBox.Name = "pointCount_textBox";
+            this.pointCount_textBox.Size = new System.Drawing.Size(81, 26);
+            this.pointCount_textBox.TabIndex = 6;
             // 
             // label4
             // 
@@ -2423,14 +2431,6 @@
             this.label83.TabIndex = 33;
             this.label83.Text = "衰减：";
             // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numericUpDown1.Location = new System.Drawing.Point(718, 8);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(64, 26);
-            this.numericUpDown1.TabIndex = 54;
-            // 
             // VNAFile_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2447,6 +2447,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.panel20.ResumeLayout(false);
             this.panel20.PerformLayout();
             this.panel19.ResumeLayout(false);
@@ -2490,7 +2491,6 @@
             this.panel14.PerformLayout();
             this.panel15.ResumeLayout(false);
             this.panel15.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2513,7 +2513,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox pointCount_textBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label3;

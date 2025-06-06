@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Ivi.Visa;
 using Keysight.KtNA;
 using TestApp.MODEL;
@@ -55,8 +57,9 @@ namespace TestApp.FUNCTION
                 _visaSession.FormattedIO.WriteLine(command);
                 return _visaSession.FormattedIO.ReadLine();
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show("查询失败，请检查设备连接或命令格式。" + ex);
                 return null;
             }
         }
@@ -106,7 +109,8 @@ namespace TestApp.FUNCTION
         public async Task SetPower(double power) => await SendCommandAsync($"POW {power}");
         public async Task EnableOutput() => await SendCommandAsync("OUTP ON");
         public async Task DisableOutput() => await SendCommandAsync("OUTP OFF");
-
+        public async Task ModON() => await SendCommandAsync("OUTP:MOD ON");
+        public async Task ModOFF() => await SendCommandAsync("OUTP:MOD OFF");
         public async Task<double?> ReadVoltage()
         {
             string resp = await QueryAsync("MEAS:VOLT?");
@@ -233,7 +237,14 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetGainStringAsync()
         {
-            return await GetAllData("CH1_S21_3", "MLOG");
+            double freqHz = await GetFreqStart() ?? 0;
+            await SelectSParameterAsync("CH1_S21_3", "S12");
+            await SendCommandAsync("CALC:FORM MLOG");
+            await SendCommandAsync("INIT:IMM; *WAI");
+            string data = await QueryAsync("CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+            //return await GetAllData("CH1_S21_3", "MLOG");
         }
         // 获取 S12 相位（单位度）
         public async Task<double?> GetPhaseAsync()
@@ -248,7 +259,7 @@ namespace TestApp.FUNCTION
         public async Task<double?> GetInputVSWRAsync()
         {
             await SelectSParameterAsync("CH1_S11_1", "S11");
-            await SendCommandAsync("CALC:FORM VSWR");
+            await SendCommandAsync("CALC:FORM SWR");
             await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
@@ -257,7 +268,7 @@ namespace TestApp.FUNCTION
         public async Task<string[]> GetInputVSWRStringAsync()
         {
             await SelectSParameterAsync("CH1_S11_1", "S11");
-            await SendCommandAsync("CALC:FORM VSWR");
+            await SendCommandAsync("CALC:FORM SWR");
             await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
@@ -267,7 +278,7 @@ namespace TestApp.FUNCTION
         public async Task<double?> GetOutputVSWRAsync()
         {
             await SelectSParameterAsync("CH1_S12_2", "S22");
-            await SendCommandAsync("CALC:FORM VSWR");
+            await SendCommandAsync("CALC:FORM SWR");
             await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
@@ -276,7 +287,7 @@ namespace TestApp.FUNCTION
         public async Task<string[]> GetOutputVSWRStringAsync()
         {
             await SelectSParameterAsync("CH1_S12_2", "S22");
-            await SendCommandAsync("CALC:FORM VSWR");
+            await SendCommandAsync("CALC:FORM SWR");
             await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
@@ -308,18 +319,138 @@ namespace TestApp.FUNCTION
             string freq = await QueryAsync(":SENS:FREQ:STAR?");
             return double.TryParse(freq?.Trim(), out double val) ? (double?)val : null;
         }
+        public async Task<double?> GetFreqStop()
+        {
+            string freq = await QueryAsync(":SENS:FREQ:STOP?");
+            return double.TryParse(freq?.Trim(), out double val) ? (double?)val : null;
+        }
+        public async Task<int?> GetPointCount()
+        {
+            string count = await QueryAsync(":SENS:SWE:POIN?");
+            return int.TryParse(count?.Trim(), out int val) ? (int?)val : null;
+        }
         public async Task<bool> AutoScan()
         {
             return await SendCommandAsync("INIT:IMM; *WAI");
         }
         public async Task<bool> LoadStateFile(string vnaPath)
         {
-            return await SendCommandAsync(vnaPath);
+            string command = $":MMEM:LOAD:FILE \"{vnaPath}\"";
+            return await SendCommandAsync(command);
         }
+
         public async Task<bool> SaveStateFile(string vnaPath)
         {
-            return await SendCommandAsync(vnaPath);
+            string command = $":MMEM:STOR:FILE \"{vnaPath}\"";
+            return await SendCommandAsync(command);
         }
+        public async Task<bool> SetPointCount(int count)
+        {
+            return await SendCommandAsync($":SENS:SWE:POIN {count}");
+        }
+        #endregion
+
+        #region 功率计
+        // 获取当前功率值（单位 dBm）
+        public async Task<double?> GetPowerDbm()
+        {
+            string result = await QueryAsync("MEAS:POW?");
+            return double.TryParse(result?.Trim(), out double val) ? (double?)val : null;
+        }
+
+        // 设置功率单位（如 DBM、WATT）
+        public async Task<bool> SetPowerUnit(string unit)
+        {
+            return await SendCommandAsync($":UNIT:POW {unit}");
+        }
+
+        // 查询功率单位
+        public async Task<string> GetPowerUnit()
+        {
+            return await QueryAsync(":UNIT:POW?");
+        }
+
+        // 启用/关闭自动校零
+        public async Task<bool> SetAutoZero(bool enable)
+        {
+            return await SendCommandAsync($":ZERO:AUTO {(enable ? "ON" : "OFF")}");
+        }
+
+        // 查询是否开启自动校零
+        public async Task<bool?> IsAutoZeroEnabled()
+        {
+            string result = await QueryAsync(":ZERO:AUTO?");
+            if (string.IsNullOrWhiteSpace(result))
+                return null;
+
+            string val = result.Trim().ToUpper();
+            if (val == "ON")
+                return true;
+            else if (val == "OFF")
+                return false;
+            else
+                return null;
+        }
+
+
+        // 设置触发方式（IMM 或 EXT）
+        public async Task<bool> SetTriggerSource(string mode)
+        {
+            return await SendCommandAsync($":TRIG:SOUR {mode}");
+        }
+
+        // 获取触发方式
+        public async Task<string> GetTriggerSource()
+        {
+            return await QueryAsync(":TRIG:SOUR?");
+        }
+
+        // 启动测量（立即触发）
+        public async Task<bool> TriggerImmediate()
+        {
+            return await SendCommandAsync("INIT:IMM; *WAI");
+        }
+
+        public async Task<string> ReadData()
+        {
+            return await QueryAsync("READ?");
+        }
+        public async Task<bool> LoadGonglvState()
+        {
+            return await SendCommandAsync("*RCL 1");
+        }
+        public async Task<bool> SaveGonglvState()
+        {
+            return await SendCommandAsync("*SAV 1");
+        }
+        public async Task<double[]> ReadPulsePowerArrayAsync()
+        {
+            string result = await QueryAsync(":FETC:ARR:AME:POW?");
+            if (string.IsNullOrWhiteSpace(result))
+                return Array.Empty<double>();
+
+            var parts = result.Split(',');
+            var values = new List<double>();
+
+            foreach (var part in parts)
+            {
+                if (double.TryParse(part.Trim(), out double val))
+                {
+                    // 过滤无效值（9.91e37 表示 NAN）
+                    if (Math.Abs(val - 9.91e37) > 1e30)
+                        values.Add(val);
+                    else
+                        values.Add(double.NaN);
+                }
+                else
+                {
+                    values.Add(double.NaN);
+                }
+            }
+
+            return values.ToArray();
+        }
+
         #endregion
     }
 }

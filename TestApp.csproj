@@ -152,6 +152,12 @@
     <Compile Include="MODEL\MeasurementBatch.cs" />
     <Compile Include="MODEL\MeasurementResult.cs" />
     <Compile Include="MODEL\OperateLog.cs" />
+    <Compile Include="PAGE\XinhaoControl_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\XinhaoControl_Form.Designer.cs">
+      <DependentUpon>XinhaoControl_Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="PAGE\ChargeControl_Form.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -280,6 +286,9 @@
     <Compile Include="ViewControl\PsgControl.Designer.cs">
       <DependentUpon>PsgControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="PAGE\XinhaoControl_Form.resx">
+      <DependentUpon>XinhaoControl_Form.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PAGE\ChargeControl_Form.resx">
       <DependentUpon>ChargeControl_Form.cs</DependentUpon>
     </EmbeddedResource>
