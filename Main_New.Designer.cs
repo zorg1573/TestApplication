@@ -46,6 +46,10 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.mod_checkBox = new System.Windows.Forms.CheckBox();
+            this.rf_checkBox = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button3 = new System.Windows.Forms.Button();
             this.ch1_checkBox = new System.Windows.Forms.CheckBox();
             this.ch2_checkBox = new System.Windows.Forms.CheckBox();
@@ -54,10 +58,7 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.manualSend_button = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -235,7 +236,10 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.button4);
+            this.splitContainer2.Panel1.Controls.Add(this.mod_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.rf_checkBox);
+            this.splitContainer2.Panel1.Controls.Add(this.label1);
+            this.splitContainer2.Panel1.Controls.Add(this.progressBar1);
             this.splitContainer2.Panel1.Controls.Add(this.button3);
             this.splitContainer2.Panel1.Controls.Add(this.ch1_checkBox);
             this.splitContainer2.Panel1.Controls.Add(this.ch2_checkBox);
@@ -244,21 +248,62 @@
             this.splitContainer2.Panel1.Controls.Add(this.sendTest_button);
             this.splitContainer2.Panel1.Controls.Add(this.receiveTest_button);
             this.splitContainer2.Panel1.Controls.Add(this.manualSend_button);
-            this.splitContainer2.Panel1.Controls.Add(this.button2);
-            this.splitContainer2.Panel1.Controls.Add(this.button1);
             this.splitContainer2.Size = new System.Drawing.Size(1289, 570);
             this.splitContainer2.SplitterDistance = 59;
             this.splitContainer2.TabIndex = 0;
             // 
+            // mod_checkBox
+            // 
+            this.mod_checkBox.AutoSize = true;
+            this.mod_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.mod_checkBox.Location = new System.Drawing.Point(797, 16);
+            this.mod_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
+            this.mod_checkBox.Name = "mod_checkBox";
+            this.mod_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.mod_checkBox.TabIndex = 29;
+            this.mod_checkBox.Text = "MOD";
+            this.mod_checkBox.UseVisualStyleBackColor = true;
+            this.mod_checkBox.CheckedChanged += new System.EventHandler(this.mod_checkBox_CheckedChanged);
+            // 
+            // rf_checkBox
+            // 
+            this.rf_checkBox.AutoSize = true;
+            this.rf_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.rf_checkBox.Location = new System.Drawing.Point(742, 16);
+            this.rf_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
+            this.rf_checkBox.Name = "rf_checkBox";
+            this.rf_checkBox.Size = new System.Drawing.Size(42, 20);
+            this.rf_checkBox.TabIndex = 28;
+            this.rf_checkBox.Text = "RF";
+            this.rf_checkBox.UseVisualStyleBackColor = true;
+            this.rf_checkBox.CheckedChanged += new System.EventHandler(this.rf_checkBox_CheckedChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(698, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(17, 12);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "0%";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(592, 15);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(100, 20);
+            this.progressBar1.TabIndex = 26;
+            // 
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(904, 6);
+            this.button3.Location = new System.Drawing.Point(1106, 6);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(91, 39);
             this.button3.TabIndex = 24;
             this.button3.Text = "读取功率";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // ch1_checkBox
@@ -315,16 +360,16 @@
             this.sendTest_button.Location = new System.Drawing.Point(236, 6);
             this.sendTest_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.sendTest_button.Name = "sendTest_button";
-            this.sendTest_button.Size = new System.Drawing.Size(83, 39);
+            this.sendTest_button.Size = new System.Drawing.Size(133, 39);
             this.sendTest_button.TabIndex = 19;
-            this.sendTest_button.Text = "发射测试";
+            this.sendTest_button.Text = "发射测试丨功率";
             this.sendTest_button.UseVisualStyleBackColor = true;
             this.sendTest_button.Click += new System.EventHandler(this.sendTest_button_Click);
             // 
             // receiveTest_button
             // 
             this.receiveTest_button.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.receiveTest_button.Location = new System.Drawing.Point(325, 6);
+            this.receiveTest_button.Location = new System.Drawing.Point(375, 6);
             this.receiveTest_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.receiveTest_button.Name = "receiveTest_button";
             this.receiveTest_button.Size = new System.Drawing.Size(122, 39);
@@ -336,7 +381,7 @@
             // manualSend_button
             // 
             this.manualSend_button.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.manualSend_button.Location = new System.Drawing.Point(453, 6);
+            this.manualSend_button.Location = new System.Drawing.Point(503, 6);
             this.manualSend_button.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.manualSend_button.Name = "manualSend_button";
             this.manualSend_button.Size = new System.Drawing.Size(83, 39);
@@ -345,30 +390,6 @@
             this.manualSend_button.UseVisualStyleBackColor = true;
             this.manualSend_button.Click += new System.EventHandler(this.manualSend_button_Click);
             // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(621, 6);
-            this.button2.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(121, 39);
-            this.button2.TabIndex = 23;
-            this.button2.Text = "调用矢网文件";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(1001, 9);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 22;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // console_textBox
             // 
             this.console_textBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -376,21 +397,9 @@
             this.console_textBox.Location = new System.Drawing.Point(0, 0);
             this.console_textBox.Multiline = true;
             this.console_textBox.Name = "console_textBox";
+            this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.console_textBox.Size = new System.Drawing.Size(1289, 62);
             this.console_textBox.TabIndex = 1;
-            // 
-            // button4
-            // 
-            this.button4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(748, 6);
-            this.button4.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(132, 39);
-            this.button4.TabIndex = 25;
-            this.button4.Text = "调用功率计文件";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Visible = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Main_New
             // 
@@ -401,7 +410,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Name = "Main_New";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "T/R组件测试";
+            this.Text = "T/R组件高低温测试";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -445,10 +454,11 @@
         private System.Windows.Forms.Button sendTest_button;
         private System.Windows.Forms.Button receiveTest_button;
         private System.Windows.Forms.Button manualSend_button;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.CheckBox mod_checkBox;
+        private System.Windows.Forms.CheckBox rf_checkBox;
     }
 }

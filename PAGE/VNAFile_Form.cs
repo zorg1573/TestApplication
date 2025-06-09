@@ -174,6 +174,29 @@ namespace TestApp.PAGE
                 MessageBox.Show("连接失败！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+            string startFreqDanwei = comboBox1.Text;
+            string stopFreqDanwei = comboBox2.Text;
+            double startFreq = 0.0;
+            double stopFreq = 0.0;
+            if (startFreqDanwei == "MHz")
+            {
+                startFreq = double.Parse(start_freq_textBox.Text) * 1e6; // 转换为Hz
+            }
+            else if (startFreqDanwei == "GHz")
+            {
+                startFreq = double.Parse(start_freq_textBox.Text) * 1e9; // 转换为Hz
+            }
+            if (stopFreqDanwei == "MHz")
+            {
+                stopFreq = double.Parse(stop_freq_textBox.Text) * 1e6; // 转换为Hz
+            }
+            else if (stopFreqDanwei == "GHz")
+            {
+                stopFreq = double.Parse(stop_freq_textBox.Text) * 1e9; // 转换为Hz
+            }
+
+            await scpiDevice.SetVNAStartFreq(startFreq);
+            await scpiDevice.SetVNAStopFreq(stopFreq);
             await scpiDevice.SetPointCount(int.Parse(pointCount_textBox.Text));
             await scpiDevice.SaveStateFile(vnaFilePath);
 

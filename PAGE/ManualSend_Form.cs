@@ -148,7 +148,7 @@ namespace TestApp.PAGE
                     var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-                    operateLog_DAL.InsertOperateLog_DT("手动发码|发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
+                    //operateLog_DAL.InsertOperateLog_DT("手动发码|发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
                 }
                 else if (radioButton1.Checked)
                 {
@@ -166,7 +166,7 @@ namespace TestApp.PAGE
                     var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-                    operateLog_DAL.InsertOperateLog_DT("手动发码|接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
+                    //operateLog_DAL.InsertOperateLog_DT("手动发码|接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
                 }
                 else if (radioButton3.Checked)
                 {
@@ -180,13 +180,13 @@ namespace TestApp.PAGE
                     var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-                    operateLog_DAL.InsertOperateLog_DT("负载模式","");
+                    //operateLog_DAL.InsertOperateLog_DT("负载模式","");
                 }
             }
             catch(Exception ex)
             {
                 MessageBox.Show("手动发码失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("手动发码失败", ex.ToString());
+                //operateLog_DAL.InsertOperateLog_DT("手动发码失败", ex.ToString());
             }
 
 
@@ -254,7 +254,7 @@ namespace TestApp.PAGE
             catch(Exception ex)
             {
                 MessageBox.Show("UDP发送失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
+                //operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
             }
 
         }

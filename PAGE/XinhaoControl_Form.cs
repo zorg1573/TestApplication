@@ -25,6 +25,7 @@ namespace TestApp.PAGE
             this.Load += XinhaoControl_Form_Load;
             this.mainForm = mainForm;
             comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
         }
         private void XinhaoControl_Form_Load(object sender, EventArgs e)
         {
@@ -138,6 +139,7 @@ namespace TestApp.PAGE
         private async void manual_button_Click(object sender, EventArgs e)
         {
             SaveToJson();
+            MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
 /*            ScpiDevice scpiDevice = new ScpiDevice();
 
             bool connected = await scpiDevice.ConnectAsync(deviceAddress);

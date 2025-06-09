@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Excel;
 using Ivi.Visa;
 using Keysight.KtNA;
 using TestApp.MODEL;
@@ -111,6 +112,14 @@ namespace TestApp.FUNCTION
         public async Task DisableOutput() => await SendCommandAsync("OUTP OFF");
         public async Task ModON() => await SendCommandAsync("OUTP:MOD ON");
         public async Task ModOFF() => await SendCommandAsync("OUTP:MOD OFF");
+        public async Task QueryOpc()
+        {
+            // 发出操作完成查询命令，直到设备响应
+            string result = await QueryAsync("*OPC?");
+            if (!result.Trim().Equals("1"))
+                throw new Exception("设备未返回 *OPC 完成标志");
+        }
+
         public async Task<double?> ReadVoltage()
         {
             string resp = await QueryAsync("MEAS:VOLT?");
@@ -230,6 +239,11 @@ namespace TestApp.FUNCTION
             string[] parts = data.Split(',');
             return parts;
         }
+        public async Task ScanOnce()
+        {
+            await SendCommandAsync("INIT:CONT OFF");
+            await SendCommandAsync("INIT:IMM; *WAI");
+        }
         // 获取 S12 增益（对数幅度，dB）
         public async Task<double?> GetGainAsync()
         {
@@ -238,9 +252,12 @@ namespace TestApp.FUNCTION
         public async Task<string[]> GetGainStringAsync()
         {
             double freqHz = await GetFreqStart() ?? 0;
-            await SelectSParameterAsync("CH1_S21_3", "S12");
+            //await SelectSParameterAsync("CH1_S21_3", "S12");
+            await SelectSParameterAsync("CH1_S12_3", "S12");
+            //await SendCommandAsync("CALC:PAR:SEL 'CH1_S21_3'");
             await SendCommandAsync("CALC:FORM MLOG");
-            await SendCommandAsync("INIT:IMM; *WAI");
+            //await SendCommandAsync("INIT:CONT OFF");
+            //await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
@@ -268,8 +285,10 @@ namespace TestApp.FUNCTION
         public async Task<string[]> GetInputVSWRStringAsync()
         {
             await SelectSParameterAsync("CH1_S11_1", "S11");
+            //await SendCommandAsync("CALC:PAR:SEL 'CH1_S11_1'");
             await SendCommandAsync("CALC:FORM SWR");
-            await SendCommandAsync("INIT:IMM; *WAI");
+            //await SendCommandAsync("INIT:CONT OFF");
+            //await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
@@ -286,9 +305,11 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetOutputVSWRStringAsync()
         {
-            await SelectSParameterAsync("CH1_S12_2", "S22");
+            await SelectSParameterAsync("CH1_S22_2", "S22");
+            //await SendCommandAsync("CALC:PAR:SEL 'CH1_S12_2'");
             await SendCommandAsync("CALC:FORM SWR");
-            await SendCommandAsync("INIT:IMM; *WAI");
+            //await SendCommandAsync("INIT:CONT OFF");
+            //await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
@@ -307,9 +328,12 @@ namespace TestApp.FUNCTION
         public async Task<string[]> GetInitialPhaseStringAsync()
         {
             double freqHz = await GetFreqStart() ?? 0;
-            await SelectSParameterAsync("CH1_S22_4", "S12");
+            //await SelectSParameterAsync("CH1_S22_4", "S12");
+            await SelectSParameterAsync("CH1_S12_4", "S12");
+            //await SendCommandAsync("CALC:PAR:SEL 'CH1_S22_4'");
             await SendCommandAsync("CALC:FORM PHAS");
-            await SendCommandAsync("INIT:IMM; *WAI");
+            //await SendCommandAsync("INIT:CONT OFF");
+            //await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
@@ -347,6 +371,14 @@ namespace TestApp.FUNCTION
         public async Task<bool> SetPointCount(int count)
         {
             return await SendCommandAsync($":SENS:SWE:POIN {count}");
+        }
+        public async Task<bool> SetVNAStartFreq(double freq)
+        {
+            return await SendCommandAsync($":SENS:FREQ:STAR {freq}");
+        }
+        public async Task<bool> SetVNAStopFreq(double freq)
+        {
+            return await SendCommandAsync($":SENS:FREQ:STOP {freq}");
         }
         #endregion
 
