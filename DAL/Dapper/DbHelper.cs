@@ -8,6 +8,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using TestApp.MODEL;
 
 namespace TestApp.DAL.Dapper
 {
@@ -17,7 +18,8 @@ namespace TestApp.DAL.Dapper
     public static class DbHelper
     {
 
-        private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["TestSystem"].ConnectionString;//连接的字符串
+        //private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["TestSystem"].ConnectionString;//连接的字符串
+        private static readonly string ConnectionString = new DbConfig().GetConnectionString();
         /// <summary>
         /// 执行sql并且返回实体List类型
         /// </summary>

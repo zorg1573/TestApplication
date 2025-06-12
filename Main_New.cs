@@ -67,6 +67,8 @@ namespace TestApp
         private AxFramerControl _axFramerControl;
         private Main_DAL main_DAL = new Main_DAL();
         private OperateLog_DAL operateLog_DAL = new OperateLog_DAL();
+        RecieveTestWait_Form recieveWaitForm = new RecieveTestWait_Form();
+        SendTestWait_Form sendWaitForm = new SendTestWait_Form();
 
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         int fpgaFlag = 0;
@@ -363,7 +365,26 @@ namespace TestApp
                 MessageBox.Show("初始化 DSOFramer 出错：" + ex.ToString());
             }
         }
+        /// <summary>
+        /// 控制台输出
+        /// </summary>
+        /// <param name="message"></param>
+        public void LogToConsole(string message)
+        {
+            if (console_textBox.InvokeRequired)
+            {
+                console_textBox.Invoke(new System.Action(() => {
+                    console_textBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
+                }));
+            }
+            else
+            {
+                console_textBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
+            }
+        }
+        #endregion
 
+        #region Excel操作
         private void WriteShiWangChaSunToExcel(string[] data, int columnIndex)
         {
             try
@@ -570,6 +591,33 @@ namespace TestApp
                 MessageBox.Show("写入 Excel 失败：" + ex.Message);
             }
         }
+        /// <summary>
+        ///  写入测试员
+        /// </summary>
+        private void WritePersonToAllSheets()
+        {
+            try
+            {
+                // 获取当前运行的 Excel 实例
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook;
+
+                string personText = person_textBox.Text.Trim();
+
+                // 遍历所有工作表
+                foreach (Excel.Worksheet sheet in workbook.Sheets)
+                {
+                    sheet.Cells[1, 2] = personText; // B1 单元格
+                }
+
+                workbook.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入测试员失败：" + ex.Message);
+            }
+        }
+
         private void WritePeakPowerToMatchingFrequencyRows(string[] freqArray, string[] powerArray, string sheetName)
         {
             try
@@ -649,6 +697,7 @@ namespace TestApp
 
         }
 
+
         // 简单线性插值
         private double InterpolateCompensation(double freqGHz, Dictionary<double, double> table)
         {
@@ -668,24 +717,6 @@ namespace TestApp
                 }
             }
             return 0.0;
-        }
-
-        /// <summary>
-        /// 控制台输出
-        /// </summary>
-        /// <param name="message"></param>
-        public void LogToConsole(string message)
-        {
-            if (console_textBox.InvokeRequired)
-            {
-                console_textBox.Invoke(new System.Action(() => {
-                    console_textBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
-                }));
-            }
-            else
-            {
-                console_textBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\r\n");
-            }
         }
         #endregion
 
@@ -771,6 +802,26 @@ namespace TestApp
             Form form = new ChargeControl_Form(this);
             form.ShowDialog();
         }
+        /// <summary>
+        /// 测试记录
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripButton9_Click(object sender, EventArgs e)
+        {
+            Form form = new TestData_Form();
+            form.ShowDialog();
+        }
+        /// <summary>
+        /// 数据库设置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SqlSet_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form form = new SqlSet_Form();
+            form.ShowDialog();
+        }
         #endregion
 
         #region 按钮
@@ -814,7 +865,7 @@ namespace TestApp
 
                 LogToConsole("FPGA发包:" + chSum);
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-
+                sendWaitForm.ChangeLabelText("step3_label", "已完成");
                 operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
 
             }
@@ -841,6 +892,7 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            sendWaitForm.Show(); // 显示等待界面
             LogToConsole("开始发射测试...");
             await ChargeSendPowerON(); // 发射加电
             await LoadGonglvState(); // 调用功率计文件
@@ -866,10 +918,13 @@ namespace TestApp
                 return;
             }
             LogToConsole("开始接收测试...");
+
+            recieveWaitForm.Show(); // 显示等待界面
             if (vnaFlag == 0)
             {
                 LoadVNAState(); // 调用矢网文件
             }
+            recieveWaitForm.ChangeLabelText("step1_label","已完成");
             await ChargeRecievePowerON(); // 接收加电
             await RecieveTestUDP(); //FPGA发包
             await Task.Delay(500); // 延时保证设备稳定
@@ -910,6 +965,7 @@ namespace TestApp
                 }
 
                 LogToConsole("FPGA发包:" + chSum);
+                recieveWaitForm.ChangeLabelText("step1_labe3", "已完成");
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
                 operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
@@ -920,14 +976,7 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString());
             }
         }
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            foreach (var dev in CaptureDeviceList.Instance)
-            {
-                LogToConsole($"Name: {dev.Name} - Description: {dev.Description}");
-            }
 
-        }
         /// <summary>
         /// 调用矢网文件
         /// </summary>
@@ -952,6 +1001,7 @@ namespace TestApp
         }
         private async Task LoadVNAData()
         {
+            recieveWaitForm.ChangeLabelText("step4_label", "进行中...");
             string ch = "";
             string testType = testType_comboBox.Text;
             string componentName = componentName_textBox.Text;
@@ -988,6 +1038,10 @@ namespace TestApp
             string[] initial = await scpiDevice.GetInitialPhaseStringAsync();    // 初相（°）
             string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
             string[] outputVswr = await scpiDevice.GetOutputVSWRStringAsync();   // 输出驻波比
+
+            recieveWaitForm.ChangeLabelText("step4_label", "已完成");
+
+            recieveWaitForm.ChangeLabelText("step5_label", "进行中...");
 
             if (chasun_checkBox.Checked)
             {
@@ -1135,7 +1189,8 @@ namespace TestApp
             WriteArrayToExcelColumn(freqArray, 1, sheetName);  // A列，从第8行开始
             WriteArrayToExcelColumn(freqArray, 1, "常温");  // A列，从第8行开始
             LogToConsole("写入Excel完成");
-
+            recieveWaitForm.ChangeLabelText("step5_label", "已完成");
+            recieveWaitForm.ChangeLabelText("step6_label", "进行中...");
             // 写入数据库
             try
             {
@@ -1154,6 +1209,7 @@ namespace TestApp
                         InitialPhase = double.Parse(initialFinal[i]),
                         InputSWR = double.Parse(inputVswrFinal[i]),
                         OutputSWR = double.Parse(outputVswrFinal[i]),
+                        Person = person_textBox.Text,
                         UpdateTime = nowTime
                     };
 
@@ -1165,6 +1221,7 @@ namespace TestApp
                     label1.Refresh();
                 }
                 LogToConsole("写入数据库完成");
+                recieveWaitForm.ChangeLabelText("step6_label", "已完成");
             }
             catch (Exception ex)
             {
@@ -1175,11 +1232,13 @@ namespace TestApp
                 scpiDevice.Disconnect(); // 释放资源
                 CloseCharge(); // 电源关电
                 LogToConsole("接收测试已完成");
+                recieveWaitForm.Close(); // 关闭等待界面
             }
 
         }
         private async Task GetSendData()
         {
+            sendWaitForm.ChangeLabelText("step4_label", "进行中...");
             string ch = "";
             string testType = testType_comboBox.Text;
             string componentName = componentName_textBox.Text;
@@ -1220,6 +1279,10 @@ namespace TestApp
             string[] compensatedPowerString = new string[pointCount];
             var compensationTable = LoadCompensationTable(buchangFilePath);
 
+            sendWaitForm.ChangeLabelText("step4_label", "已完成");
+
+            sendWaitForm.ChangeLabelText("step5_label", "进行中...");
+
             var signalGen = new ScpiDevice();
             var powerMeter = new ScpiDevice();
 
@@ -1256,7 +1319,7 @@ namespace TestApp
                 }
                 LogToConsole("开始写入数据...");
                 //var results = new List<(double freqGHz, double power)>();
-
+                sendWaitForm.ChangeLabelText("step6_label", "进行中...");
                 for (int i = 0; i < pointCount; i++)
                 {
                     double freqHz = startFreq + step * i;
@@ -1291,9 +1354,9 @@ namespace TestApp
                 //WriteArrayToExcelColumn(compensatedPowerString, 8, ch);
                 WritePeakPowerToMatchingFrequencyRows(freqArray, compensatedPowerString, "测试结果");
 
-
                 LogToConsole("Excel写入完成");
-
+                sendWaitForm.ChangeLabelText("step5_label", "已完成");
+                sendWaitForm.ChangeLabelText("step6_label", "已完成");
             }
             catch (Exception ex)
             {
@@ -1310,6 +1373,7 @@ namespace TestApp
                 rf_checkBox.Checked = false;
                 mod_checkBox.Checked = false;
                 LogToConsole("发射测试已完成");
+                sendWaitForm.Close(); // 关闭等待界面
             }
         }
 
@@ -1366,6 +1430,7 @@ namespace TestApp
                 await scpiDevice.SetVoltage(5);
                 await scpiDevice.SetCurrent(1.5);
                 LogToConsole("接收加电...");
+                recieveWaitForm.ChangeLabelText("step2_label", "已完成");
                 scpiDevice.Disconnect();
             }
             catch (Exception ex)
@@ -1438,6 +1503,7 @@ namespace TestApp
                 await scpiDevice.SetVoltage(5);
                 await scpiDevice.SetCurrent(1.5);
 
+                sendWaitForm.ChangeLabelText("step1_label", "已完成");
                 scpiDevice.Disconnect();
             }
             catch (Exception ex)
@@ -1451,7 +1517,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Close_ToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void ClosePower_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -1572,400 +1638,6 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString());
             }
 
-        }
-        #endregion
-
-        #region UDP发送
-        public void SendCustomPacket(byte[] headValue, byte[] modelValue, byte[] emptyValue, byte[] codeValue)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(srcIpStr) || string.IsNullOrEmpty(dstIpStr) || string.IsNullOrEmpty(srcMacAddress) || string.IsNullOrEmpty(dstMacStr))
-                {
-                    MessageBox.Show("IP或MAC地址为空，请设置后再操作。");
-                    return;
-                }
-
-                var payload = headValue.Concat(modelValue).Concat(emptyValue).Concat(codeValue).ToArray();
-
-                PhysicalAddress srcMac = PhysicalAddress.Parse(srcMacAddress.Trim().Replace(":", "-").ToUpperInvariant());
-                PhysicalAddress dstMac = PhysicalAddress.Parse(dstMacStr.Trim().Replace(":", "-").ToUpperInvariant());
-                IPAddress srcIp = IPAddress.Parse(srcIpStr);
-                IPAddress dstIp = IPAddress.Parse(dstIpStr);
-
-                // 创建 UDP 数据包
-                var udpPacket = new UdpPacket(srcPort, dstPort)
-                {
-                    PayloadData = payload
-                };
-
-                // 创建 IP 数据包
-                var ipPacket = new IPv4Packet(srcIp, dstIp)
-                {
-                    Protocol = ProtocolType.Udp,
-                    TimeToLive = 128
-                };
-                ipPacket.PayloadPacket = udpPacket;
-
-                // 创建以太网帧
-                var ethernetPacket = new EthernetPacket(srcMac, dstMac, EthernetType.IPv4)
-                {
-                    PayloadPacket = ipPacket
-                };
-
-                // 选择接口
-                var devices = CaptureDeviceList.Instance;
-                var device = CaptureDeviceList.Instance.FirstOrDefault(d => d.Name == ifaceName);
-                if (device == null)
-                {
-                    LogToConsole("找不到接口：" + ifaceName);
-                    return;
-                }
-
-                device.Open();
-                device.SendPacket(ethernetPacket);
-                device.Close();
-
-                LogToConsole($"发送数据包：Payload长度={payload.Length}字节");
-                LogToConsole($"Payload (Hex): {BitConverter.ToString(payload).Replace("-", " ")}");
-                LogToConsole("数据包已发送。\n");
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"UDP发送失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
-            }
-
-        }
-
-        static byte[] GenerateCodeValueFromBits(string[] bitStrings)
-        {
-            if (bitStrings.Length != 5)
-                throw new ArgumentException("应包含5个通道的比特串");
-
-            int[] expectedLengths = { 26, 26, 26, 26, 16 };
-            string allBits = "";
-
-            for (int i = 0; i < 5; i++)
-            {
-                var bits = bitStrings[i].Replace(" ", "");
-                if (bits.Length != expectedLengths[i])
-                    throw new ArgumentException($"通道{i + 1} 应为 {expectedLengths[i]} 位，但提供了 {bits.Length} 位");
-
-                allBits += bits;
-            }
-
-            if (allBits.Length != 120)
-                throw new ArgumentException("总位数应为120");
-
-            byte[] codeBytes = new byte[15];
-            for (int i = 0; i < 15; i++)
-            {
-                codeBytes[i] = Convert.ToByte(allBits.Substring(i * 8, 8), 2);
-            }
-
-            return codeBytes;
-        }
-
-        static byte[] StringToByteArray(string hex)
-        {
-            try
-            {
-                return hex.Split(' ')
-                  .Select(s => Convert.ToByte(s, 16))
-                  .ToArray();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("转换十六进制字符串到字节数组失败: " + ex.Message);
-                return new byte[0];
-            }
-
-        }
-
-        #endregion
-
-        private async void button3_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = gonglvAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                //await scpiDevice.TriggerImmediate();
-                double[] result = await scpiDevice.ReadPulsePowerArrayAsync();
-                LogToConsole("当前峰值功率: "+ result[0] + "dBm, " + "平均功率: " + result[1] + "dBm");
-
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"读取功率失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("读取功率失败", ex.ToString());
-            }
-        }
-
-        private async void button4_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = gonglvAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                bool state = await scpiDevice.LoadGonglvState();
-                if (state)
-                {
-                    LogToConsole("调用功率计文件");
-                }
-                
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
-            }
-        }
-        private async Task LoadGonglvState()
-        {
-            try
-            {
-                string visaAddress = gonglvAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                bool state = await scpiDevice.LoadGonglvState();
-                if (state)
-                {
-                    LogToConsole("调用功率计文件");
-                }
-
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
-            }
-        }
-
-        private async void rf_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rf_checkBox.Checked)
-            {
-                try
-                {
-                    string visaAddress = xinhaoAddress;
-
-                    ScpiDevice scpiDevice = new ScpiDevice();
-
-                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                    if (!connected)
-                    {
-                        LogToConsole("连接失败");
-                        return;
-                    }
-                    await scpiDevice.EnableOutput();
-                    LogToConsole("打开射频输出");
-
-                    scpiDevice.Disconnect();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"打开射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString());
-                }
-            }
-            else
-            {
-                try
-                {
-                    string visaAddress = xinhaoAddress;
-
-                    ScpiDevice scpiDevice = new ScpiDevice();
-
-                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                    if (!connected)
-                    {
-                        LogToConsole("连接失败");
-                        return;
-                    }
-                    await scpiDevice.DisableOutput();
-                    LogToConsole("关闭射频输出");
-
-                    scpiDevice.Disconnect();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
-                }
-            }
-        }
-        private async void CloseRFOutPut()
-        {
-            try
-            {
-                string visaAddress = xinhaoAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                await scpiDevice.DisableOutput();
-                LogToConsole("关闭射频输出");
-
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
-            }
-        }
-        private async void CloseModOutPut()
-        {
-            try
-            {
-                string visaAddress = xinhaoAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                await scpiDevice.ModOFF();
-                LogToConsole("关闭调制功能");
-
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
-            }
-        }
-        private async void mod_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (mod_checkBox.Checked)
-            {
-                try
-                {
-                    string visaAddress = xinhaoAddress;
-
-                    ScpiDevice scpiDevice = new ScpiDevice();
-
-                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                    if (!connected)
-                    {
-                        LogToConsole("连接失败");
-                        return;
-                    }
-                    await scpiDevice.ModON();
-                    LogToConsole("启用调制功能");
-
-                    scpiDevice.Disconnect();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"启用调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString());
-                }
-            }
-            else
-            {
-                try
-                {
-                    string visaAddress = xinhaoAddress;
-
-                    ScpiDevice scpiDevice = new ScpiDevice();
-
-                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                    if (!connected)
-                    {
-                        LogToConsole("连接失败");
-                        return;
-                    }
-                    await scpiDevice.ModOFF();
-                    LogToConsole("关闭调制功能");
-
-                    scpiDevice.Disconnect();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
-                }
-            }
-
-
-        }
-
-        private void ch1_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch1_checkBox.Checked)
-            {
-                ch2_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch2_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if(ch2_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch3_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch3_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch2_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch4_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch4_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch2_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-            }
         }
 
         private async void button1_Click_1(object sender, EventArgs e)
@@ -2115,12 +1787,368 @@ namespace TestApp
                 MessageBox.Show("打开 Excel 文件失败：" + ex.Message);
             }
         }
+        #endregion
 
-        private void toolStripButton9_Click(object sender, EventArgs e)
+        #region UDP发送
+        public void SendCustomPacket(byte[] headValue, byte[] modelValue, byte[] emptyValue, byte[] codeValue)
         {
-            Form form = new TestData_Form();
-            form.ShowDialog();
+            try
+            {
+                if (string.IsNullOrEmpty(srcIpStr) || string.IsNullOrEmpty(dstIpStr) || string.IsNullOrEmpty(srcMacAddress) || string.IsNullOrEmpty(dstMacStr))
+                {
+                    MessageBox.Show("IP或MAC地址为空，请设置后再操作。");
+                    return;
+                }
+
+                var payload = headValue.Concat(modelValue).Concat(emptyValue).Concat(codeValue).ToArray();
+
+                PhysicalAddress srcMac = PhysicalAddress.Parse(srcMacAddress.Trim().Replace(":", "-").ToUpperInvariant());
+                PhysicalAddress dstMac = PhysicalAddress.Parse(dstMacStr.Trim().Replace(":", "-").ToUpperInvariant());
+                IPAddress srcIp = IPAddress.Parse(srcIpStr);
+                IPAddress dstIp = IPAddress.Parse(dstIpStr);
+
+                // 创建 UDP 数据包
+                var udpPacket = new UdpPacket(srcPort, dstPort)
+                {
+                    PayloadData = payload
+                };
+
+                // 创建 IP 数据包
+                var ipPacket = new IPv4Packet(srcIp, dstIp)
+                {
+                    Protocol = ProtocolType.Udp,
+                    TimeToLive = 128
+                };
+                ipPacket.PayloadPacket = udpPacket;
+
+                // 创建以太网帧
+                var ethernetPacket = new EthernetPacket(srcMac, dstMac, EthernetType.IPv4)
+                {
+                    PayloadPacket = ipPacket
+                };
+
+                // 选择接口
+                var devices = CaptureDeviceList.Instance;
+                var device = CaptureDeviceList.Instance.FirstOrDefault(d => d.Name == ifaceName);
+                if (device == null)
+                {
+                    LogToConsole("找不到接口：" + ifaceName);
+                    return;
+                }
+
+                device.Open();
+                device.SendPacket(ethernetPacket);
+                device.Close();
+
+                LogToConsole($"发送数据包：Payload长度={payload.Length}字节");
+                LogToConsole($"Payload (Hex): {BitConverter.ToString(payload).Replace("-", " ")}");
+                LogToConsole("数据包已发送。\n");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"UDP发送失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
+            }
+
         }
+
+        static byte[] GenerateCodeValueFromBits(string[] bitStrings)
+        {
+            if (bitStrings.Length != 5)
+                throw new ArgumentException("应包含5个通道的比特串");
+
+            int[] expectedLengths = { 26, 26, 26, 26, 16 };
+            string allBits = "";
+
+            for (int i = 0; i < 5; i++)
+            {
+                var bits = bitStrings[i].Replace(" ", "");
+                if (bits.Length != expectedLengths[i])
+                    throw new ArgumentException($"通道{i + 1} 应为 {expectedLengths[i]} 位，但提供了 {bits.Length} 位");
+
+                allBits += bits;
+            }
+
+            if (allBits.Length != 120)
+                throw new ArgumentException("总位数应为120");
+
+            byte[] codeBytes = new byte[15];
+            for (int i = 0; i < 15; i++)
+            {
+                codeBytes[i] = Convert.ToByte(allBits.Substring(i * 8, 8), 2);
+            }
+
+            return codeBytes;
+        }
+
+        static byte[] StringToByteArray(string hex)
+        {
+            try
+            {
+                return hex.Split(' ')
+                  .Select(s => Convert.ToByte(s, 16))
+                  .ToArray();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("转换十六进制字符串到字节数组失败: " + ex.Message);
+                return new byte[0];
+            }
+
+        }
+
+        #endregion
+
+        #region 设备控制
+        /// <summary>
+        /// 调用功率计文件
+        /// </summary>
+        /// <returns></returns>
+        private async Task LoadGonglvState()
+        {
+            try
+            {
+                string visaAddress = gonglvAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                bool state = await scpiDevice.LoadGonglvState();
+                if (state)
+                {
+                    LogToConsole("调用功率计文件");
+                }
+                sendWaitForm.ChangeLabelText("step2_label", "已完成");
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
+            }
+        }
+        /// <summary>
+        /// 开关射频输出功能
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void rf_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rf_checkBox.Checked)
+            {
+                try
+                {
+                    string visaAddress = xinhaoAddress;
+
+                    ScpiDevice scpiDevice = new ScpiDevice();
+
+                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                    if (!connected)
+                    {
+                        LogToConsole("连接失败");
+                        return;
+                    }
+                    await scpiDevice.EnableOutput();
+                    LogToConsole("打开射频输出");
+
+                    scpiDevice.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"打开射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString());
+                }
+            }
+            else
+            {
+                try
+                {
+                    string visaAddress = xinhaoAddress;
+
+                    ScpiDevice scpiDevice = new ScpiDevice();
+
+                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                    if (!connected)
+                    {
+                        LogToConsole("连接失败");
+                        return;
+                    }
+                    await scpiDevice.DisableOutput();
+                    LogToConsole("关闭射频输出");
+
+                    scpiDevice.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+                }
+            }
+        }
+        /// <summary>
+        /// 开关调制功能
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void mod_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mod_checkBox.Checked)
+            {
+                try
+                {
+                    string visaAddress = xinhaoAddress;
+
+                    ScpiDevice scpiDevice = new ScpiDevice();
+
+                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                    if (!connected)
+                    {
+                        LogToConsole("连接失败");
+                        return;
+                    }
+                    await scpiDevice.ModON();
+                    LogToConsole("启用调制功能");
+
+                    scpiDevice.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"启用调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString());
+                }
+            }
+            else
+            {
+                try
+                {
+                    string visaAddress = xinhaoAddress;
+
+                    ScpiDevice scpiDevice = new ScpiDevice();
+
+                    bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                    if (!connected)
+                    {
+                        LogToConsole("连接失败");
+                        return;
+                    }
+                    await scpiDevice.ModOFF();
+                    LogToConsole("关闭调制功能");
+
+                    scpiDevice.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+                }
+            }
+        }
+        /// <summary>
+        /// 关闭射频输出功能
+        /// </summary>
+        private async void CloseRFOutPut()
+        {
+            try
+            {
+                string visaAddress = xinhaoAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                await scpiDevice.DisableOutput();
+                LogToConsole("关闭射频输出");
+
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+            }
+        }
+        /// <summary>
+        /// 关闭调制功能
+        /// </summary>
+        private async void CloseModOutPut()
+        {
+            try
+            {
+                string visaAddress = xinhaoAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                await scpiDevice.ModOFF();
+                LogToConsole("关闭调制功能");
+
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+            }
+        }
+
+        #endregion
+
+
+
+        private void ch1_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch1_checkBox.Checked)
+            {
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch2_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(ch2_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch3_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch3_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch4_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch4_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+            }
+        }
+
 
     }
 }

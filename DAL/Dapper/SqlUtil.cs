@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Reflection;
 using System.Diagnostics;
-using TestApp.DAL.Dapper;
+using TestApp.MODEL;
 
 namespace TestApp.DAL.Dapper
 {
@@ -56,7 +56,8 @@ namespace TestApp.DAL.Dapper
         /// <param name="strcon">连接字符串</param>
         public SqlUtil()
         {
-            this.connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["TestSystem"].ToString();
+            //this.connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["TestSystem"].ToString();
+            this.connectionString = new DbConfig().GetConnectionString();
 
             cmd = new SqlCommand();
             cmd.CommandTimeout = 999;

@@ -13,8 +13,8 @@ namespace TestApp.DAL
         public int InsertTestData_DT(MeasurementResult model)
         {
             string sql = $@"insert test_data
-	                ([TestType],[ComponentName],[BatchId],[PointIndex],[PointFreq],[Gain],[InitialPhase],[InputSWR],[OutputSWR],[UpdateTime])  
-                values('{model.TestType}','{model.ComponentName}','{model.BatchId}','{model.PointIndex}','{model.PointFreq}','{model.Gain}','{model.InitialPhase}','{model.InputSWR}','{model.OutputSWR}','{model.UpdateTime}')";
+	                ([TestType],[ComponentName],[BatchId],[PointIndex],[PointFreq],[Gain],[InitialPhase],[InputSWR],[OutputSWR],[Person],[UpdateTime])  
+                values('{model.TestType}','{model.ComponentName}','{model.BatchId}','{model.PointIndex}','{model.PointFreq}','{model.Gain}','{model.InitialPhase}','{model.InputSWR}','{model.OutputSWR}','{model.Person}','{model.UpdateTime}')";
             return Dapper.DbHelper.UpdateBySql(sql);
         }
         public int UpdateTestDataFreq_DT(string testType, string componentName, double pointFreq, double freq)

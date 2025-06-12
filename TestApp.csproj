@@ -26,7 +26,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>TR组件高低温测试</ProductName>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>13</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -207,11 +207,31 @@
     <Compile Include="DAL\Dapper\DBUtil.cs" />
     <Compile Include="DAL\Dapper\Log.cs" />
     <Compile Include="DAL\Dapper\SqlUtil.cs" />
+    <Compile Include="DAL\DbConfigHelper.cs" />
     <Compile Include="DAL\Main_DAL.cs" />
     <Compile Include="DAL\OperateLog_DAL.cs" />
+    <Compile Include="MODEL\DbConfig.cs" />
     <Compile Include="MODEL\MeasurementBatch.cs" />
     <Compile Include="MODEL\MeasurementResult.cs" />
     <Compile Include="MODEL\OperateLog.cs" />
+    <Compile Include="PAGE\SendTestWait_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\SendTestWait_Form.Designer.cs">
+      <DependentUpon>SendTestWait_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PAGE\RecieveTestWait_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\RecieveTestWait_Form.Designer.cs">
+      <DependentUpon>RecieveTestWait_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PAGE\SqlSet_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\SqlSet_Form.Designer.cs">
+      <DependentUpon>SqlSet_Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="PAGE\TestData_Form.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -306,6 +326,11 @@
     <Compile Include="PAGE\VNAFile_Form_Old.Designer.cs">
       <DependentUpon>VNAFile_Form_Old.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ViewControl\FPGAControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -358,6 +383,15 @@
     <Compile Include="ViewControl\PsgControl.Designer.cs">
       <DependentUpon>PsgControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="PAGE\SendTestWait_Form.resx">
+      <DependentUpon>SendTestWait_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PAGE\RecieveTestWait_Form.resx">
+      <DependentUpon>RecieveTestWait_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PAGE\SqlSet_Form.resx">
+      <DependentUpon>SqlSet_Form.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PAGE\TestData_Form.resx">
       <DependentUpon>TestData_Form.cs</DependentUpon>
     </EmbeddedResource>
@@ -420,14 +454,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="ViewControl\PsgControl.resx">
       <DependentUpon>PsgControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -496,6 +525,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="IMAGES\loading.gif" />
+    <None Include="IMAGES\Loading.png" />
     <Content Include="IMAGES\savefile.png" />
     <Content Include="IMAGES\search.png" />
     <Content Include="WGBTIHUC206L4O7J4.ico" />
