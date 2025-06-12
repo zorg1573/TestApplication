@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -47,8 +49,8 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -64,6 +66,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.textBox9);
+            this.splitContainer1.Panel1.Controls.Add(this.label9);
             this.splitContainer1.Panel1.Controls.Add(this.textBox8);
             this.splitContainer1.Panel1.Controls.Add(this.label8);
             this.splitContainer1.Panel1.Controls.Add(this.button4);
@@ -88,13 +92,33 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
-            this.splitContainer1.Size = new System.Drawing.Size(700, 623);
-            this.splitContainer1.SplitterDistance = 531;
+            this.splitContainer1.Size = new System.Drawing.Size(716, 653);
+            this.splitContainer1.SplitterDistance = 582;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox8.Location = new System.Drawing.Point(209, 405);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(404, 29);
+            this.textBox8.TabIndex = 31;
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label8.Location = new System.Drawing.Point(36, 410);
+            this.label8.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(119, 16);
+            this.label8.TabIndex = 30;
+            this.label8.Text = "补偿数据文件：";
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(619, 474);
+            this.button4.Location = new System.Drawing.Point(619, 527);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(48, 23);
             this.button4.TabIndex = 29;
@@ -105,7 +129,7 @@
             // textBox7
             // 
             this.textBox7.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox7.Location = new System.Drawing.Point(209, 473);
+            this.textBox7.Location = new System.Drawing.Point(209, 526);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(404, 29);
             this.textBox7.TabIndex = 28;
@@ -115,7 +139,7 @@
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label7.Location = new System.Drawing.Point(28, 478);
+            this.label7.Location = new System.Drawing.Point(36, 531);
             this.label7.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(159, 16);
@@ -124,7 +148,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(619, 412);
+            this.button3.Location = new System.Drawing.Point(619, 465);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(48, 23);
             this.button3.TabIndex = 26;
@@ -135,7 +159,7 @@
             // textBox6
             // 
             this.textBox6.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox6.Location = new System.Drawing.Point(209, 411);
+            this.textBox6.Location = new System.Drawing.Point(209, 464);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(404, 29);
             this.textBox6.TabIndex = 25;
@@ -143,7 +167,7 @@
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox5.Location = new System.Drawing.Point(209, 289);
+            this.textBox5.Location = new System.Drawing.Point(209, 342);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(404, 29);
             this.textBox5.TabIndex = 24;
@@ -151,7 +175,7 @@
             // textBox4
             // 
             this.textBox4.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox4.Location = new System.Drawing.Point(209, 222);
+            this.textBox4.Location = new System.Drawing.Point(209, 275);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(404, 29);
             this.textBox4.TabIndex = 23;
@@ -159,7 +183,7 @@
             // textBox3
             // 
             this.textBox3.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox3.Location = new System.Drawing.Point(209, 155);
+            this.textBox3.Location = new System.Drawing.Point(209, 208);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(404, 29);
             this.textBox3.TabIndex = 22;
@@ -167,7 +191,7 @@
             // textBox2
             // 
             this.textBox2.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox2.Location = new System.Drawing.Point(209, 88);
+            this.textBox2.Location = new System.Drawing.Point(209, 141);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(404, 29);
             this.textBox2.TabIndex = 21;
@@ -177,7 +201,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(28, 26);
+            this.label1.Location = new System.Drawing.Point(36, 26);
             this.label1.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(119, 16);
@@ -189,7 +213,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(28, 93);
+            this.label2.Location = new System.Drawing.Point(36, 146);
             this.label2.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(119, 16);
@@ -201,7 +225,7 @@
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(28, 160);
+            this.label3.Location = new System.Drawing.Point(36, 213);
             this.label3.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(151, 16);
@@ -213,7 +237,7 @@
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(28, 227);
+            this.label4.Location = new System.Drawing.Point(36, 280);
             this.label4.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(151, 16);
@@ -225,7 +249,7 @@
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(28, 294);
+            this.label5.Location = new System.Drawing.Point(36, 347);
             this.label5.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(151, 16);
@@ -237,7 +261,7 @@
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(28, 416);
+            this.label6.Location = new System.Drawing.Point(36, 469);
             this.label6.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(151, 16);
@@ -274,31 +298,31 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // textBox8
+            // textBox9
             // 
-            this.textBox8.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox8.Location = new System.Drawing.Point(209, 352);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(404, 29);
-            this.textBox8.TabIndex = 31;
+            this.textBox9.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox9.Location = new System.Drawing.Point(209, 79);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(404, 29);
+            this.textBox9.TabIndex = 33;
             // 
-            // label8
+            // label9
             // 
-            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label8.Location = new System.Drawing.Point(28, 357);
-            this.label8.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(119, 16);
-            this.label8.TabIndex = 30;
-            this.label8.Text = "补偿数据文件：";
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label9.Location = new System.Drawing.Point(36, 84);
+            this.label9.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(119, 16);
+            this.label9.TabIndex = 32;
+            this.label9.Text = "矢网差损文件：";
             // 
             // DeviceFiles_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(700, 623);
+            this.ClientSize = new System.Drawing.Size(716, 653);
             this.Controls.Add(this.splitContainer1);
             this.Name = "DeviceFiles_Form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -335,5 +359,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.Label label9;
     }
 }

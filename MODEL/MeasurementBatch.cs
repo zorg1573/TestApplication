@@ -12,6 +12,8 @@ namespace TestApp.MODEL
     {
         [Key]
         public int Id { get; set; }
+        public string TestType { get; set; }
+        public string ComponentName { get; set; }
         public string Operator { get; set; }
         public string Description { get; set; }
         public string UpdateTime { get; set; }

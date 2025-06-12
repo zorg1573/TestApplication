@@ -13,16 +13,16 @@ using TestApp.FUNCTION;
 
 namespace TestApp.PAGE
 {
-    public partial class VNAFile_Form : Form
+    public partial class VNAFile_Form_Old : Form
     {
         string vnaAddress = "";
         string vnaFilePath = "";
-        public VNAFile_Form()
+        public VNAFile_Form_Old()
         {
             InitializeComponent();
-            this.Load += VNAFile_Form_Load;
+            this.Load += VNAFile_Form_Old_Load;
         }
-        private void VNAFile_Form_Load(object sender, EventArgs e)
+        private void VNAFile_Form_Old_Load(object sender, EventArgs e)
         {
             LoadFromJson();
             GetAddress();
@@ -205,6 +205,5 @@ namespace TestApp.PAGE
             SaveToJson();
             MessageBox.Show("保存成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
     }
 }

@@ -32,6 +32,7 @@ namespace TestApp
         string vnaFilePath = "";
         string excelMobanPath = "";
         string buchangFilePath = "";
+        string shiwangChaSunPath = ""; //矢网差损文件路径
 
     //DeviceAddressNew.json
         string chargeAddress = "";
@@ -69,6 +70,7 @@ namespace TestApp
 
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         int fpgaFlag = 0;
+        int testFlag = 0;
 
         public Main_New()
         {
@@ -190,6 +192,12 @@ namespace TestApp
                 {
                     buchangFilePath = value4.ToString();
                 }
+
+                data.TryGetValue("textBox9", out object value5);
+                if (value5 != null)
+                {
+                    shiwangChaSunPath = value5.ToString();
+                }
             }
             catch(Exception ex)
             {
@@ -256,6 +264,57 @@ namespace TestApp
                 MessageBox.Show("加载DeviceFiles.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        /*        private void InitializeDSO()
+                {
+                    try
+                    {
+                        _axFramerControl = new AxFramerControl();
+                        _axFramerControl.Dock = DockStyle.Fill;
+
+                        this.splitContainer2.Panel2.Controls.Add(_axFramerControl);
+
+                        _axFramerControl.CreateControl(); // 强制初始化
+
+                        _axFramerControl.Titlebar = false;
+
+                        //string excelPath = "C:\\Users\\Administrator\\Desktop\\test.xlsx";
+                        excelPath = Path.Combine(excelPath, "高低温模板.xls");
+                        if (File.Exists(excelPath))
+                        {
+                            _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
+                        }
+                        else
+                        {
+                            MessageBox.Show($"找不到 Excel 文件：{excelPath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("初始化 DSOFramer 出错：" + ex.ToString());
+                    }
+                }*/
+        private void ClearExcelContentBelowRow(Excel.Worksheet sheet, int startRow)
+        {
+            try
+            {
+                foreach (Excel.Range column in sheet.UsedRange.Columns)
+                {
+                    int columnIndex = column.Column;
+                    int lastRow = sheet.Cells[sheet.Rows.Count, columnIndex].End(Excel.XlDirection.xlUp).Row;
+
+                    if (lastRow >= startRow)
+                    {
+                        Excel.Range clearRange = sheet.Range[sheet.Cells[startRow, columnIndex], sheet.Cells[lastRow, columnIndex]];
+                        clearRange.ClearContents();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("清除数据失败：" + ex.Message);
+            }
+        }
+
         private void InitializeDSO()
         {
             try
@@ -264,74 +323,211 @@ namespace TestApp
                 _axFramerControl.Dock = DockStyle.Fill;
 
                 this.splitContainer2.Panel2.Controls.Add(_axFramerControl);
-
                 _axFramerControl.CreateControl(); // 强制初始化
-
                 _axFramerControl.Titlebar = false;
 
-                //string excelPath = "C:\\Users\\Administrator\\Desktop\\test.xlsx";
-/*                excelPath = Path.Combine(excelPath, "test.xls");
+                // Excel 文件路径
+                excelPath = Path.Combine(excelPath, "高低温模板.xls");
                 if (File.Exists(excelPath))
                 {
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
+
+                    // 等待文档加载完成后清空数据（需稍作延迟）
+                    Task.Delay(1000).ContinueWith(_ =>
+                    {
+                        try
+                        {
+                            var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                            Excel.Workbook workbook = excelApp.ActiveWorkbook;
+
+                            foreach (Excel.Worksheet sheet in workbook.Worksheets)
+                            {
+                                ClearExcelContentBelowRow(sheet, 8);
+                            }
+
+                            workbook.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("清空 Excel 内容失败：" + ex.Message);
+                        }
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
                 else
                 {
                     MessageBox.Show($"找不到 Excel 文件：{excelPath}");
-                }*/
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("初始化 DSOFramer 出错：" + ex.ToString());
             }
         }
-        /*        private void WriteArrayToExcelColumn(string[] data, int columnIndex)
+
+        private void WriteShiWangChaSunToExcel(string[] data, int columnIndex)
+        {
+            try
+            {
+                if (!File.Exists(shiwangChaSunPath))
+                {
+                    MessageBox.Show("指定的 Excel 文件不存在：" + shiwangChaSunPath);
+                    return;
+                }
+                // 去除每个字符串的空格
+                string[] cleanedData = data.Select(s => s.Replace("\n", "")).ToArray();
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook workbook = excelApp.Workbooks.Open(shiwangChaSunPath);
+                Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Sheets[1]; // 默认写入第一个Sheet
+                //ClearExcelContentBelowRow(worksheet, 2);
+                ClearExcelColumnBelowRow(worksheet, columnIndex, 3);
+
+                for (int i = 0; i < cleanedData.Length; i++)
+                {
+                    worksheet.Cells[3 + i, columnIndex] = cleanedData[i];
+                }
+
+                workbook.Save();
+                workbook.Close(false);
+                excelApp.Quit();
+
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入 Excel 失败：" + ex.Message);
+            }
+        }
+
+        /*        private void ClearExcelColumnBelowRow(int columnIndex, int startRow = 8)
                 {
                     try
                     {
                         var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-                        var workbook = excelApp.ActiveWorkbook;
-                        var worksheet = (Excel.Worksheet)workbook.ActiveSheet;
+                        Excel.Workbook workbook = excelApp.ActiveWorkbook;
+                        Excel.Worksheet worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
-                        for (int i = 0; i < data.Length; i++)
+                        // 找到当前列中最后有数据的行号
+                        int lastRow = worksheet.Cells[worksheet.Rows.Count, columnIndex].End(Excel.XlDirection.xlUp).Row;
+
+                        // 如果最后行在第8行或之后，清除从第8行到最后行之间的单元格
+                        if (lastRow >= startRow)
                         {
-                            worksheet.Cells[8 + i, columnIndex] = data[i];
+                            Excel.Range clearRange = worksheet.Range[worksheet.Cells[startRow, columnIndex], worksheet.Cells[lastRow, columnIndex]];
+                            clearRange.ClearContents();
                         }
 
                         workbook.Save();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("写入 Excel 失败：" + ex.Message);
+                        MessageBox.Show("清除 Excel 列数据失败：" + ex.Message);
                     }
                 }*/
-        private void ClearExcelColumnBelowRow(int columnIndex, int startRow = 8)
+        private void ClearExcelColumnBelowRow(Excel.Worksheet worksheet, int columnIndex, int startRow)
         {
             try
             {
-                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-                Excel.Workbook workbook = excelApp.ActiveWorkbook;
-                Excel.Worksheet worksheet = (Excel.Worksheet)workbook.ActiveSheet;
-
                 // 找到当前列中最后有数据的行号
                 int lastRow = worksheet.Cells[worksheet.Rows.Count, columnIndex].End(Excel.XlDirection.xlUp).Row;
 
-                // 如果最后行在第8行或之后，清除从第8行到最后行之间的单元格
+                // 如果最后行在第 startRow 行或之后，清除从 startRow 到最后行之间的单元格
                 if (lastRow >= startRow)
                 {
                     Excel.Range clearRange = worksheet.Range[worksheet.Cells[startRow, columnIndex], worksheet.Cells[lastRow, columnIndex]];
                     clearRange.ClearContents();
                 }
-
-                workbook.Save();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("清除 Excel 列数据失败：" + ex.Message);
             }
         }
+        private double Parse(string input)
+        {
+            double.TryParse(input, out double val);
+            return val;
+        }
+        private string[] ReadChaSunData(string sheetName, int columnIndex)
+        {
+            Excel.Application excelApp = null;
+            Excel.Workbook workbook = null;
+            try
+            {
+                excelApp = new Excel.Application();
+                workbook = excelApp.Workbooks.Open(shiwangChaSunPath, ReadOnly: true);
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
 
-        private void WriteArrayToExcelColumn(string[] data, int columnIndex)
+                int startRow = 3;
+                int lastRow = worksheet.Cells[worksheet.Rows.Count, columnIndex].End(Excel.XlDirection.xlUp).Row;
+
+                int length = lastRow - startRow + 1;
+                string[] result = new string[length];
+
+                for (int i = 0; i < length; i++)
+                {
+                    var cellVal = worksheet.Cells[startRow + i, columnIndex].Text.ToString().Trim();
+                    result[i] = cellVal;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("读取矢网差损数据失败：" + ex.Message);
+                return new string[0];
+            }
+            finally
+            {
+                if (workbook != null)
+                {
+                    workbook.Close(false);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
+                }
+
+                if (excelApp != null)
+                {
+                    excelApp.Quit();
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+                }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        }
+
+        private string[] ReadExcelColumnData(string sheetName, int columnIndex)
+        {
+            try
+            {
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook;
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+
+                int startRow = 8;
+                int lastRow = worksheet.Cells[worksheet.Rows.Count, columnIndex].End(Excel.XlDirection.xlUp).Row;
+
+                int length = lastRow - startRow + 1;
+                string[] result = new string[length];
+
+                for (int i = 0; i < length; i++)
+                {
+                    var cellVal = worksheet.Cells[startRow + i, columnIndex].Text.ToString().Trim();
+                    result[i] = cellVal;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("读取常温数据失败：" + ex.Message);
+                return new string[0];
+            }
+        }
+
+        private void WriteArrayToExcelColumn(string[] data, int columnIndex, string sheetName)
         {
             try
             {
@@ -340,10 +536,26 @@ namespace TestApp
 
                 var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
-                Excel.Worksheet worksheet = (Excel.Worksheet)workbook.ActiveSheet;
+
+                // 根据名称获取指定的工作表
+                Excel.Worksheet worksheet = null;
+                foreach (Excel.Worksheet sheet in workbook.Sheets)
+                {
+                    if (sheet.Name == sheetName)
+                    {
+                        worksheet = sheet;
+                        break;
+                    }
+                }
+
+                if (worksheet == null)
+                {
+                    MessageBox.Show($"未找到名为“{sheetName}”的工作表。");
+                    return;
+                }
 
                 // 清空第8行以下的数据
-                ClearExcelColumnBelowRow(columnIndex);
+                ClearExcelColumnBelowRow(worksheet, columnIndex, 8);
 
                 // 写入数据，从第8行开始
                 for (int i = 0; i < cleanedData.Length; i++)
@@ -358,28 +570,83 @@ namespace TestApp
                 MessageBox.Show("写入 Excel 失败：" + ex.Message);
             }
         }
-        private Dictionary<double, double> LoadCompensationTable(string filePath)
+        private void WritePeakPowerToMatchingFrequencyRows(string[] freqArray, string[] powerArray, string sheetName)
         {
-            var compensationTable = new Dictionary<double, double>();
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            try
             {
-                var result = reader.AsDataSet();
-                var table = result.Tables[0];
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook;
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
 
-                // 从第3行（索引2）开始，假设频率在第1列（索引0），补偿值在第10列（索引9）
-                for (int i = 2; i < table.Rows.Count; i++)
+                int startRow = 8;
+                int freqColumn = 1;   // A列
+                int powerColumn = 7;  // G列
+
+                int usedRowCount = worksheet.UsedRange.Rows.Count;
+
+                for (int i = 0; i < freqArray.Length; i++)
                 {
-                    if (double.TryParse(table.Rows[i][0]?.ToString(), out double freq) &&
-                        double.TryParse(table.Rows[i][9]?.ToString(), out double comp))
+                    // 保留三位小数进行对比
+                    string targetFreq = double.Parse(freqArray[i]).ToString("F3");
+
+                    for (int row = startRow; row <= usedRowCount; row++)
                     {
-                        compensationTable[freq] = comp;
+                        var cellValue = worksheet.Cells[row, freqColumn].Text.ToString().Trim();
+
+                        // Excel单元格内容保留三位小数进行对比
+                        if (double.TryParse(cellValue, out double cellFreq))
+                        {
+                            string formattedCellFreq = cellFreq.ToString("F3");
+
+                            if (formattedCellFreq == targetFreq)
+                            {
+                                worksheet.Cells[row, powerColumn] = powerArray[i];
+                                break;
+                            }
+                        }
                     }
                 }
+
+                workbook.Save();
             }
-            return compensationTable;
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入峰值功率失败：" + ex.Message);
+            }
+        }
+
+
+
+        private Dictionary<double, double> LoadCompensationTable(string filePath)
+        {
+            try
+            {
+                var compensationTable = new Dictionary<double, double>();
+                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+                using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet();
+                    var table = result.Tables[0];
+
+                    // 从第3行（索引2）开始，假设频率在第1列（索引0），补偿值在第10列（索引9）
+                    for (int i = 2; i < table.Rows.Count; i++)
+                    {
+                        if (double.TryParse(table.Rows[i][0]?.ToString(), out double freq) &&
+                            double.TryParse(table.Rows[i][9]?.ToString(), out double comp))
+                        {
+                            compensationTable[freq] = comp;
+                        }
+                    }
+                }
+                return compensationTable;
+            }catch(Exception ex)
+            {
+                MessageBox.Show("加载补偿表失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return new Dictionary<double, double>();
+            }
+
         }
 
         // 简单线性插值
@@ -458,11 +725,12 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void manualSend_button_Click(object sender, EventArgs e)
+        private void toolStripButton7_Click(object sender, EventArgs e)
         {
             Form form = new ManualSend_Form(this);
             form.ShowDialog();
         }
+
         /// <summary>
         /// 信号发生器设置
         /// </summary>
@@ -547,21 +815,37 @@ namespace TestApp
                 LogToConsole("FPGA发包:" + chSum);
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
-                //operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
+                operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
 
             }
             catch (Exception ex)
             {
                 LogToConsole("发射测试失败: " + ex);
-                //operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString());
             }
         }
         private async void sendTest_button_Click(object sender, EventArgs e)
         {
+            if(testFlag == 0)
+            {
+                MessageBox.Show("请先进行接收测试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (testType_comboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             LogToConsole("开始发射测试...");
             await ChargeSendPowerON(); // 发射加电
             await LoadGonglvState(); // 调用功率计文件
             await SendTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
             await GetSendData(); // 获取功率计数据
         }
         /// <summary>
@@ -571,14 +855,26 @@ namespace TestApp
         /// <param name="e"></param>
         private async void receiveTest_button_Click(object sender, EventArgs e)
         {
+            if(testType_comboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             LogToConsole("开始接收测试...");
-            await ChargeRecievePowerON(); // 接收加电
-            if(vnaFlag == 0)
+            if (vnaFlag == 0)
             {
                 LoadVNAState(); // 调用矢网文件
             }
+            await ChargeRecievePowerON(); // 接收加电
             await RecieveTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
             await LoadVNAData(); // 获取矢网数据
+            testFlag = 1;
         }
         private async Task RecieveTestUDP()
         {
@@ -616,12 +912,12 @@ namespace TestApp
                 LogToConsole("FPGA发包:" + chSum);
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
-                //operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
+                operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
             }
             catch (Exception ex)
             {
                 LogToConsole("接收测试失败: " + ex);
-                //operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString());
             }
         }
         private async void button1_Click(object sender, EventArgs e)
@@ -654,103 +950,29 @@ namespace TestApp
             vnaFlag = 1;
             scpiDevice.Disconnect(); // 释放资源
         }
-        private async void button2_Click(object sender, EventArgs e)
-        {
-            string visaAddress = vnaAddress;
-            ScpiDevice scpiDevice = new ScpiDevice();
-
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
-            if (!connected)
-            {
-                LogToConsole("连接失败");
-                return;
-            }
-
-            await scpiDevice.LoadStateFile(vnaFilePath);
-
-            string[] gain = await scpiDevice.GetGainStringAsync();               // 增益（dB）
-            string[] initial = await scpiDevice.GetInitialPhaseStringAsync();    // 初相（°）
-            string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
-            string[] outputVswr = await scpiDevice.GetOutputVSWRStringAsync();   // 输出驻波比
-/*            string[] gain = { "1.111", "2.222", "3.333" };               // 增益（dB）
-            string[] initial = { "1.111", "2.222", "3.333" };     // 初相（°）
-            string[] inputVswr = { "1.111", "2.222", "3.333" };      // 输入驻波比
-            string[] outputVswr = { "1.111", "2.222", "3.333" };    // 输出驻波比*/
-
-            LogToConsole($"数据读取完成");
-            LogToConsole("开始写入 Excel...");
-
-            // 写入测量数据
-            WriteArrayToExcelColumn(gain, 2);        // B列
-            WriteArrayToExcelColumn(initial, 3);     // C列
-            WriteArrayToExcelColumn(inputVswr, 4);   // D列
-            WriteArrayToExcelColumn(outputVswr, 5);  // E列
-
-            // 写入频率（从 A8 开始）
-            double startFreq = await scpiDevice.GetFreqStart() ?? -1;  // 单位 Hz
-            double stopFreq = await scpiDevice.GetFreqStop() ?? -1;    // 单位 Hz
-            int pointCount = await scpiDevice.GetPointCount() ?? -1;
-
-
-            if (startFreq < 0 || stopFreq < 0 || pointCount <= 0)
-            {
-                LogToConsole("获取频率或点数失败，请检查设备连接或设置。");
-                scpiDevice.Disconnect();
-                return;
-            }
-
-            double step = (stopFreq - startFreq) / (pointCount - 1);
-            string[] freqArray = new string[pointCount];
-            for (int i = 0; i < pointCount; i++)
-            {
-                double freqGHz = (startFreq + step * i) / 1e9;
-                freqArray[i] = freqGHz.ToString("F6"); // 保留6位小数（GHz）
-            }
-
-            WriteArrayToExcelColumn(freqArray, 1);  // A列，从第8行开始
-            LogToConsole("写入Excel完成");
-
-            // 写入数据库
-            LogToConsole("开始写入数据库...");
-            try
-            {
-                int batchId = main_DAL.GetBatchId();
-
-                var batch = new MeasurementBatch
-                {
-                    Operator = "操作员",
-                    Description = "自动测试批次",
-                    UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                };
-                main_DAL.InsertTestBatch_DT(batch);
-
-                for (int i = 0; i < gain.Length; i++)
-                {
-                    var result = new MeasurementResult
-                    {
-                        BatchId = batchId + 1,
-                        PointIndex = i,
-                        Gain = double.Parse(gain[i]),
-                        InitialPhase = double.Parse(initial[i]),
-                        InputVSWR = double.Parse(inputVswr[i]),
-                        OutputVSWR = double.Parse(outputVswr[i]),
-                    };
-
-                    main_DAL.InsertTestData_DT(result);
-                }
-                LogToConsole("写入数据库完成");
-            }
-            catch (Exception ex)
-            {
-                LogToConsole("写入数据库出错: " + ex.Message);
-            }
-
-            scpiDevice.Disconnect(); // 释放资源
-
-            //operateLog_DAL.InsertOperateLog_DT("调用矢网文件", "");
-        }
         private async Task LoadVNAData()
         {
+            string ch = "";
+            string testType = testType_comboBox.Text;
+            string componentName = componentName_textBox.Text;
+            string sheetName = "测试结果";
+            if (ch1_checkBox.Checked)
+            {
+                ch = $"通道1-{testType}";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = $"通道2-{testType}";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = $"通道3-{testType}";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = $"通道4-{testType}";
+            }
+
             string visaAddress = vnaAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
 
@@ -767,13 +989,122 @@ namespace TestApp
             string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
             string[] outputVswr = await scpiDevice.GetOutputVSWRStringAsync();   // 输出驻波比
 
-            LogToConsole($"数据读取完成");
+            if (chasun_checkBox.Checked)
+            {
+                string[] gainPlusChasun = null;
+                string[] gainChasun = null;
+                if (ch.Contains("通道1"))
+                {
+                    gainChasun = ReadChaSunData("Sheet1", 2);
+                }
+                if (ch.Contains("通道2"))
+                {
+                    gainChasun = ReadChaSunData("Sheet1", 3);
+                }
+                if (ch.Contains("通道3"))
+                {
+                    gainChasun = ReadChaSunData("Sheet1", 4);
+                }
+                if (ch.Contains("通道4"))
+                {
+                    gainChasun = ReadChaSunData("Sheet1", 5);
+                }
+
+                int len = gain.Length;
+
+                // 初始化差值数组
+                gainPlusChasun = new string[len];
+
+                for (int i = 0; i < len; i++)
+                {
+                    double g = Parse(gain[i]);
+                    double gN = Parse(gainChasun[i]);
+                    gainPlusChasun[i] = (g - gN).ToString();
+                }
+                gain = gainPlusChasun; // 替换原有增益数据
+            }
+
+            WriteArrayToExcelColumn(gain, 2, sheetName);
+            WriteArrayToExcelColumn(initial, 3, sheetName);
+            WriteArrayToExcelColumn(inputVswr, 4, sheetName);
+            WriteArrayToExcelColumn(outputVswr, 5, sheetName);
+
+            if(testType == "常温")
+            {
+                WriteArrayToExcelColumn(gain, 2, "常温");
+                WriteArrayToExcelColumn(initial, 3, "常温");
+                WriteArrayToExcelColumn(inputVswr, 4, "常温");
+                WriteArrayToExcelColumn(outputVswr, 5, "常温");
+            }
+
+            LogToConsole("数据读取完成");
 
             // 写入测量数据
-            WriteArrayToExcelColumn(gain, 2);        // B列
-            WriteArrayToExcelColumn(initial, 3);     // C列
-            WriteArrayToExcelColumn(inputVswr, 4);   // D列
-            WriteArrayToExcelColumn(outputVswr, 5);  // E列
+            // 判断是否是差值计算模式
+            bool isNormal = testType == "常温";
+            bool isLow = testType == "低温";
+            bool isHigh = testType == "高温";
+
+            // 需要写入的数据（可能被替换）
+            string[] gainFinal = gain;
+            string[] initialFinal = initial;
+            string[] inputVswrFinal = inputVswr;
+            string[] outputVswrFinal = outputVswr;
+
+            LogToConsole("开始写入数据...");
+            if (isLow || isHigh)
+            {
+                string[] gainNormal = ReadExcelColumnData("常温", 2);      // B列
+                string[] initialNormal = ReadExcelColumnData("常温", 3);   // C列
+                string[] inputVswrNormal = ReadExcelColumnData("常温", 4); // D列
+                string[] outputVswrNormal = ReadExcelColumnData("常温", 5);// E列
+
+                int len = gain.Length;
+
+                // 初始化差值数组
+                gainFinal = new string[len];
+                initialFinal = new string[len];
+                inputVswrFinal = new string[len];
+                outputVswrFinal = new string[len];
+
+                for (int i = 0; i < len; i++)
+                {
+                    double g = Parse(gain[i]);
+                    double gN = Parse(gainNormal[i]);
+                    double p = Parse(initial[i]);
+                    double pN = Parse(initialNormal[i]);
+                    double vin = Parse(inputVswr[i]);
+                    double vinN = Parse(inputVswrNormal[i]);
+                    double vout = Parse(outputVswr[i]);
+                    double voutN = Parse(outputVswrNormal[i]);
+
+                    if (isLow)
+                    {
+                        sheetName = "低温-常温";
+                        gainFinal[i] = (g - gN).ToString();
+                        initialFinal[i] = (p - pN).ToString();
+                        inputVswrFinal[i] = (vin - vinN).ToString();
+                        outputVswrFinal[i] = (vout - voutN).ToString();
+                    }
+                    else if (isHigh)
+                    {
+                        sheetName = "常温-高温";
+                        gainFinal[i] = (gN - g).ToString();
+                        initialFinal[i] = (pN - p).ToString();
+                        inputVswrFinal[i] = (vinN - vin).ToString();
+                        outputVswrFinal[i] = (voutN - vout).ToString();
+                    }
+                }
+            }
+            WriteArrayToExcelColumn(gainFinal, 2, sheetName);
+            WriteArrayToExcelColumn(initialFinal, 3, sheetName);
+            WriteArrayToExcelColumn(inputVswrFinal, 4, sheetName);
+            WriteArrayToExcelColumn(outputVswrFinal, 5, sheetName);
+
+            /*            WriteArrayToExcelColumn(gain, 2, ch);       // B列
+                        WriteArrayToExcelColumn(initial, 3, ch);    // C列
+                        WriteArrayToExcelColumn(inputVswr, 4, ch);  // D列
+                        WriteArrayToExcelColumn(outputVswr, 5, ch);  // E列*/
 
             // 写入频率（从 A8 开始）
             double startFreq = await scpiDevice.GetFreqStart() ?? -1;  // 单位 Hz
@@ -788,6 +1119,7 @@ namespace TestApp
                 return;
             }
 
+            //进度条
             int num = 0;
             progressBar1.Maximum = _pointCount;
             progressBar1.Value = 0;
@@ -800,32 +1132,29 @@ namespace TestApp
                 freqArray[i] = freqGHz.ToString("F6"); // 保留6位小数（GHz）
             }
 
-            WriteArrayToExcelColumn(freqArray, 1);  // A列，从第8行开始
+            WriteArrayToExcelColumn(freqArray, 1, sheetName);  // A列，从第8行开始
+            WriteArrayToExcelColumn(freqArray, 1, "常温");  // A列，从第8行开始
             LogToConsole("写入Excel完成");
 
             // 写入数据库
             try
             {
-                int batchId = main_DAL.GetBatchId();
-
-                var batch = new MeasurementBatch
-                {
-                    Operator = "操作员",
-                    Description = "自动测试批次",
-                    UpdateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                };
-                main_DAL.InsertTestBatch_DT(batch);
-
+                int batchId = main_DAL.GetBatchId(ch, componentName);
+                string nowTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 for (int i = 0; i < gain.Length; i++)
                 {
                     var result = new MeasurementResult
                     {
+                        TestType = ch,
+                        ComponentName = componentName,
                         BatchId = batchId + 1,
                         PointIndex = i,
-                        Gain = double.Parse(gain[i]),
-                        InitialPhase = double.Parse(initial[i]),
-                        InputVSWR = double.Parse(inputVswr[i]),
-                        OutputVSWR = double.Parse(outputVswr[i]),
+                        PointFreq = double.Parse(freqArray[i]),
+                        Gain = double.Parse(gainFinal[i]),
+                        InitialPhase = double.Parse(initialFinal[i]),
+                        InputSWR = double.Parse(inputVswrFinal[i]),
+                        OutputSWR = double.Parse(outputVswrFinal[i]),
+                        UpdateTime = nowTime
                     };
 
                     main_DAL.InsertTestData_DT(result);
@@ -851,6 +1180,27 @@ namespace TestApp
         }
         private async Task GetSendData()
         {
+            string ch = "";
+            string testType = testType_comboBox.Text;
+            string componentName = componentName_textBox.Text;
+
+            if (ch1_checkBox.Checked)
+            {
+                ch = $"通道1-{testType}";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = $"通道2-{testType}";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = $"通道3-{testType}";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = $"通道4-{testType}";
+            }
+
             GetXinhaoSetJson();
             string sgAddress = xinhaoAddress;   // 信号源地址
             string pmAddress = gonglvAddress; // 功率计地址
@@ -884,6 +1234,11 @@ namespace TestApp
 
             try
             {
+                signalGen.EnableOutput(); // 打开信号源输出
+                signalGen.ModON(); // 打开调制输出
+                rf_checkBox.Checked = true;
+                mod_checkBox.Checked = true;
+
                 LogToConsole("获取功率计数据");
                 double step = 0;
                 if (pointCount > 1)
@@ -899,7 +1254,7 @@ namespace TestApp
                     MessageBox.Show("信号源点数设置错误，请检查设置", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-
+                LogToConsole("开始写入数据...");
                 //var results = new List<(double freqGHz, double power)>();
 
                 for (int i = 0; i < pointCount; i++)
@@ -929,10 +1284,13 @@ namespace TestApp
                     progressBar1.Value += 1;
                     label1.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
                     label1.Refresh();
+
+                    main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
                 }
-                WriteArrayToExcelColumn(freqArray, 7);
-                WriteArrayToExcelColumn(compensatedPowerString, 8);
-                //WriteArrayToExcelColumn(pulsePowerString, 8);
+                //WriteArrayToExcelColumn(freqArray, 7, ch);
+                //WriteArrayToExcelColumn(compensatedPowerString, 8, ch);
+                WritePeakPowerToMatchingFrequencyRows(freqArray, compensatedPowerString, "测试结果");
+
 
                 LogToConsole("Excel写入完成");
 
@@ -947,6 +1305,10 @@ namespace TestApp
                 signalGen.Disconnect();
                 powerMeter.Disconnect();
                 CloseCharge(); // 电源关电
+                CloseRFOutPut();
+                CloseModOutPut();
+                rf_checkBox.Checked = false;
+                mod_checkBox.Checked = false;
                 LogToConsole("发射测试已完成");
             }
         }
@@ -981,7 +1343,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
             }
 
         }
@@ -1009,7 +1371,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
             }
         }
         /// <summary>
@@ -1047,7 +1409,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
             }
 
         }
@@ -1081,7 +1443,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
             }
         }
         /// <summary>
@@ -1116,7 +1478,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
             }
         }
         private async Task CloseCharge()
@@ -1145,7 +1507,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
             }
         }
         /// <summary>
@@ -1179,7 +1541,7 @@ namespace TestApp
                     catch (Exception ex)
                     {
                         MessageBox.Show($"创建 Excel 文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        //operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString());
+                        operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString());
                     }
                 }
             }
@@ -1207,7 +1569,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"打开Excel失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString());
             }
 
         }
@@ -1271,7 +1633,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"UDP发送失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
             }
 
         }
@@ -1321,9 +1683,6 @@ namespace TestApp
 
         }
 
-
-
-
         #endregion
 
         private async void button3_Click(object sender, EventArgs e)
@@ -1349,7 +1708,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"读取功率失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("读取功率失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("读取功率失败", ex.ToString());
             }
         }
 
@@ -1378,7 +1737,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
             }
         }
         private async Task LoadGonglvState()
@@ -1406,7 +1765,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
             }
         }
 
@@ -1434,7 +1793,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"打开射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString());
                 }
             }
             else
@@ -1459,13 +1818,60 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
                 }
             }
-
-
         }
+        private async void CloseRFOutPut()
+        {
+            try
+            {
+                string visaAddress = xinhaoAddress;
 
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                await scpiDevice.DisableOutput();
+                LogToConsole("关闭射频输出");
+
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+            }
+        }
+        private async void CloseModOutPut()
+        {
+            try
+            {
+                string visaAddress = xinhaoAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                await scpiDevice.ModOFF();
+                LogToConsole("关闭调制功能");
+
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+            }
+        }
         private async void mod_checkBox_CheckedChanged(object sender, EventArgs e)
         {
             if (mod_checkBox.Checked)
@@ -1490,7 +1896,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"启用调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString());
                 }
             }
             else
@@ -1515,11 +1921,206 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
                 }
             }
 
 
         }
+
+        private void ch1_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch1_checkBox.Checked)
+            {
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch2_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(ch2_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch3_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch3_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch4_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch4_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+            }
+        }
+
+        private async void button1_Click_1(object sender, EventArgs e)
+        {
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LoadVNAState();
+            string ch = "";
+            if (ch1_checkBox.Checked)
+            {
+                ch = "CH1";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = "CH2";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = "CH3";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = "CH4";
+            }
+            string visaAddress = vnaAddress;
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            if (!connected)
+            {
+                LogToConsole("矢网连接失败");
+                return;
+            }
+
+            await scpiDevice.ScanOnce();
+            string[] gain = await scpiDevice.GetGainStringAsync();
+
+
+            LogToConsole($"数据读取完成");
+
+            // 写入测量数据
+            if (ch == "CH1")
+            {
+                WriteShiWangChaSunToExcel(gain, 2);
+            }
+            if (ch == "CH2")
+            {
+                WriteShiWangChaSunToExcel(gain, 3);
+            }
+            if (ch == "CH3")
+            {
+                WriteShiWangChaSunToExcel(gain, 4);
+            }
+            if (ch == "CH4")
+            {
+                WriteShiWangChaSunToExcel(gain, 5);
+            }
+
+
+            // 写入频率
+            double startFreq = await scpiDevice.GetFreqStart() ?? -1;  // 单位 Hz
+            double stopFreq = await scpiDevice.GetFreqStop() ?? -1;    // 单位 Hz
+            int _pointCount = await scpiDevice.GetPointCount() ?? -1;
+
+
+            if (startFreq < 0 || stopFreq < 0 || _pointCount <= 0)
+            {
+                LogToConsole("获取频率或点数失败，请检查设备连接或设置。");
+                scpiDevice.Disconnect();
+                return;
+            }
+
+            int num = 0;
+            progressBar1.Maximum = _pointCount;
+            progressBar1.Value = 0;
+
+            double step = (stopFreq - startFreq) / (_pointCount - 1);
+            string[] freqArray = new string[_pointCount];
+            for (int i = 0; i < _pointCount; i++)
+            {
+                double freqGHz = (startFreq + step * i) / 1e9;
+                freqArray[i] = freqGHz.ToString("F6"); // 保留6位小数（GHz）
+
+                num++;
+                progressBar1.Value += 1;
+                label1.Text = ((double)num / _pointCount * 100).ToString("f2") + "%";
+                label1.Refresh();
+            }
+
+            WriteShiWangChaSunToExcel(freqArray, 1);
+            LogToConsole("写入Excel完成");
+            MessageBox.Show("数据已写入：" + shiwangChaSunPath, "写入成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            scpiDevice.Disconnect(); // 释放资源
+            LogToConsole("矢网差损已完成");
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            LoadVNAState();
+        }
+
+        private void toolStripButton6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // 获取当前 Excel 应用程序实例
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+
+                // 构建保存路径
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string savePath = Path.Combine(excelPath, $"测试结果_{timestamp}{Path.GetExtension(workbook.FullName)}");
+
+                // 保存副本
+                workbook.SaveCopyAs(savePath);
+
+                MessageBox.Show($"已成功另存为：{savePath}", "保存成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("另存为失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void toolStripButton8_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(shiwangChaSunPath) || !File.Exists(shiwangChaSunPath))
+                {
+                    MessageBox.Show("找不到指定的 Excel 文件路径：" + shiwangChaSunPath, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // 创建 Excel 应用程序实例
+                var excelApp = new Excel.Application();
+                excelApp.Visible = true; // 显示 Excel 窗口
+
+                // 打开指定工作簿
+                excelApp.Workbooks.Open(shiwangChaSunPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("打开 Excel 文件失败：" + ex.Message);
+            }
+        }
+
+        private void toolStripButton9_Click(object sender, EventArgs e)
+        {
+            Form form = new TestData_Form();
+            form.ShowDialog();
+        }
+
     }
 }

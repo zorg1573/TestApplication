@@ -12,11 +12,16 @@ namespace TestApp.MODEL
     {
         [Key]
         public int Id { get; set; }
+        public string TestType { get; set; }
+        public string ComponentName { get; set; }
         public int BatchId { get; set; }
         public int PointIndex { get; set; }
+        public double PointFreq { get; set; }
         public double Gain { get; set; }
         public double InitialPhase { get; set; }
-        public double InputVSWR { get; set; }
-        public double OutputVSWR { get; set; }
+        public double InputSWR { get; set; }
+        public double OutputSWR { get; set; }
+        public double Frequency { get; set; }
+        public string UpdateTime { get; set; }
     }
 }
