@@ -44,19 +44,20 @@
             this.gonglv_textBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.pc_mac_textBox = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.pc_jiekou_textBox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.pc_ip_textBox = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.fpga_ip_textBox = new System.Windows.Forms.TextBox();
             this.fpga_mac_textBox = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.fpga_ip_textBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.xinhaoName_textBox = new System.Windows.Forms.TextBox();
             this.xinhao_textBox = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -77,6 +78,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
             this.splitContainer1.Size = new System.Drawing.Size(735, 632);
@@ -270,17 +272,6 @@
             this.pc_mac_textBox.Size = new System.Drawing.Size(351, 23);
             this.pc_mac_textBox.TabIndex = 15;
             // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(37, 440);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(103, 55);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "上位机接口名";
-            // 
             // pc_jiekou_textBox
             // 
             this.pc_jiekou_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -288,6 +279,17 @@
             this.pc_jiekou_textBox.Name = "pc_jiekou_textBox";
             this.pc_jiekou_textBox.Size = new System.Drawing.Size(351, 23);
             this.pc_jiekou_textBox.TabIndex = 16;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label6.Location = new System.Drawing.Point(33, 440);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(111, 55);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "上位机NPF接口";
             // 
             // label9
             // 
@@ -308,16 +310,13 @@
             this.pc_ip_textBox.Size = new System.Drawing.Size(351, 23);
             this.pc_ip_textBox.TabIndex = 21;
             // 
-            // label5
+            // fpga_mac_textBox
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(41, 275);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(95, 55);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "FPGA IP地址";
+            this.fpga_mac_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.fpga_mac_textBox.Location = new System.Drawing.Point(359, 333);
+            this.fpga_mac_textBox.Name = "fpga_mac_textBox";
+            this.fpga_mac_textBox.Size = new System.Drawing.Size(351, 23);
+            this.fpga_mac_textBox.TabIndex = 23;
             // 
             // label10
             // 
@@ -330,6 +329,17 @@
             this.label10.TabIndex = 22;
             this.label10.Text = "FPGA MAC地址";
             // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(41, 275);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(95, 55);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "FPGA IP地址";
+            // 
             // fpga_ip_textBox
             // 
             this.fpga_ip_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -337,36 +347,6 @@
             this.fpga_ip_textBox.Name = "fpga_ip_textBox";
             this.fpga_ip_textBox.Size = new System.Drawing.Size(351, 23);
             this.fpga_ip_textBox.TabIndex = 14;
-            // 
-            // fpga_mac_textBox
-            // 
-            this.fpga_mac_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.fpga_mac_textBox.Location = new System.Drawing.Point(359, 333);
-            this.fpga_mac_textBox.Name = "fpga_mac_textBox";
-            this.fpga_mac_textBox.Size = new System.Drawing.Size(351, 23);
-            this.fpga_mac_textBox.TabIndex = 23;
-            // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button2.Location = new System.Drawing.Point(441, 9);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(102, 46);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "测试连接";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(168, 9);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(102, 46);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "保存";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label12
             // 
@@ -395,6 +375,39 @@
             this.xinhao_textBox.Name = "xinhao_textBox";
             this.xinhao_textBox.Size = new System.Drawing.Size(351, 23);
             this.xinhao_textBox.TabIndex = 29;
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button3.Location = new System.Drawing.Point(506, 12);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(112, 46);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "获取本机信息";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button2.Location = new System.Drawing.Point(315, 12);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(102, 46);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "测试连接";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button1.Location = new System.Drawing.Point(124, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(102, 46);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "保存";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // DeviceAddressNew_Form
             // 
@@ -446,5 +459,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox xinhaoName_textBox;
         private System.Windows.Forms.TextBox xinhao_textBox;
+        private System.Windows.Forms.Button button3;
     }
 }

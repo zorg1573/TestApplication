@@ -728,7 +728,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void device_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new DeviceAddressNew_Form();
+            Form form = new DeviceAddressNew_Form(this);
             form.ShowDialog();
         }
         /// <summary>

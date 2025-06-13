@@ -1,5 +1,6 @@
 ﻿using Ivi.Visa;
 using NationalInstruments.Visa;
+using SharpPcap;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,10 +18,12 @@ namespace TestApp.PAGE
 {
     public partial class DeviceAddressNew_Form : Form
     {
-        public DeviceAddressNew_Form()
+        private Main_New mainForm;
+        public DeviceAddressNew_Form(Main_New mainForm)
         {
             InitializeComponent();
             this.Load += DeviceAddressNew_Form_Load;
+            this.mainForm = mainForm;
         }
         private void DeviceAddressNew_Form_Load(object sender, EventArgs e)
         {
@@ -124,6 +128,55 @@ namespace TestApp.PAGE
             if (!string.IsNullOrEmpty(xinhao_textBox.Text))
             {
                 xinhaoName_textBox.Text = await TryConnectAndGetIdnAsync(xinhao_textBox.Text);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            mainForm.LogToConsole("正在获取网络接口信息...\n");
+
+            // 获取所有网络接口
+            var adapters = NetworkInterface.GetAllNetworkInterfaces();
+            var npfDevices = CaptureDeviceList.Instance;
+
+            foreach (var adapter in adapters)
+            {
+                var ipProps = adapter.GetIPProperties();
+                var unicastAddresses = ipProps.UnicastAddresses;
+
+                mainForm.LogToConsole($"接口名称: {adapter.Name}");
+                mainForm.LogToConsole($"描述: {adapter.Description}");
+
+                // 打印 IPv4 地址
+                foreach (var addr in unicastAddresses)
+                {
+                    if (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        mainForm.LogToConsole($"IP 地址: {addr.Address}");
+                    }
+                }
+
+                // 打印 MAC 地址
+                var mac = adapter.GetPhysicalAddress();
+                mainForm.LogToConsole($"MAC 地址: {string.Join(":", mac.GetAddressBytes().Select(b => b.ToString("X2")))}");
+
+                // 查找对应的 NPF 设备（通过 MAC 地址比对）
+                var matchedDevice = npfDevices.FirstOrDefault(dev =>
+                {
+                    var devMac = dev.MacAddress;
+                    return devMac != null && devMac.Equals(mac);
+                });
+
+                if (matchedDevice != null)
+                {
+                    mainForm.LogToConsole($"NPF 接口: {matchedDevice.Name}");
+                }
+                else
+                {
+                    mainForm.LogToConsole("NPF 接口: 未找到匹配");
+                }
+
+                mainForm.LogToConsole(new string('-', 50));
             }
         }
     }
