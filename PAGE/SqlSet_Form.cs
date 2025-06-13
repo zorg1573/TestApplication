@@ -39,7 +39,7 @@ namespace TestApp.PAGE
                 Database = database_textBox.Text.Trim(),
                 UserId = userid_textBox.Text.Trim(),
                 Password = password_textBox.Text.Trim()
-            }.GetConnectionString();
+            }.GetConnection();
 
             try
             {

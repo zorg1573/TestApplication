@@ -19,7 +19,8 @@ namespace TestApp.DAL.Dapper
     {
 
         //private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["TestSystem"].ConnectionString;//连接的字符串
-        private static readonly string ConnectionString = new DbConfig().GetConnectionString();
+        private static DbConfig dbConfig = new DbConfig();
+        private static readonly string ConnectionString = dbConfig.GetConnectionString();
         /// <summary>
         /// 执行sql并且返回实体List类型
         /// </summary>

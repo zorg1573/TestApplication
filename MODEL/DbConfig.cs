@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestApp.DAL;
 
 namespace TestApp.MODEL
 {
@@ -13,9 +14,14 @@ namespace TestApp.MODEL
         public string UserId { get; set; }
         public string Password { get; set; }
 
-        public string GetConnectionString()
+        public string GetConnection()
         {
             return $"Server={Server};Database={Database};User Id={UserId};Password={Password};";
+        }
+        public string GetConnectionString()
+        {
+            DbConfig config = DbConfigHelper.LoadConfig();
+            return $"Server={config.Server};Database={config.Database};User Id={config.UserId};Password={config.Password};";
         }
     }
 

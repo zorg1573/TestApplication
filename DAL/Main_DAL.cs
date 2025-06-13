@@ -10,6 +10,7 @@ namespace TestApp.DAL
 {
     public class Main_DAL
     {
+        #region test_data
         public int InsertTestData_DT(MeasurementResult model)
         {
             string sql = $@"insert test_data
@@ -29,13 +30,6 @@ namespace TestApp.DAL
             return Dapper.DbHelper.UpdateBySql(sql);
         }
 
-        public int InsertTestBatch_DT(MeasurementBatch model)
-        {
-            string sql = $@"insert test_batch
-	                ([Operator],[Description],[UpdateTime])  
-                values('{model.Operator}','{model.Description}','{model.UpdateTime}')";
-            return Dapper.DbHelper.UpdateBySql(sql);
-        }
         public int GetBatchId(string testType, string componentName)
         {
             string sql = $@"
@@ -69,5 +63,16 @@ namespace TestApp.DAL
             var result = Sqlutil.Query<MeasurementResult>(sql);
             return result;
         }
+        #endregion
+
+        public int InsertTestBatch_DT(MeasurementBatch model)
+        {
+            string sql = $@"insert test_batch
+	                ([Operator],[Description],[UpdateTime])  
+                values('{model.Operator}','{model.Description}','{model.UpdateTime}')";
+            return Dapper.DbHelper.UpdateBySql(sql);
+        }
+
+
     }
 }

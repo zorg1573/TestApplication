@@ -247,11 +247,10 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "RecieveTestWait_Form";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "RecieveTestWait_Form";
+            this.Text = "接收测试进度";
             this.ResumeLayout(false);
             this.PerformLayout();
 

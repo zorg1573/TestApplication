@@ -9,12 +9,12 @@ namespace TestApp.DAL
 {
     public class OperateLog_DAL
     {
-        public int InsertOperateLog_DT(string operation, string description)
+        public int InsertOperateLog_DT(string operation, string description, string operatorName)
         {
             string updateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string sql = $@"insert operate_log
-	                ([operation],[description],[update_time])  
-                values('{operation}','{description}','{updateTime}')";
+	                ([Operation],[Description],[Operator],[UpdateTime])  
+                values('{operation}','{description}','{operatorName}','{updateTime}')";
             return Dapper.DbHelper.UpdateBySql(sql);
         }
     }

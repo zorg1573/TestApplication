@@ -57,7 +57,9 @@ namespace TestApp.DAL.Dapper
         public SqlUtil()
         {
             //this.connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["TestSystem"].ToString();
-            this.connectionString = new DbConfig().GetConnectionString();
+            DbConfig dbConfig = new DbConfig();
+
+            this.connectionString = dbConfig.GetConnectionString();;
 
             cmd = new SqlCommand();
             cmd.CommandTimeout = 999;

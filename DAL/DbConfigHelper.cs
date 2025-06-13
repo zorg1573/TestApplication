@@ -33,5 +33,6 @@ namespace TestApp.DAL
             string json = File.ReadAllText(configPath);
             return JsonSerializer.Deserialize<DbConfig>(json);
         }
+
     }
 }

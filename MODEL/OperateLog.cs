@@ -14,6 +14,7 @@ namespace TestApp.MODEL
         public int Id { get; set; }
         public string Operation { get; set; }
         public string Description { get; set; }
+        public string Operator { get; set; }
         public string UpdateTime { get; set; }
 
     }

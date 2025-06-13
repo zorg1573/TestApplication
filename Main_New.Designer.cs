@@ -37,6 +37,7 @@
             this.device_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.电源设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChargeSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +72,6 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -166,13 +166,20 @@
             this.testSet_ToolStripMenuItem.Visible = false;
             this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
             // 
+            // SqlSet_ToolStripMenuItem
+            // 
+            this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
+            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
+            this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
+            // 
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.电源设置ToolStripMenuItem,
-            this.toolStripButton4,
-            this.矢网设置ToolStripMenuItem});
+            this.矢网设置ToolStripMenuItem,
+            this.toolStripButton4});
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
@@ -187,31 +194,31 @@
             this.SendPower_ToolStripMenuItem,
             this.ClosePower_ToolStripMenuItem});
             this.电源设置ToolStripMenuItem.Name = "电源设置ToolStripMenuItem";
-            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.电源设置ToolStripMenuItem.Text = "电源设置";
             // 
             // ChargeSet_ToolStripMenuItem
             // 
             this.ChargeSet_ToolStripMenuItem.Name = "ChargeSet_ToolStripMenuItem";
-            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ChargeSet_ToolStripMenuItem.Text = "参数设置";
             // 
             // RecievePower_ToolStripMenuItem
             // 
             this.RecievePower_ToolStripMenuItem.Name = "RecievePower_ToolStripMenuItem";
-            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.RecievePower_ToolStripMenuItem.Text = "接收加电";
             // 
             // SendPower_ToolStripMenuItem
             // 
             this.SendPower_ToolStripMenuItem.Name = "SendPower_ToolStripMenuItem";
-            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SendPower_ToolStripMenuItem.Text = "发射加电";
             // 
             // ClosePower_ToolStripMenuItem
             // 
             this.ClosePower_ToolStripMenuItem.Name = "ClosePower_ToolStripMenuItem";
-            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ClosePower_ToolStripMenuItem.Text = "关电";
             // 
             // toolStripButton4
@@ -231,13 +238,13 @@
             this.toolStripButton5,
             this.toolStripButton8});
             this.矢网设置ToolStripMenuItem.Name = "矢网设置ToolStripMenuItem";
-            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.矢网设置ToolStripMenuItem.Text = "矢网设置";
             // 
             // vnaFile_ToolStripMenuItem
             // 
             this.vnaFile_ToolStripMenuItem.Name = "vnaFile_ToolStripMenuItem";
-            this.vnaFile_ToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.vnaFile_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.vnaFile_ToolStripMenuItem.Text = "矢网文件设置";
             this.vnaFile_ToolStripMenuItem.Click += new System.EventHandler(this.vnaFile_ToolStripMenuItem_Click);
             // 
@@ -541,13 +548,6 @@
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.console_textBox.Size = new System.Drawing.Size(1405, 62);
             this.console_textBox.TabIndex = 1;
-            // 
-            // SqlSet_ToolStripMenuItem
-            // 
-            this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
-            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
-            this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
             // 
             // Main_New
             // 

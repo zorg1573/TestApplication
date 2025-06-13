@@ -100,7 +100,7 @@ namespace TestApp.FUNCTION
             return idn;
         }
 
-        // SCPI命令封装（保持不变）
+        #region 通用命令
         public async Task SelectChannel(int ch) => await SendCommandAsync($"INST:NSEL {ch}");
         public async Task<string> GetInfo() => await QueryAsync("*IDN?");
         public async Task ClearInfo() => await SendCommandAsync("*CLS");
@@ -143,7 +143,7 @@ namespace TestApp.FUNCTION
             string resp = await QueryAsync("POW?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
         }
-
+        #endregion
 
         #region 频谱
         // 设置频谱分析相关参数

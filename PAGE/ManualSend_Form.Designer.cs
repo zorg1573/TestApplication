@@ -261,6 +261,7 @@
             this.radioButton5.TabStop = true;
             this.radioButton5.Text = "接收高电平";
             this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioButton5.Visible = false;
             // 
             // radioButton4
             // 

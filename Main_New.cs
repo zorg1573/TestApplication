@@ -866,13 +866,13 @@ namespace TestApp
                 LogToConsole("FPGA发包:" + chSum);
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
                 sendWaitForm.ChangeLabelText("step3_label", "已完成");
-                operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}");
+                operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}", person_textBox.Text);
 
             }
             catch (Exception ex)
             {
                 LogToConsole("发射测试失败: " + ex);
-                operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), person_textBox.Text);
             }
         }
         private async void sendTest_button_Click(object sender, EventArgs e)
@@ -890,6 +890,11 @@ namespace TestApp
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(person_textBox.Text))
+            {
+                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             sendWaitForm.Show(); // 显示等待界面
@@ -915,6 +920,11 @@ namespace TestApp
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(person_textBox.Text))
+            {
+                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             LogToConsole("开始接收测试...");
@@ -968,12 +978,12 @@ namespace TestApp
                 recieveWaitForm.ChangeLabelText("step1_labe3", "已完成");
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
-                operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}");
+                operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}", person_textBox.Text);
             }
             catch (Exception ex)
             {
                 LogToConsole("接收测试失败: " + ex);
-                operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), person_textBox.Text);
             }
         }
 
@@ -1196,6 +1206,17 @@ namespace TestApp
             {
                 int batchId = main_DAL.GetBatchId(ch, componentName);
                 string nowTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var batch = new MeasurementBatch
+                {
+                    TestType = ch,
+                    ComponentName = componentName,
+                    Operator = person_textBox.Text,
+                    Description = "自动测试批次",
+                    UpdateTime = nowTime
+                };
+                main_DAL.InsertTestBatch_DT(batch);
+
                 for (int i = 0; i < gain.Length; i++)
                 {
                     var result = new MeasurementResult
@@ -1407,7 +1428,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), person_textBox.Text);
             }
 
         }
@@ -1436,7 +1457,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), person_textBox.Text);
             }
         }
         /// <summary>
@@ -1474,7 +1495,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), person_textBox.Text);
             }
 
         }
@@ -1509,7 +1530,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), person_textBox.Text);
             }
         }
         /// <summary>
@@ -1544,7 +1565,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), person_textBox.Text);
             }
         }
         private async Task CloseCharge()
@@ -1573,7 +1594,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), person_textBox.Text);
             }
         }
         /// <summary>
@@ -1607,7 +1628,7 @@ namespace TestApp
                     catch (Exception ex)
                     {
                         MessageBox.Show($"创建 Excel 文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString());
+                        operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString(), person_textBox.Text);
                     }
                 }
             }
@@ -1635,7 +1656,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"打开Excel失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString(), person_textBox.Text);
             }
 
         }
@@ -1847,7 +1868,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"UDP发送失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString(), person_textBox.Text);
             }
 
         }
@@ -1929,7 +1950,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString(), person_textBox.Text);
             }
         }
         /// <summary>
@@ -1961,7 +1982,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"打开射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString(), person_textBox.Text);
                 }
             }
             else
@@ -1986,7 +2007,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), person_textBox.Text);
                 }
             }
         }
@@ -2019,7 +2040,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"启用调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString(), person_textBox.Text);
                 }
             }
             else
@@ -2044,7 +2065,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), person_textBox.Text);
                 }
             }
         }
@@ -2073,7 +2094,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), person_textBox.Text);
             }
         }
         /// <summary>
@@ -2101,7 +2122,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString());
+                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), person_textBox.Text);
             }
         }
 
