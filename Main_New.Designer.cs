@@ -48,11 +48,18 @@
             this.vnaFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.频谱分析仪设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pinpuSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadState_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.功率计设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gonglvSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadGonglvState_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button2 = new System.Windows.Forms.Button();
             this.person_textBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.chasun_checkBox = new System.Windows.Forms.CheckBox();
@@ -179,6 +186,8 @@
             this.toolStripButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.电源设置ToolStripMenuItem,
             this.矢网设置ToolStripMenuItem,
+            this.频谱分析仪设置ToolStripMenuItem,
+            this.功率计设置ToolStripMenuItem,
             this.toolStripButton4});
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -194,7 +203,7 @@
             this.SendPower_ToolStripMenuItem,
             this.ClosePower_ToolStripMenuItem});
             this.电源设置ToolStripMenuItem.Name = "电源设置ToolStripMenuItem";
-            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.电源设置ToolStripMenuItem.Text = "电源设置";
             // 
             // ChargeSet_ToolStripMenuItem
@@ -228,7 +237,7 @@
             this.toolStripButton5,
             this.toolStripButton8});
             this.矢网设置ToolStripMenuItem.Name = "矢网设置ToolStripMenuItem";
-            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.矢网设置ToolStripMenuItem.Text = "矢网设置";
             // 
             // vnaFile_ToolStripMenuItem
@@ -258,13 +267,60 @@
             this.toolStripButton8.Text = "打开矢网差损文件";
             this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
             // 
+            // 频谱分析仪设置ToolStripMenuItem
+            // 
+            this.频谱分析仪设置ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pinpuSet_ToolStripMenuItem,
+            this.loadState_ToolStripMenuItem});
+            this.频谱分析仪设置ToolStripMenuItem.Name = "频谱分析仪设置ToolStripMenuItem";
+            this.频谱分析仪设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.频谱分析仪设置ToolStripMenuItem.Text = "频谱分析仪设置";
+            // 
+            // pinpuSet_ToolStripMenuItem
+            // 
+            this.pinpuSet_ToolStripMenuItem.Name = "pinpuSet_ToolStripMenuItem";
+            this.pinpuSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.pinpuSet_ToolStripMenuItem.Text = "参数设置";
+            this.pinpuSet_ToolStripMenuItem.Click += new System.EventHandler(this.pinpuSet_ToolStripMenuItem_Click);
+            // 
+            // loadState_ToolStripMenuItem
+            // 
+            this.loadState_ToolStripMenuItem.Name = "loadState_ToolStripMenuItem";
+            this.loadState_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.loadState_ToolStripMenuItem.Text = "调用状态文件";
+            this.loadState_ToolStripMenuItem.Click += new System.EventHandler(this.loadState_ToolStripMenuItem_Click);
+            // 
+            // 功率计设置ToolStripMenuItem
+            // 
+            this.功率计设置ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gonglvSet_ToolStripMenuItem,
+            this.loadGonglvState_ToolStripMenuItem});
+            this.功率计设置ToolStripMenuItem.Name = "功率计设置ToolStripMenuItem";
+            this.功率计设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.功率计设置ToolStripMenuItem.Text = "功率计设置";
+            this.功率计设置ToolStripMenuItem.Visible = false;
+            // 
+            // gonglvSet_ToolStripMenuItem
+            // 
+            this.gonglvSet_ToolStripMenuItem.Name = "gonglvSet_ToolStripMenuItem";
+            this.gonglvSet_ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.gonglvSet_ToolStripMenuItem.Text = "参数设置";
+            this.gonglvSet_ToolStripMenuItem.Click += new System.EventHandler(this.gonglvSet_ToolStripMenuItem_Click);
+            // 
+            // loadGonglvState_ToolStripMenuItem
+            // 
+            this.loadGonglvState_ToolStripMenuItem.Name = "loadGonglvState_ToolStripMenuItem";
+            this.loadGonglvState_ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadGonglvState_ToolStripMenuItem.Text = "调用功率计文件";
+            this.loadGonglvState_ToolStripMenuItem.Click += new System.EventHandler(this.loadGonglvState_ToolStripMenuItem_Click);
+            // 
             // toolStripButton4
             // 
             this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(96, 21);
+            this.toolStripButton4.Size = new System.Drawing.Size(160, 22);
             this.toolStripButton4.Text = "信号发生器设置";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
@@ -303,7 +359,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.console_textBox);
             this.splitContainer1.Size = new System.Drawing.Size(1405, 636);
-            this.splitContainer1.SplitterDistance = 437;
+            this.splitContainer1.SplitterDistance = 487;
             this.splitContainer1.TabIndex = 1;
             // 
             // splitContainer2
@@ -315,6 +371,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.button2);
             this.splitContainer2.Panel1.Controls.Add(this.person_textBox);
             this.splitContainer2.Panel1.Controls.Add(this.label4);
             this.splitContainer2.Panel1.Controls.Add(this.chasun_checkBox);
@@ -333,9 +390,19 @@
             this.splitContainer2.Panel1.Controls.Add(this.ch4_checkBox);
             this.splitContainer2.Panel1.Controls.Add(this.sendTest_button);
             this.splitContainer2.Panel1.Controls.Add(this.receiveTest_button);
-            this.splitContainer2.Size = new System.Drawing.Size(1405, 437);
-            this.splitContainer2.SplitterDistance = 87;
+            this.splitContainer2.Size = new System.Drawing.Size(1405, 487);
+            this.splitContainer2.SplitterDistance = 96;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(364, 52);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 39;
+            this.button2.Text = "噪声采集";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // person_textBox
             // 
@@ -542,11 +609,12 @@
             // 
             this.console_textBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.console_textBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.console_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.console_textBox.Location = new System.Drawing.Point(0, 0);
             this.console_textBox.Multiline = true;
             this.console_textBox.Name = "console_textBox";
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.console_textBox.Size = new System.Drawing.Size(1405, 195);
+            this.console_textBox.Size = new System.Drawing.Size(1405, 145);
             this.console_textBox.TabIndex = 1;
             // 
             // Main_New
@@ -613,7 +681,6 @@
         private System.Windows.Forms.ToolStripMenuItem RecievePower_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SendPower_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ClosePower_ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripMenuItem 矢网设置ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vnaFile_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
@@ -621,5 +688,13 @@
         private System.Windows.Forms.TextBox person_textBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem SqlSet_ToolStripMenuItem;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ToolStripMenuItem 频谱分析仪设置ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pinpuSet_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadState_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripButton4;
+        private System.Windows.Forms.ToolStripMenuItem 功率计设置ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gonglvSet_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadGonglvState_ToolStripMenuItem;
     }
 }

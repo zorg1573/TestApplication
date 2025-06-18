@@ -181,6 +181,64 @@ namespace TestApp.FUNCTION
             string resp = await QueryAsync("CALC:MARK1:Y?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
         }
+        #region 相位噪声测量
+
+        // 设置仪器进入相位噪声测量模式
+        public async Task EnterPhaseNoiseModeAsync() => await SendCommandAsync(":INST PNOISE");
+
+        // 启用相位噪声测量功能
+        public async Task EnablePhaseNoiseMeasurementAsync() => await SendCommandAsync(":CONF:LPL");
+
+        // 设置载波频率
+        public async Task SetCarrierFrequencyAsync(double freqHz) => await SendCommandAsync($":FREQ:CARR {freqHz}");
+
+        // 设置频偏范围
+        public async Task SetOffsetStartAsync(double startHz) => await SendCommandAsync($":LPL:FREQ:OFFS:STAR {startHz}");
+        public async Task SetOffsetStopAsync(double stopHz) => await SendCommandAsync($":LPL:FREQ:OFFS:STOP {stopHz}");
+
+        // 设置平均次数与开关
+        public async Task SetAverageCountAsync(int count) => await SendCommandAsync($":LPL:AVER:COUN {count}");
+        public async Task EnableAveragingAsync(bool enable) => await SendCommandAsync($":LPL:AVER:STAT {(enable ? "ON" : "OFF")}");
+
+        // 设置平滑度
+        public async Task SetSmoothingAsync(double factor) => await SendCommandAsync($":LPL:SMO {factor}");
+
+        // 设置测量方法（PN: 相位噪声，DANL: 本底噪声）
+        public async Task SetMeasurementMethodAsync(string method) => await SendCommandAsync($":LPL:METH {method}");
+
+        // 启动单次测量
+        public async Task StartSinglePhaseNoiseMeasurementAsync() => await SendCommandAsync(":INIT:CONT OFF; INIT; *WAI");
+
+        // 启动连续测量
+        public async Task StartContinuousPhaseNoiseMeasurementAsync() => await SendCommandAsync(":INIT:CONT ON");
+
+        // 重新启动测量
+        public async Task RestartMeasurementAsync() => await SendCommandAsync(":INIT:REST");
+
+        // 暂停测量
+        public async Task PauseMeasurementAsync() => await SendCommandAsync(":INIT:PAUS");
+
+        // 获取基础测量结果（载波功率、频率、抖动等）
+        public async Task<string> FetchBasicPhaseNoiseResultAsync() => await QueryAsync(":FETC:LPL1?");
+
+        // 获取轨迹点数信息
+        public async Task<string> FetchTracePointsInfoAsync() => await QueryAsync(":FETC:LPL2?");
+
+        // 获取第一条轨迹数据（频偏+相噪）
+        public async Task<string> FetchTrace1DataAsync() => await QueryAsync(":FETC:LPL3?");
+
+        // 获取第二、三条轨迹数据
+        public async Task<string> FetchTrace2DataAsync() => await QueryAsync(":FETC:LPL4?");
+        public async Task<string> FetchTrace3DataAsync() => await QueryAsync(":FETC:LPL5?");
+
+        // 获取三条轨迹汇总数据
+        public async Task<string> FetchAllTracesDataAsync() => await QueryAsync(":FETC:LPL6?");
+
+        // 清除所有标记
+        public async Task ClearAllMarkersAsync() => await SendCommandAsync(":CALC:LPL:MARK:AOFF");
+
+        #endregion
+
         #endregion
 
 
@@ -389,7 +447,11 @@ namespace TestApp.FUNCTION
             string result = await QueryAsync("MEAS:POW?");
             return double.TryParse(result?.Trim(), out double val) ? (double?)val : null;
         }
-
+        // 设置频率
+        public async Task<bool> SetFreq(double freq)
+        {
+            return await SendCommandAsync($"SENS:FREQ {freq}");
+        }
         // 设置功率单位（如 DBM、WATT）
         public async Task<bool> SetPowerUnit(string unit)
         {
@@ -484,5 +546,6 @@ namespace TestApp.FUNCTION
         }
 
         #endregion
+
     }
 }
