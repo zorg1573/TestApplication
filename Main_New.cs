@@ -74,6 +74,7 @@ namespace TestApp
         private OperateLog_DAL operateLog_DAL = new OperateLog_DAL();
         RecieveTestWait_Form recieveWaitForm = new RecieveTestWait_Form();
         SendTestWait_Form sendWaitForm = new SendTestWait_Form();
+        string[] jieshouGonglv = new string[200];
 
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         int fpgaFlag = 0;
@@ -640,7 +641,7 @@ namespace TestApp
             }
         }
 
-        private void WritePeakPowerToMatchingFrequencyRows(string[] freqArray, string[] powerArray, string[] xiaolvArray, string sheetName)
+        private void WritePeakPowerToMatchingFrequencyRows(string[] freqArray, string[] powerArray, string[] xiaolvArray, string[] fasheYizhi, string sheetName)
         {
             try
             {
@@ -652,6 +653,7 @@ namespace TestApp
                 int freqColumn = 1;   // A列
                 int powerColumn = 7;  // G列
                 int xiaolvColumn = 8;  // H列
+                int fasheYizhiColum = 9;  // I列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -673,6 +675,7 @@ namespace TestApp
                             {
                                 worksheet.Cells[row, powerColumn] = powerArray[i];
                                 worksheet.Cells[row, xiaolvColumn] = xiaolvArray[i];
+                                worksheet.Cells[row, fasheYizhiColum] = fasheYizhi[i];
                                 break;
                             }
                         }
@@ -1058,12 +1061,15 @@ namespace TestApp
             }
 
             string visaAddress = vnaAddress;
+            string pmAddress = gonglvAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
+            var powerMeter = new ScpiDevice();
 
+            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
             bool connected = await scpiDevice.ConnectAsync(visaAddress);
-            if (!connected)
+            if (!connected||!pmConnected)
             {
-                LogToConsole("矢网连接失败");
+                LogToConsole("矢网或功率计连接失败");
                 return;
             }
 
@@ -1108,6 +1114,12 @@ namespace TestApp
                     double g = Parse(gain[i]);
                     double gN = Parse(gainChasun[i]);
                     gainPlusChasun[i] = (g - gN).ToString();
+
+                    // 接收通道泄露功率
+                    await powerMeter.ReadPulsePowerArrayAsync(); // 预读取一次丢弃
+                    // 读取功率计峰值功率（dBm）
+                    double[] pulsePower = await powerMeter.ReadPulsePowerArrayAsync();
+                    jieshouGonglv[i] = pulsePower[0].ToString();
                 }
                 gain = gainPlusChasun; // 替换原有增益数据
             }
@@ -1326,6 +1338,7 @@ namespace TestApp
             string[] freqArray = new string[pointCount];
             string[] pulsePowerString = new string[pointCount];
             string[] xiaolvString = new string[pointCount];
+            string[] fasheYizhi = new string[pointCount]; //发射抑制
 
             string[] compensatedPowerString = new string[pointCount];
             var compensationTable = LoadCompensationTable(buchangFilePath);
@@ -1392,9 +1405,13 @@ namespace TestApp
                     double compensatedPower = pulsePower[0] - compensation;
                     double PowerWatt = dBmToWatt(compensatedPower); // dBm 转 W
                     xiaolvString[i] = PowerWatt / chargePower * 100.0 + "%"; // 计算效率百分比
-                    compensatedPowerString[i] = compensatedPower.ToString("F3");
+                    compensatedPowerString[i] = compensatedPower.ToString();
+                    //compensatedPowerString[i] = compensatedPower.ToString("F3");
 
                     //pulsePowerString[i] = pulsePower[0].ToString("F3"); // 保留两位小数（dBm）
+
+                    fasheYizhi[i] = (compensatedPower - double.Parse(jieshouGonglv[i])).ToString(); // 发射抑制 = 发射功率 - 接收功率
+
 
                     num++;
                     progressBar1.Value += 1;
@@ -1405,7 +1422,7 @@ namespace TestApp
                 }
                 //WriteArrayToExcelColumn(freqArray, 7, ch);
                 //WriteArrayToExcelColumn(compensatedPowerString, 8, ch);
-                WritePeakPowerToMatchingFrequencyRows(freqArray, compensatedPowerString, xiaolvString, "测试结果");
+                WritePeakPowerToMatchingFrequencyRows(freqArray, compensatedPowerString, xiaolvString, fasheYizhi, "测试结果");
 
                 LogToConsole("Excel写入完成");
                 sendWaitForm.ChangeLabelText("step5_label", "已完成");
@@ -2325,6 +2342,11 @@ namespace TestApp
         }
 
         private void gonglvSet_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
         {
 
         }
