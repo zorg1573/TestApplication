@@ -183,5 +183,10 @@ namespace TestApp.PAGE
                 mainForm.LogToConsole(new string('-', 50));
             }
         }
+
+        private void DeviceAddressNew_Form_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

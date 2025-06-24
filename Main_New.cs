@@ -25,6 +25,10 @@ using ExcelDataReader;
 using System.Windows.Media.Animation;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
+using NPOI.SS.Formula.Functions;
+using MathNet.Numerics.Integration;
+using NPOI.OpenXmlFormats.Dml.Chart;
+using Org.BouncyCastle.Ocsp;
 
 namespace TestApp
 {
@@ -36,7 +40,9 @@ namespace TestApp
         string excelMobanPath = "";
         string buchangFilePath = "";
         string shiwangChaSunPath = ""; //矢网差损文件路径
-        string pinpuStatePath = ""; //频谱分析仪状态文件
+        string pinpuZhupuStatePath = ""; //频谱分析仪主谱状态文件
+        string pinpuDaiwaiyizhiPath = ""; //频谱分析仪带外抑制状态文件
+
 
     //DeviceAddressNew.json
         string chargeAddress = "";
@@ -74,7 +80,8 @@ namespace TestApp
         private OperateLog_DAL operateLog_DAL = new OperateLog_DAL();
         RecieveTestWait_Form recieveWaitForm = new RecieveTestWait_Form();
         SendTestWait_Form sendWaitForm = new SendTestWait_Form();
-        string[] jieshouGonglv = new string[200];
+        //string[] jieshouGonglv = new string[200];
+        double jieshouChargePower = 0; // 接收电源功率
 
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         int fpgaFlag = 0;
@@ -216,7 +223,13 @@ namespace TestApp
                 data.TryGetValue("textBox3", out object value6);
                 if (value6 != null)
                 {
-                    pinpuStatePath = value6.ToString();
+                    pinpuZhupuStatePath = value6.ToString();
+                }
+
+                data.TryGetValue("textBox4", out object value7);
+                if (value7 != null)
+                {
+                    pinpuDaiwaiyizhiPath = value7.ToString();
                 }
 
             }
@@ -354,25 +367,84 @@ namespace TestApp
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
 
                     // 等待文档加载完成后清空数据（需稍作延迟）
-                    Task.Delay(1000).ContinueWith(_ =>
+                    /*                    Task.Delay(1000).ContinueWith(_ =>
+                                        {
+                                            try
+                                            {
+                                                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                                                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+
+                                                foreach (Excel.Worksheet sheet in workbook.Worksheets)
+                                                {
+                                                    ClearExcelContentBelowRow(sheet, 8);
+                                                }
+
+                                                workbook.Save();
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                MessageBox.Show("清空 Excel 内容失败：" + ex.Message);
+                                            }
+                                        }, TaskScheduler.FromCurrentSynchronizationContext());*/
+                    Task.Delay(1500).ContinueWith(_ =>
                     {
                         try
                         {
-                            var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-                            Excel.Workbook workbook = excelApp.ActiveWorkbook;
-
-                            foreach (Excel.Worksheet sheet in workbook.Worksheets)
+                            dynamic document = _axFramerControl.ActiveDocument;
+                            if (document == null)
                             {
-                                ClearExcelContentBelowRow(sheet, 8);
+                                MessageBox.Show("未能获取 Excel 文档对象");
+                                return;
+                            }
+
+                            Excel.Workbook workbook = (Excel.Workbook)document;
+                            Excel.Application excelApp = workbook.Application;
+
+                            if (excelApp == null || excelApp.ActiveWindow == null)
+                            {
+                                MessageBox.Show("Excel 应用或窗口未就绪，跳过缩放设置");
+                                return;
+                            }
+
+                            // 强制激活第一个工作表
+                            Excel.Worksheet sheet = (Excel.Worksheet)workbook.Worksheets[1];
+                            sheet.Activate();
+
+                            // 稍微等待后再次尝试设置缩放（第一次可能失败）
+                            Task.Delay(500).ContinueWith(__ =>
+                            {
+                                try
+                                {
+                                    Excel.Window window = excelApp.ActiveWindow;
+
+                                    if (window != null)
+                                    {
+                                        window.Zoom = false; // 自动适应窗口
+                                                             // 或：window.Zoom = 100; （如果你要固定缩放）
+                                    }
+                                }
+                                catch (Exception zoomEx)
+                                {
+                                    //MessageBox.Show("设置缩放失败：" + zoomEx.Message);
+                                }
+                            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+                            // 可选：清除数据
+                            foreach (Excel.Worksheet ws in workbook.Worksheets)
+                            {
+                                ClearExcelContentBelowRow(ws, 8);
                             }
 
                             workbook.Save();
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("清空 Excel 内容失败：" + ex.Message);
+                            MessageBox.Show("初始化 Excel 失败：" + ex.Message);
                         }
                     }, TaskScheduler.FromCurrentSynchronizationContext());
+
+
+
                 }
                 else
                 {
@@ -685,7 +757,7 @@ namespace TestApp
                 MessageBox.Show("写入峰值功率失败：" + ex.Message);
             }
         }
-        private void WritePeakPowerToMatchingFrequencyRows_New(string[] freqArray, string[] powerArray, string[] xiaolvArray, string[] fasheYizhi, string sheetName)
+        private void WritePeakPowerToMatchingFrequencyRows_New(string[] freqArray, string[] powerArray, string[] xiaolvArray, string[] fasheYizhi, string[] dingJiang, string sheetName)
         {
             try
             {
@@ -697,7 +769,8 @@ namespace TestApp
                 int freqColumn = 1;   // A列
                 int powerColumn = 7;  // G列
                 int xiaolvColumn = 8;  // H列
-                int fasheYizhiColum = 9;  // I列
+                int fasheYizhiColumn = 9;  // I列
+                int dingJiangColumn = 10;  // J列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -719,7 +792,8 @@ namespace TestApp
                             {
                                 worksheet.Cells[row, powerColumn] = powerArray[i];
                                 worksheet.Cells[row, xiaolvColumn] = xiaolvArray[i];
-                                worksheet.Cells[row, fasheYizhiColum] = fasheYizhi[i];
+                                worksheet.Cells[row, fasheYizhiColumn] = fasheYizhi[i];
+                                worksheet.Cells[row, dingJiangColumn] = dingJiang[i];
                                 break;
                             }
                         }
@@ -734,7 +808,52 @@ namespace TestApp
             }
         }
 
+        private void WriteZaoshengToMatchingFrequencyRows(string[] freqArray, string[] data, string sheetName)
+        {
+            try
+            {
+                // 去除每个字符串的空格
+                string[] cleanedData = data.Select(s => s.Replace("\n", "")).ToArray();
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook;
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
 
+                int startRow = 8;
+                int freqColumn = 1;   // A列
+                int zaoshengColumn = 6;  // G列
+
+                int usedRowCount = worksheet.UsedRange.Rows.Count;
+
+                for (int i = 0; i < freqArray.Length; i++)
+                {
+                    // 保留三位小数进行对比
+                    string targetFreq = double.Parse(freqArray[i]).ToString("F3");
+
+                    for (int row = startRow; row <= usedRowCount; row++)
+                    {
+                        var cellValue = worksheet.Cells[row, freqColumn].Text.ToString().Trim();
+
+                        // Excel单元格内容保留三位小数进行对比
+                        if (double.TryParse(cellValue, out double cellFreq))
+                        {
+                            string formattedCellFreq = cellFreq.ToString("F3");
+
+                            if (formattedCellFreq == targetFreq)
+                            {
+                                worksheet.Cells[row, zaoshengColumn] = cleanedData[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                workbook.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入噪声系数失败：" + ex.Message);
+            }
+        }
         private Dictionary<double, double> LoadCompensationTable(string filePath)
         {
             try
@@ -1045,7 +1164,7 @@ namespace TestApp
                 }
 
                 LogToConsole("FPGA发包:" + chSum);
-                recieveWaitForm.ChangeLabelText("step1_labe3", "已完成");
+                recieveWaitForm.ChangeLabelText("step3_label", "已完成");
                 SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
                 operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}", person_textBox.Text);
@@ -1331,6 +1450,8 @@ namespace TestApp
         }
         private async Task LoadVNAData_New()
         {
+            jieshouChargePower = await GetRecieveChargePower();// 获取接收电源功率
+
             recieveWaitForm.ChangeLabelText("step4_label", "进行中...");
             string ch = "";
             string testType = testType_comboBox.Text;
@@ -1408,11 +1529,11 @@ namespace TestApp
                     double gN = Parse(gainChasun[i]);
                     gainPlusChasun[i] = (g - gN).ToString();
 
-                    // 接收通道泄露功率
+                    
                     await powerMeter.ReadPulsePowerArrayAsync(); // 预读取一次丢弃
                     // 读取功率计峰值功率（dBm）
                     double[] pulsePower = await powerMeter.ReadPulsePowerArrayAsync();
-                    jieshouGonglv[i] = pulsePower[0].ToString();
+                    //jieshouGonglv[i] = pulsePower[0].ToString();
                 }
                 gain = gainPlusChasun; // 替换原有增益数据
             }
@@ -1592,7 +1713,6 @@ namespace TestApp
             string ch = "";
             string testType = testType_comboBox.Text;
             string componentName = componentName_textBox.Text;
-            double chargePower = await GetChargePower(); // 获取电源功率
 
             if (ch1_checkBox.Checked)
             {
@@ -1617,11 +1737,6 @@ namespace TestApp
             if(pointCount <= 0)
             {
                 MessageBox.Show("请先设置点数", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            if(chargePower <= 0)
-            {
-                MessageBox.Show("电源功率读取失败", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             int num = 0;
@@ -1741,7 +1856,7 @@ namespace TestApp
             string ch = "";
             string testType = testType_comboBox.Text;
             string componentName = componentName_textBox.Text;
-            double chargePower = await GetChargePower(); // 获取电源功率
+            double sendChargePower = await GetSendChargePower(); // 获取电源功率
 
             if (ch1_checkBox.Checked)
             {
@@ -1768,7 +1883,7 @@ namespace TestApp
                 MessageBox.Show("请先设置点数", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (chargePower <= 0)
+            if (sendChargePower <= 0)
             {
                 MessageBox.Show("电源功率读取失败", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1781,6 +1896,7 @@ namespace TestApp
             string[] pulsePowerString = new string[pointCount];
             string[] xiaolvString = new string[pointCount];
             string[] fasheYizhi = new string[pointCount]; //发射抑制
+            string[] dingJiang = new string[pointCount]; //顶降
 
             string[] compensatedPowerString = new string[pointCount];
             var compensationTable = LoadCompensationTable(buchangFilePath);
@@ -1837,34 +1953,46 @@ namespace TestApp
                     await signalGen.SetPower(power);
                     await signalGen.QueryOpc();
 
+                    await powerMeter.SendCommandAsync(":TIM:SCAL 10e-6");   // 设置水平时基
+                    await powerMeter.SendCommandAsync(":TRIG:SOUR EXT");    // 使用外部触发
+                    await powerMeter.SendCommandAsync(":TRIG:LEV -10");     // 设置触发电平
+                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
+                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
                     await Task.Delay(500); // 延时保证设备稳定
                     await powerMeter.ReadPulsePowerArrayAsync(); // 预读取一次丢弃
 
                     // 读取功率计峰值功率（dBm）
                     double[] pulsePower = await powerMeter.ReadPulsePowerArrayAsync();
+                    //await powerMeter.GetDingjiang();//预读取一次丢弃
+                    //double dingJiangPower = await powerMeter.GetDingjiang() ?? 0;
+                    //dingJiang[i] = dingJiangPower.ToString(); // 顶降
+                    dingJiang[i] = pulsePower[6].ToString();
 
                     double compensation = InterpolateCompensation(freqGHz, compensationTable);
                     double compensatedPower = pulsePower[0] - compensation;
                     double PowerWatt = dBmToWatt(compensatedPower); // dBm 转 W
-                    xiaolvString[i] = PowerWatt / chargePower * 100.0 + "%"; // 计算效率百分比
+
+                    double chargePower = sendChargePower + jieshouChargePower / 4;
+                    xiaolvString[i] = PowerWatt * 0.2 / chargePower * 100.0 + "%"; // 计算效率百分比
                     compensatedPowerString[i] = compensatedPower.ToString();
                     //compensatedPowerString[i] = compensatedPower.ToString("F3");
 
                     //pulsePowerString[i] = pulsePower[0].ToString("F3"); // 保留两位小数（dBm）
 
-                    fasheYizhi[i] = (compensatedPower - double.Parse(jieshouGonglv[i])).ToString(); // 发射抑制 = 发射功率 - 接收功率
-
+                    //fasheYizhi[i] = (compensatedPower - double.Parse(jieshouGonglv[i])).ToString(); // 发射抑制 = 发射功率 - 接收功率
 
                     num++;
                     progressBar1.Value += 1;
                     label1.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
                     label1.Refresh();
 
-                    main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
+                    //main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
                 }
+
+                fasheYizhi = await GetFasheyizhiAsync(freqArray);
                 //WriteArrayToExcelColumn(freqArray, 7, ch);
                 //WriteArrayToExcelColumn(compensatedPowerString, 8, ch);
-                WritePeakPowerToMatchingFrequencyRows_New(freqArray, compensatedPowerString, xiaolvString, fasheYizhi, "测试结果");
+                WritePeakPowerToMatchingFrequencyRows_New(freqArray, compensatedPowerString, xiaolvString, fasheYizhi, dingJiang, "测试结果");
 
                 LogToConsole("Excel写入完成");
                 sendWaitForm.ChangeLabelText("step5_label", "已完成");
@@ -2023,7 +2151,36 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), person_textBox.Text);
             }
         }
-        private async Task<double> GetChargePower()
+        private async Task<double> GetRecieveChargePower()
+        {
+            try
+            {
+                string visaAddress = chargeAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return -1;
+                }
+                await scpiDevice.SelectChannel(2);
+                double vol2 = await scpiDevice.ReadVoltage() ?? 0;
+                double cur2 = await scpiDevice.ReadCurrent() ?? 0;
+                double chargePower2 = vol2 * cur2; // 计算电源功率
+
+                scpiDevice.Disconnect();
+                return chargePower2;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"读取电源数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), person_textBox.Text);
+                return -1;
+            }
+        }
+        private async Task<double> GetSendChargePower()
         {
             try
             {
@@ -2041,9 +2198,15 @@ namespace TestApp
                 double vol = await scpiDevice.ReadVoltage() ?? 0;
                 double cur = await scpiDevice.ReadCurrent() ?? 0;
                 double chargePower = vol * cur; // 计算电源功率
+                await scpiDevice.SelectChannel(2);
+                double vol2 = await scpiDevice.ReadVoltage() ?? 0;
+                double cur2 = await scpiDevice.ReadCurrent() ?? 0;
+                double chargePower2 = vol2 * cur2; // 计算电源功率
+
+                double chargePowerSum = chargePower + chargePower2; // 总功率
 
                 scpiDevice.Disconnect();
-                return chargePower;
+                return chargePowerSum;
             }
             catch (Exception ex)
             {
@@ -2703,25 +2866,28 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
-                LogToConsole("开始相位噪声测试");
-                await scpiDevice.EnterPhaseNoiseModeAsync();
-                await scpiDevice.EnablePhaseNoiseMeasurementAsync();
-                await scpiDevice.SetCarrierFrequencyAsync(1e9);
-                await scpiDevice.SetOffsetStartAsync(10);
-                await scpiDevice.SetOffsetStopAsync(1e6);
-                await scpiDevice.SetAverageCountAsync(5);
-                await scpiDevice.EnableAveragingAsync(true);
-                await scpiDevice.SetSmoothingAsync(0.1);
-                await scpiDevice.SetMeasurementMethodAsync("PN");
-                await scpiDevice.StartSinglePhaseNoiseMeasurementAsync();
-                var result = await scpiDevice.FetchBasicPhaseNoiseResultAsync();
-                LogToConsole(result);
+                int testPoint = 21; // 采集点数
+                string[] freqArray = new string[testPoint];
+                string[] data = await scpiDevice.GetZaoshengData();
+                double step = 0;
+                step = (stopFreq - startFreq) / (testPoint - 1);
+
+                for (int i = 0; i < testPoint; i++)
+                {
+                    double freqHz = startFreq + step * i;
+                    double freqGHz = freqHz / 1e9;
+                    freqArray[i] = freqGHz.ToString("F6");
+
+                }
+                WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
+                LogToConsole("噪声采集");
+
                 scpiDevice.Disconnect();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"相位噪声测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("相位噪声测试失败", ex.ToString(), person_textBox.Text);
+                MessageBox.Show($"噪声采集失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("噪声采集失败", ex.ToString(), person_textBox.Text);
             }
 
         }
@@ -2747,7 +2913,7 @@ namespace TestApp
                     return;
                 }
                 LogToConsole("调用频谱分析仪状态文件");
-                await scpiDevice.LoadStateFile(pinpuStatePath);
+                await scpiDevice.LoadStateFile(pinpuZhupuStatePath);
                 scpiDevice.Disconnect();
             }
             catch (Exception ex)
@@ -2848,7 +3014,257 @@ namespace TestApp
             await LoadGonglvState(); // 调用功率计文件
             await SendTestUDP(); //FPGA发包
             await Task.Delay(500); // 延时保证设备稳定
-            await GetSendData_New(); // 获取功率计数据
+            await GetSendData_New(); // 获取发射数据
+        }
+
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            await ChargeRecievePowerON(); // 接收加电
+            await RecieveTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
+            jieshouChargePower = await GetRecieveChargePower(); // 获取接收功率
+            await Task.Delay(500); // 延时保证设备稳定
+
+        }
+
+        private async void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = pinpuAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                double freq = 9 * 1e9;
+                // 1. 加载状态文件
+                await scpiDevice.LoadPinpuStateAsync(pinpuZhupuStatePath);
+
+                await Task.Delay(500); // 延时保证设备稳定
+
+                // 2. 开启 marker 并设置位置
+                await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq}");
+
+                // 3. 读取功率
+                double power = await scpiDevice.ReadMarkerPowerAsync() ?? 0;
+
+                // 1. 加载状态文件
+                await scpiDevice.LoadPinpuStateAsync(pinpuDaiwaiyizhiPath);
+
+                await Task.Delay(500); // 延时保证设备稳定
+
+                // 2. 开启 marker 并设置位置
+                await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                double freq1 = freq - 0.3 * 1e9;
+                await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq1}");
+
+                // 3. 读取功率
+                double power1 = await scpiDevice.ReadMarkerPowerAsync() ?? 0;
+                double result = power - power1;
+
+                LogToConsole("发射抑制测试:" + power + "-" + power1 + "=" + result);
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+
+        private async Task<double> GetFasheyizhi(double freq)
+        {
+            try
+            {
+                string visaAddress = pinpuAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return 0;
+                }
+
+                // 1. 加载状态文件
+                await scpiDevice.LoadPinpuStateAsync("/usrdata/Data/9105s.state");
+
+                await Task.Delay(500); // 延时保证设备稳定
+
+                // 2. 开启 marker 并设置位置
+                await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq}");
+
+                // 3. 读取功率
+                double power = await scpiDevice.ReadMarkerPowerAsync() ?? 0;
+
+                // 1. 加载状态文件
+                await scpiDevice.LoadPinpuStateAsync("/usrdata/Data/9105dwyz.state");
+
+                await Task.Delay(500); // 延时保证设备稳定
+
+                // 2. 开启 marker 并设置位置
+                await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                double freq1 = freq - 0.3 * 1e9;
+                await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq1}");
+
+                // 3. 读取功率
+                double power1 = await scpiDevice.ReadMarkerPowerAsync() ?? 0;
+                double result = power - power1;
+
+                LogToConsole("发射抑制测试:" + freq/1e9 + "----" + result);
+                scpiDevice.Disconnect();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+                return 0;
+            }
+        }
+        private async Task<string[]> GetFasheyizhiAsync(string[] freqArray)
+        {
+            List<string> results = new List<string>();
+
+            try
+            {
+                string visaAddress = pinpuAddress;
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return results.ToArray();
+                }
+
+                // 解析频率数组为 double
+                List<double> freqs = new List<double>();
+                foreach (var f in freqArray)
+                {
+                    if (double.TryParse(f, out double parsed))
+                    {
+                        freqs.Add(parsed*1e9);
+                    }
+                    else
+                    {
+                        LogToConsole($"频率格式错误: {f}");
+                        results.Add(null);
+                    }
+                }
+
+                // Step 1: 加载主频状态文件，一次读取所有主频点功率
+                await scpiDevice.LoadPinpuStateAsync("/usrdata/Data/9105s.state");
+                await Task.Delay(500);
+
+                List<double> mainPowers = new List<double>();
+                foreach (var freq in freqs)
+                {
+                    await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                    await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq}");
+                    await Task.Delay(50); // 避免读取过快
+                    double p = await scpiDevice.ReadMarkerPowerAsync() ?? double.NaN;
+                    mainPowers.Add(p);
+                }
+
+                // Step 2: 加载偏移频率状态文件，一次读取所有偏移频率点功率
+                await scpiDevice.LoadPinpuStateAsync("/usrdata/Data/9105dwyz.state");
+                await Task.Delay(500);
+
+                List<double> offsetPowers = new List<double>();
+                foreach (var freq in freqs)
+                {
+                    double offsetFreq = freq - 0.3e9;
+                    await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                    await scpiDevice.SendCommandAsync($":CALC:MARK1:X {offsetFreq}");
+                    await Task.Delay(50);
+                    double p = await scpiDevice.ReadMarkerPowerAsync() ?? double.NaN;
+                    offsetPowers.Add(p);
+                }
+
+                // Step 3: 计算差值
+                for (int i = 0; i < freqs.Count; i++)
+                {
+                    string result = (mainPowers[i] - offsetPowers[i]).ToString();
+                    results.Add(result);
+                    LogToConsole($"发射抑制: {freqs[i] / 1e9:F3} GHz -> {mainPowers[i]:F2} - {offsetPowers[i]:F2} = {result:F2} dB");
+                }
+
+                scpiDevice.Disconnect();
+                return results.ToArray();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+                return results.ToArray();
+            }
+        }
+
+
+        private async void button7_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = gonglvAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                bool state = await scpiDevice.LoadGonglvState();
+
+                await Task.Delay(500); // 延时保证设备稳定
+                await scpiDevice.GetDingjiang();//预读取一次丢弃
+                double power = await scpiDevice.GetDingjiang() ?? 0;
+
+                LogToConsole("顶降测试: " + power);
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+        private async Task<double> GetGonglvDingjiang()
+        {
+            try
+            {
+                string visaAddress = gonglvAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return 0;
+                }
+                await Task.Delay(500); // 延时保证设备稳定
+                await scpiDevice.GetDingjiang();//预读取一次丢弃
+                double power = await scpiDevice.GetDingjiang() ?? 0;
+                scpiDevice.Disconnect();
+                return power;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
+                return 0;
+            }
         }
     }
 }

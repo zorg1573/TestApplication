@@ -168,18 +168,29 @@ namespace TestApp.FUNCTION
         // 连续扫描
         public async Task StartSweepAsync() => await SendCommandAsync(":INIT:CONT ON");
         // 标记相关功能
-        public async Task SetMarkerToMaxAsync() => await SendCommandAsync("CALC:MARK1:MAX");
+        public async Task SetMarkerToMaxAsync() => await SendCommandAsync(":CALC:MARK1:MAX");
+        public async Task EnableMarkerAsync() => await SendCommandAsync(":CALC:MARK1:STATE ON");
+        public async Task SetMarkerAsync(double frequency) => await SendCommandAsync($":CALC:MARK1:X {frequency}");
 
         public async Task<double?> ReadMarkerFrequencyAsync()
         {
-            string resp = await QueryAsync("CALC:MARK1:X?");
+            string resp = await QueryAsync(":CALC:MARK1:X?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
         }
 
         public async Task<double?> ReadMarkerPowerAsync()
         {
-            string resp = await QueryAsync("CALC:MARK1:Y?");
+            string resp = await QueryAsync(":CALC:MARK1:Y?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
+        }
+        public async Task<double?> ReadPowerAtFrequencyAsync(double freqHz)
+        {
+            await SendCommandAsync(":CALC:MARK1:STATE ON");
+            await SendCommandAsync($":CALC:MARK1:X {freqHz}");
+            string result = await QueryAsync(":CALC:MARK1:Y?");
+            if (double.TryParse(result, out double value))
+                return value;
+            return null;
         }
         #region 相位噪声测量
 
@@ -238,6 +249,49 @@ namespace TestApp.FUNCTION
         public async Task ClearAllMarkersAsync() => await SendCommandAsync(":CALC:LPL:MARK:AOFF");
 
         #endregion
+
+        #region 噪声系数测量
+
+        // 设置仪器进入噪声系数测量模式
+        public async Task EnterNoiseFigureModeAsync() => await SendCommandAsync(":INST:SEL NFIGURE");
+
+        // 加载噪声系数测量预设状态文件
+        public async Task LoadPinpuStateAsync(string filePath) => await SendCommandAsync($":MMEM:LOAD:STATe '{filePath}'");
+
+        // 设置是否连续测量
+        public async Task SetContinuousMeasurementAsync(bool enable) =>
+            await SendCommandAsync($":INIT:CONT {(enable ? "ON" : "OFF")}");
+
+        // 手动触发一次噪声系数测量
+        public async Task TriggerSingleMeasurementAsync() => await SendCommandAsync(":INIT:REST");
+
+        // 查询仪器是否完成测量
+        public async Task<bool> QueryOperationCompleteAsync()
+        {
+            var response = await QueryAsync("*OPC?");
+            return response.Trim() == "1";
+        }
+
+        // 获取已校正的噪声系数结果（单位 dB）
+        public async Task<string> FetchCorrectedNoiseFigureAsync() =>
+            await QueryAsync(":FETCH:CORR:NFIG?DB");
+
+        public async Task<string[]> GetZaoshengData()
+        {
+            await SendCommandAsync(":INST:SEL NFIGURE");
+            await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
+            await SendCommandAsync(":INIT:CONT OFF");
+            await SendCommandAsync(":INIT:REST");
+            string opc = await QueryAsync("*OPC?");
+
+            string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
+            if (string.IsNullOrWhiteSpace(data)) return null;
+
+            string[] parts = data.Split(',');
+            return parts;
+        }
+        #endregion
+
 
         #endregion
 
@@ -447,6 +501,19 @@ namespace TestApp.FUNCTION
             string result = await QueryAsync("MEAS:POW?");
             return double.TryParse(result?.Trim(), out double val) ? (double?)val : null;
         }
+        public async Task<double?> GetDingjiang()
+        {
+            string result = await QueryAsync("FETC:DRO?");
+            if (!double.TryParse(result?.Trim(), out double val))
+                return null;
+
+            // 判断是否为无效值（功率计定义的 NAN 值）
+            if (Math.Abs(val - 9.91e37) < 1e30)
+                return null; 
+
+            return val;
+        }
+
         // 设置频率
         public async Task<bool> SetFreq(double freq)
         {

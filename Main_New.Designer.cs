@@ -59,6 +59,9 @@
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -93,6 +96,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton3,
@@ -205,32 +209,36 @@
             this.SendPower_ToolStripMenuItem,
             this.ClosePower_ToolStripMenuItem});
             this.电源设置ToolStripMenuItem.Name = "电源设置ToolStripMenuItem";
-            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.电源设置ToolStripMenuItem.Text = "电源设置";
             // 
             // ChargeSet_ToolStripMenuItem
             // 
             this.ChargeSet_ToolStripMenuItem.Name = "ChargeSet_ToolStripMenuItem";
-            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ChargeSet_ToolStripMenuItem.Text = "参数设置";
+            this.ChargeSet_ToolStripMenuItem.Click += new System.EventHandler(this.ChargeSet_ToolStripMenuItem_Click);
             // 
             // RecievePower_ToolStripMenuItem
             // 
             this.RecievePower_ToolStripMenuItem.Name = "RecievePower_ToolStripMenuItem";
-            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.RecievePower_ToolStripMenuItem.Text = "接收加电";
+            this.RecievePower_ToolStripMenuItem.Click += new System.EventHandler(this.RecievePower_ToolStripMenuItem_Click);
             // 
             // SendPower_ToolStripMenuItem
             // 
             this.SendPower_ToolStripMenuItem.Name = "SendPower_ToolStripMenuItem";
-            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SendPower_ToolStripMenuItem.Text = "发射加电";
+            this.SendPower_ToolStripMenuItem.Click += new System.EventHandler(this.SendPower_ToolStripMenuItem_Click);
             // 
             // ClosePower_ToolStripMenuItem
             // 
             this.ClosePower_ToolStripMenuItem.Name = "ClosePower_ToolStripMenuItem";
-            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ClosePower_ToolStripMenuItem.Text = "关电";
+            this.ClosePower_ToolStripMenuItem.Click += new System.EventHandler(this.ClosePower_ToolStripMenuItem_Click);
             // 
             // 矢网设置ToolStripMenuItem
             // 
@@ -239,7 +247,7 @@
             this.toolStripButton5,
             this.toolStripButton8});
             this.矢网设置ToolStripMenuItem.Name = "矢网设置ToolStripMenuItem";
-            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.矢网设置ToolStripMenuItem.Text = "矢网设置";
             // 
             // vnaFile_ToolStripMenuItem
@@ -275,7 +283,7 @@
             this.pinpuSet_ToolStripMenuItem,
             this.loadState_ToolStripMenuItem});
             this.频谱分析仪设置ToolStripMenuItem.Name = "频谱分析仪设置ToolStripMenuItem";
-            this.频谱分析仪设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.频谱分析仪设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.频谱分析仪设置ToolStripMenuItem.Text = "频谱分析仪设置";
             // 
             // pinpuSet_ToolStripMenuItem
@@ -298,7 +306,7 @@
             this.gonglvSet_ToolStripMenuItem,
             this.loadGonglvState_ToolStripMenuItem});
             this.功率计设置ToolStripMenuItem.Name = "功率计设置ToolStripMenuItem";
-            this.功率计设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.功率计设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
             this.功率计设置ToolStripMenuItem.Text = "功率计设置";
             this.功率计设置ToolStripMenuItem.Visible = false;
             // 
@@ -322,7 +330,7 @@
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(160, 22);
+            this.toolStripButton4.Size = new System.Drawing.Size(184, 26);
             this.toolStripButton4.Text = "信号发生器设置";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
@@ -373,6 +381,9 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.button7);
+            this.splitContainer2.Panel1.Controls.Add(this.button6);
+            this.splitContainer2.Panel1.Controls.Add(this.button5);
             this.splitContainer2.Panel1.Controls.Add(this.button4);
             this.splitContainer2.Panel1.Controls.Add(this.button3);
             this.splitContainer2.Panel1.Controls.Add(this.button2);
@@ -395,16 +406,52 @@
             this.splitContainer2.Panel1.Controls.Add(this.sendTest_button);
             this.splitContainer2.Panel1.Controls.Add(this.receiveTest_button);
             this.splitContainer2.Size = new System.Drawing.Size(1405, 487);
-            this.splitContainer2.SplitterDistance = 96;
+            this.splitContainer2.SplitterDistance = 112;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button7.Location = new System.Drawing.Point(508, 84);
+            this.button7.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 25);
+            this.button7.TabIndex = 44;
+            this.button7.Text = "顶降";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button6
+            // 
+            this.button6.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button6.Location = new System.Drawing.Point(508, 54);
+            this.button6.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 25);
+            this.button6.TabIndex = 43;
+            this.button6.Text = "发射抑制";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button5.Location = new System.Drawing.Point(265, 54);
+            this.button5.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 25);
+            this.button5.TabIndex = 42;
+            this.button5.Text = "效率";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button4.Location = new System.Drawing.Point(684, 53);
+            this.button4.Location = new System.Drawing.Point(427, 54);
             this.button4.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 26);
+            this.button4.Size = new System.Drawing.Size(75, 25);
             this.button4.TabIndex = 41;
             this.button4.Text = "发射测试";
             this.button4.UseVisualStyleBackColor = true;
@@ -413,10 +460,10 @@
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(588, 53);
+            this.button3.Location = new System.Drawing.Point(346, 54);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 26);
+            this.button3.Size = new System.Drawing.Size(75, 25);
             this.button3.TabIndex = 40;
             this.button3.Text = "接收测试";
             this.button3.UseVisualStyleBackColor = true;
@@ -424,9 +471,10 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(364, 52);
+            this.button2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button2.Location = new System.Drawing.Point(588, 50);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(129, 39);
             this.button2.TabIndex = 39;
             this.button2.Text = "噪声采集";
             this.button2.UseVisualStyleBackColor = true;
@@ -726,5 +774,8 @@
         private System.Windows.Forms.ToolStripMenuItem loadGonglvState_ToolStripMenuItem;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
     }
 }
