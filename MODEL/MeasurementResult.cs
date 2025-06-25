@@ -22,6 +22,7 @@ namespace TestApp.MODEL
         public double InputSWR { get; set; }
         public double OutputSWR { get; set; }
         public double Frequency { get; set; }
+        public double Zaosheng { get; set; }
         public string Person { get; set; }
         public string UpdateTime { get; set; }
     }

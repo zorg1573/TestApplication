@@ -1173,6 +1173,7 @@ namespace TestApp
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            WritePersonToAllSheets();
             sendWaitForm.Show(); // 显示等待界面
             LogToConsole("开始发射测试...");
             await ChargeSendPowerON(); // 发射加电
@@ -1211,6 +1212,7 @@ namespace TestApp
             {
                 LoadVNAState(); // 调用矢网文件
             }
+            WritePersonToAllSheets();
             recieveWaitForm.ChangeLabelText("step1_label","已完成");
             await ChargeRecievePowerON(); // 接收加电
             await RecieveTestUDP(); //FPGA发包
@@ -3110,13 +3112,41 @@ namespace TestApp
                 ch3_checkBox.Checked = false;
             }
         }
-
+        /// <summary>
+        /// 噪声采集
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void button2_Click(object sender, EventArgs e)
         {
             try
             {
                 string visaAddress = pinpuAddress;
+                string ch = "";
+                string testType = testType_comboBox.Text;
+                string componentName = componentName_textBox.Text;
 
+                if (ch1_checkBox.Checked)
+                {
+                    ch = $"通道1-{testType}";
+                }
+                if (ch2_checkBox.Checked)
+                {
+                    ch = $"通道2-{testType}";
+                }
+                if (ch3_checkBox.Checked)
+                {
+                    ch = $"通道3-{testType}";
+                }
+                if (ch4_checkBox.Checked)
+                {
+                    ch = $"通道4-{testType}";
+                }
+                if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+                {
+                    MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 ScpiDevice scpiDevice = new ScpiDevice();
 
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
@@ -3136,7 +3166,7 @@ namespace TestApp
                     double freqHz = startFreq + step * i;
                     double freqGHz = freqHz / 1e9;
                     freqArray[i] = freqGHz.ToString("F6");
-
+                    main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
                 }
                 WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
                 LogToConsole("噪声采集");
@@ -3230,7 +3260,7 @@ namespace TestApp
                 return;
             }
             LogToConsole("开始接收测试...");
-
+            WritePersonToAllSheets();
             recieveWaitForm.Show(); // 显示等待界面
             if (vnaFlag == 0)
             {
@@ -3267,6 +3297,7 @@ namespace TestApp
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            WritePersonToAllSheets();
             sendWaitForm.Show(); // 显示等待界面
             LogToConsole("开始发射测试...");
             await ChargeSendPowerON(); // 发射加电
@@ -3758,6 +3789,11 @@ namespace TestApp
             double jieshouPower = await GetRecieveChargePower();
             double result = (jieshouPower - jitaiPower*3/4)*0.8;
             return result;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

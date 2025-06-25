@@ -65,24 +65,40 @@ namespace TestApp.PAGE
                     return;
                 }
 
-                await scpiDevice.SetCenterFrequencyAsync(double.Parse(centerFreq_textBox.Text) * 1e9);
-                //await scpiDevice.SetSpanAsync(double.Parse(span_textBox.Text) * 1000000000);
-                await scpiDevice.SetStartFrequencyAsync(double.Parse(startFreq_textBox.Text) * 1e9);
-                await scpiDevice.SetStopFrequencyAsync(double.Parse(stopFreq_textBox.Text) * 1e9);
-                //await scpiDevice.SetRBWAsync(double.Parse(rbw_textBox.Text));
-                //await scpiDevice.SetVBWAsync(double.Parse(vbw_textBox.Text));
-                //await scpiDevice.SetSweepTimeAsync(double.Parse(scanTime_textBox.Text));
-                //await CurrentDevice.SetDetectorAsync(jianbo_comboBox.Text);
-                //await scpiDevice.SetTriggerSourceAsync(trigger_comboBox.Text);
+                // 逐项检查是否为空，非空才设置
+                if (!string.IsNullOrWhiteSpace(centerFreq_textBox.Text))
+                    await scpiDevice.SetCenterFrequencyAsync(double.Parse(centerFreq_textBox.Text) * 1e9);
+
+                if (!string.IsNullOrWhiteSpace(span_textBox.Text))
+                    await scpiDevice.SetSpanAsync(double.Parse(span_textBox.Text) * 1e9);
+
+                if (!string.IsNullOrWhiteSpace(startFreq_textBox.Text))
+                    await scpiDevice.SetStartFrequencyAsync(double.Parse(startFreq_textBox.Text) * 1e9);
+
+                if (!string.IsNullOrWhiteSpace(stopFreq_textBox.Text))
+                    await scpiDevice.SetStopFrequencyAsync(double.Parse(stopFreq_textBox.Text) * 1e9);
+
+                if (!string.IsNullOrWhiteSpace(rbw_textBox.Text))
+                    await scpiDevice.SetRBWAsync(double.Parse(rbw_textBox.Text));
+
+                if (!string.IsNullOrWhiteSpace(vbw_textBox.Text))
+                    await scpiDevice.SetVBWAsync(double.Parse(vbw_textBox.Text));
+
+                if (!string.IsNullOrWhiteSpace(scanTime_textBox.Text))
+                    await scpiDevice.SetSweepTimeAsync(double.Parse(scanTime_textBox.Text));
+
+                if (!string.IsNullOrWhiteSpace(trigger_comboBox.Text))
+                    await scpiDevice.SetTriggerSourceAsync(trigger_comboBox.Text);
 
                 mainForm.LogToConsole("参数已应用");
                 scpiDevice.Disconnect(); // 释放资源
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("设置参数失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void save_button_Click(object sender, EventArgs e)
         {

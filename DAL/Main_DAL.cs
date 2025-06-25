@@ -29,7 +29,17 @@ namespace TestApp.DAL
                 WHERE BatchId = '{batchId}' AND PointFreq = '{pointFreqRounded}' AND TestType = '{testType}' AND ComponentName = '{componentName}'";
             return Dapper.DbHelper.UpdateBySql(sql);
         }
+        public int UpdateTestDataZaosheng_DT(string testType, string componentName, double pointFreq, double zaosheng)
+        {
+            int batchId = GetBatchId(testType, componentName);
+            double pointFreqRounded = Math.Round(pointFreq, 2);
 
+            string sql = $@"
+                UPDATE test_data 
+                SET Zaosheng = '{zaosheng}'
+                WHERE BatchId = '{batchId}' AND PointFreq = '{pointFreqRounded}' AND TestType = '{testType}' AND ComponentName = '{componentName}'";
+            return Dapper.DbHelper.UpdateBySql(sql);
+        }
         public int GetBatchId(string testType, string componentName)
         {
             string sql = $@"

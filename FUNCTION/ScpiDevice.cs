@@ -164,7 +164,7 @@ namespace TestApp.FUNCTION
         public async Task SetTriggerSourceAsync(string source) => await SendCommandAsync($"TRIG:SOUR {source}");
 
         // 启动单次扫描并等待完成
-        public async Task StartSingleSweepAsync() => await SendCommandAsync(":INIT:CONT OFF; INIT;");
+        public async Task StartSingleSweepAsync() => await SendCommandAsync(":INIT:CONT OFF; INIT; *WAI");
         // 连续扫描
         public async Task StartSweepAsync() => await SendCommandAsync(":INIT:CONT ON");
         // 标记相关功能

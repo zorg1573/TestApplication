@@ -52,6 +52,7 @@
             this.频谱分析仪设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pinpuSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadState_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadPinpudwyz_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.功率计设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gonglvSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGonglvState_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +85,7 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.loadPinpudwyz_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button8 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -160,28 +161,28 @@
             // device_ToolStripMenuItem
             // 
             this.device_ToolStripMenuItem.Name = "device_ToolStripMenuItem";
-            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.device_ToolStripMenuItem.Text = "仪表地址设置";
             this.device_ToolStripMenuItem.Click += new System.EventHandler(this.device_ToolStripMenuItem_Click);
             // 
             // deviceFile_ToolStripMenuItem
             // 
             this.deviceFile_ToolStripMenuItem.Name = "deviceFile_ToolStripMenuItem";
-            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deviceFile_ToolStripMenuItem.Text = "调用文件设置";
             this.deviceFile_ToolStripMenuItem.Click += new System.EventHandler(this.deviceFile_ToolStripMenuItem_Click);
             // 
             // testSet_ToolStripMenuItem
             // 
             this.testSet_ToolStripMenuItem.Name = "testSet_ToolStripMenuItem";
-            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.testSet_ToolStripMenuItem.Text = "测试设置";
             this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
             // 
             // SqlSet_ToolStripMenuItem
             // 
             this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
-            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
             this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
             // 
@@ -311,6 +312,13 @@
             this.loadState_ToolStripMenuItem.Text = "调用主谱状态文件";
             this.loadState_ToolStripMenuItem.Click += new System.EventHandler(this.loadState_ToolStripMenuItem_Click);
             // 
+            // loadPinpudwyz_ToolStripMenuItem
+            // 
+            this.loadPinpudwyz_ToolStripMenuItem.Name = "loadPinpudwyz_ToolStripMenuItem";
+            this.loadPinpudwyz_ToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.loadPinpudwyz_ToolStripMenuItem.Text = "调用带外抑制状态文件";
+            this.loadPinpudwyz_ToolStripMenuItem.Click += new System.EventHandler(this.loadPinpudwyz_ToolStripMenuItem_Click);
+            // 
             // 功率计设置ToolStripMenuItem
             // 
             this.功率计设置ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -382,6 +390,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.button8);
             this.splitContainer2.Panel1.Controls.Add(this.button7);
             this.splitContainer2.Panel1.Controls.Add(this.button6);
             this.splitContainer2.Panel1.Controls.Add(this.button5);
@@ -515,7 +524,7 @@
             // 
             this.mod_checkBox.AutoSize = true;
             this.mod_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.mod_checkBox.Location = new System.Drawing.Point(1209, 17);
+            this.mod_checkBox.Location = new System.Drawing.Point(1199, 17);
             this.mod_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.mod_checkBox.Name = "mod_checkBox";
             this.mod_checkBox.Size = new System.Drawing.Size(50, 20);
@@ -581,7 +590,7 @@
             // 
             this.rf_checkBox.AutoSize = true;
             this.rf_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rf_checkBox.Location = new System.Drawing.Point(1154, 17);
+            this.rf_checkBox.Location = new System.Drawing.Point(1144, 17);
             this.rf_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.rf_checkBox.Name = "rf_checkBox";
             this.rf_checkBox.Size = new System.Drawing.Size(42, 20);
@@ -694,12 +703,17 @@
             this.console_textBox.Size = new System.Drawing.Size(1405, 145);
             this.console_textBox.TabIndex = 1;
             // 
-            // loadPinpudwyz_ToolStripMenuItem
+            // button8
             // 
-            this.loadPinpudwyz_ToolStripMenuItem.Name = "loadPinpudwyz_ToolStripMenuItem";
-            this.loadPinpudwyz_ToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.loadPinpudwyz_ToolStripMenuItem.Text = "调用带外抑制状态文件";
-            this.loadPinpudwyz_ToolStripMenuItem.Click += new System.EventHandler(this.loadPinpudwyz_ToolStripMenuItem_Click);
+            this.button8.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button8.Location = new System.Drawing.Point(501, 84);
+            this.button8.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(75, 25);
+            this.button8.TabIndex = 45;
+            this.button8.Text = "三阶交调";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // Main_New
             // 
@@ -786,5 +800,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadGonglvState_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripButton4;
         private System.Windows.Forms.ToolStripMenuItem loadPinpudwyz_ToolStripMenuItem;
+        private System.Windows.Forms.Button button8;
     }
 }
