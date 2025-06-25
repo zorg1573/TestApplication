@@ -9,9 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using TestApp.FUNCTION;
-
 namespace TestApp.PAGE
 {
     public partial class XinhaoControl_Form : Form
@@ -31,6 +29,16 @@ namespace TestApp.PAGE
         {
             GetAddress();
             LoadFromJson();
+        }
+        private IEnumerable<Control> GetAllControls(Control parent)
+        {
+            foreach (Control ctrl in parent.Controls)
+            {
+                yield return ctrl;
+
+                foreach (var child in GetAllControls(ctrl))
+                    yield return child;
+            }
         }
         private void GetAddress()
         {
@@ -59,7 +67,7 @@ namespace TestApp.PAGE
         {
             var data = new Dictionary<string, object>();
 
-            foreach (Control ctrl in this.Controls)
+            foreach (Control ctrl in GetAllControls(this))
             {
                 if (ctrl is TextBox textBox)
                 {
@@ -87,7 +95,7 @@ namespace TestApp.PAGE
             if (data == null)
                 return;
 
-            foreach (Control ctrl in this.Controls)
+            foreach (Control ctrl in GetAllControls(this))
             {
                 if (data.TryGetValue(ctrl.Name, out object value))
                 {
@@ -140,29 +148,7 @@ namespace TestApp.PAGE
         {
             SaveToJson();
             MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-/*            ScpiDevice scpiDevice = new ScpiDevice();
 
-            bool connected = await scpiDevice.ConnectAsync(deviceAddress);
-            if (!connected)
-            {
-                mainForm.LogToConsole("连接失败");
-                return;
-            }
-            double freq = double.Parse(start_freq_textBox.Text);
-            double power = double.Parse(power_textBox.Text);
-            string danwei = comboBox1.Text;
-            if(danwei == "GHz")
-            {
-                freq = freq * 1e9;
-            }
-            if (danwei == "MHz")
-            {
-                freq = freq * 1e6;
-            }
-            await scpiDevice.SetFrequency(freq);
-            await scpiDevice.SetPower(power);
-            mainForm.LogToConsole("执行修改：" + ", 频率：" + freq + comboBox1.Text + ", 功率：" + power);
-            scpiDevice.Disconnect(); // 释放资源*/
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -192,6 +178,33 @@ namespace TestApp.PAGE
             }
             await scpiDevice.ModOFF();
             mainForm.LogToConsole("MOD OFF");
+            scpiDevice.Disconnect(); // 释放资源
+        }
+
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(deviceAddress);
+            if (!connected)
+            {
+                mainForm.LogToConsole("连接失败");
+                return;
+            }
+            double freq = double.Parse(pinlv_textBox.Text);
+            double power = double.Parse(gonglv_textBox.Text);
+            string danwei = comboBox1.Text;
+            if (danwei == "GHz")
+            {
+                freq = freq * 1e9;
+            }
+            if (danwei == "MHz")
+            {
+                freq = freq * 1e6;
+            }
+            await scpiDevice.SetFrequency(freq);
+            await scpiDevice.SetPower(power);
+            mainForm.LogToConsole("执行修改：" + ", 频率：" + freq + comboBox1.Text + ", 功率：" + power);
             scpiDevice.Disconnect(); // 释放资源
         }
     }

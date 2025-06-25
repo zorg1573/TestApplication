@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Ocsp;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -64,15 +65,15 @@ namespace TestApp.PAGE
                     return;
                 }
 
-                await scpiDevice.SetCenterFrequencyAsync(double.Parse(centerFreq_textBox.Text) * 1000000000);
-                await scpiDevice.SetSpanAsync(double.Parse(span_textBox.Text) * 1000000000);
-                await scpiDevice.SetStartFrequencyAsync(double.Parse(startFreq_textBox.Text) * 1000000);
-                await scpiDevice.SetStopFrequencyAsync(double.Parse(stopFreq_textBox.Text) * 1000000000);
-                await scpiDevice.SetRBWAsync(double.Parse(rbw_textBox.Text));
-                await scpiDevice.SetVBWAsync(double.Parse(vbw_textBox.Text));
-                await scpiDevice.SetSweepTimeAsync(double.Parse(scanTime_textBox.Text));
+                await scpiDevice.SetCenterFrequencyAsync(double.Parse(centerFreq_textBox.Text) * 1e9);
+                //await scpiDevice.SetSpanAsync(double.Parse(span_textBox.Text) * 1000000000);
+                await scpiDevice.SetStartFrequencyAsync(double.Parse(startFreq_textBox.Text) * 1e9);
+                await scpiDevice.SetStopFrequencyAsync(double.Parse(stopFreq_textBox.Text) * 1e9);
+                //await scpiDevice.SetRBWAsync(double.Parse(rbw_textBox.Text));
+                //await scpiDevice.SetVBWAsync(double.Parse(vbw_textBox.Text));
+                //await scpiDevice.SetSweepTimeAsync(double.Parse(scanTime_textBox.Text));
                 //await CurrentDevice.SetDetectorAsync(jianbo_comboBox.Text);
-                await scpiDevice.SetTriggerSourceAsync(trigger_comboBox.Text);
+                //await scpiDevice.SetTriggerSourceAsync(trigger_comboBox.Text);
 
                 mainForm.LogToConsole("参数已应用");
                 scpiDevice.Disconnect(); // 释放资源
@@ -123,8 +124,11 @@ namespace TestApp.PAGE
                     return;
                 }
 
-                await scpiDevice.SetMarkerToMaxAsync();
-                mainForm.LogToConsole("标记最大点位");
+                //await scpiDevice.SetMarkerToMaxAsync();
+                //mainForm.LogToConsole("标记最大点位");
+                double freq = double.Parse(mark_textBox.Text)*1e9;
+                await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq}");
                 scpiDevice.Disconnect(); // 释放资源
             }
             catch (Exception ex)

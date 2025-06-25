@@ -54,6 +54,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.centerFreq_textBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.mark_textBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // scanOnce_button
@@ -222,7 +225,7 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(31, 16);
             this.label9.TabIndex = 82;
-            this.label9.Text = "MHz";
+            this.label9.Text = "GHz";
             // 
             // stopFreq_textBox
             // 
@@ -316,11 +319,42 @@
             this.label1.TabIndex = 72;
             this.label1.Text = "中心频率：";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(217, 189);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 16);
+            this.label4.TabIndex = 101;
+            this.label4.Text = "GHz";
+            // 
+            // mark_textBox
+            // 
+            this.mark_textBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.mark_textBox.Location = new System.Drawing.Point(111, 186);
+            this.mark_textBox.Name = "mark_textBox";
+            this.mark_textBox.Size = new System.Drawing.Size(100, 26);
+            this.mark_textBox.TabIndex = 100;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(18, 189);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(71, 16);
+            this.label5.TabIndex = 99;
+            this.label5.Text = "标记点：";
+            // 
             // PinpuControl_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(878, 206);
+            this.ClientSize = new System.Drawing.Size(878, 228);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.mark_textBox);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.scanOnce_button);
             this.Controls.Add(this.save_button);
             this.Controls.Add(this.trigger_comboBox);
@@ -383,5 +417,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox centerFreq_textBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox mark_textBox;
+        private System.Windows.Forms.Label label5;
     }
 }
