@@ -28,8 +28,11 @@ namespace TestApp
 {
     public partial class Main_New : Form
     {
+        private Timer measureTimer;
+        private ScpiDevice powerMeterPublic;
+        private bool isMeasuring = false;
         #region 变量
-    //DeviceFiles.json
+        //DeviceFiles.json
         string excelPath = "";
         string vnaFilePath = "";
         string excelMobanPath = "";
@@ -795,6 +798,50 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show("写入峰值功率失败：" + ex.Message);
+            }
+        }
+        private void WriteYasuodianToMatchingFrequencyRows(string[] freqArray, string[] yasuodian, string sheetName)
+        {
+            try
+            {
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook;
+                Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+
+                int startRow = 8;
+                int freqColumn = 1;   // A列
+                int yasuodianColumn = 12;  // L列
+
+                int usedRowCount = worksheet.UsedRange.Rows.Count;
+
+                for (int i = 0; i < freqArray.Length; i++)
+                {
+                    // 保留三位小数进行对比
+                    string targetFreq = double.Parse(freqArray[i]).ToString("F3");
+
+                    for (int row = startRow; row <= usedRowCount; row++)
+                    {
+                        var cellValue = worksheet.Cells[row, freqColumn].Text.ToString().Trim();
+
+                        // Excel单元格内容保留三位小数进行对比
+                        if (double.TryParse(cellValue, out double cellFreq))
+                        {
+                            string formattedCellFreq = cellFreq.ToString("F3");
+
+                            if (formattedCellFreq == targetFreq)
+                            {
+                                worksheet.Cells[row, yasuodianColumn] = yasuodian[i]; ;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                workbook.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入发射抑制失败：" + ex.Message);
             }
         }
         private void WriteDingjiangToMatchingFrequencyRows(string[] freqArray, string[] dingJiang, string sheetName)
@@ -3253,13 +3300,8 @@ namespace TestApp
                     await signalGen.SetPower(power);
                     await signalGen.QueryOpc();
 
-                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
-                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
-                    await Task.Delay(500); // 延时保证设备稳定
-                    await powerMeter.GetDingjiang(); // 预读取一次丢弃
-
-                    // 读取功率计峰值功率（dBm）
-                    double dingjiangDouble = await powerMeter.GetDingjiang() ?? double.NaN;
+                    // 读取功率计顶降
+                    double dingjiangDouble = await GetDingjiangDouble(powerMeter);
                     dingJiang[i] = dingjiangDouble.ToString();
                 }
                 WriteDingjiangToMatchingFrequencyRows(freqArray, dingJiang, "测试结果");
@@ -3978,8 +4020,222 @@ namespace TestApp
             double result = (jieshouPower - jitaiPower * 3 / 4) * 0.8;
             return result;
         }
+        /// <summary>
+        /// 测量顶降
+        /// </summary>
+        /// <param name="powerMeter"></param>
+        /// <returns></returns>
+        private async Task<double> GetDingjiangDouble(ScpiDevice powerMeter)
+        {
+            try
+            {
+                double dingjiangDouble = double.NaN;
+                int maxAttempts = 15;
+                int attempt = 0;
+
+                while (attempt < maxAttempts)
+                {
+                    attempt++;
+
+                    await powerMeter.SendCommandAsync(":INIT:IMM");
+                    await powerMeter.SendCommandAsync("*WAI");
+                    await Task.Delay(300);
+
+                    dingjiangDouble = await powerMeter.GetDingjiang() ?? double.NaN;
+
+                    // 判断是否为有效值
+                    if (Math.Abs(dingjiangDouble - 9.91e37) > 1e30)
+                    {
+                        LogToConsole($"顶降：{dingjiangDouble} dB");
+                        break;
+                    }
+                }
+
+                if (Math.Abs(dingjiangDouble - 9.91e37) <= 1e30)
+                {
+                    LogToConsole("多次测量未获得有效顶降值。");
+                    return double.NaN;
+                }
+                return dingjiangDouble;
+            }
+            catch (Exception ex)
+            {
+                LogToConsole($"测量异常：{ex.Message}");
+                return double.NaN;
+            }
+        }
         #endregion
 
+        private async void button9_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await ChargeSendPowerON(); // 发射加电
+                await SendTestUDP(); //FPGA发包
+                await Task.Delay(500); // 延时保证设备稳定
+                await WriteFreqArray();
+
+                string[] yasuodian = new string[pointCount]; //顶降
+                string[] freqArray = GetFilterFreqArray();
+                LogToConsole("压缩点测试");
+                
+                for (int i = 0; i < pointCount; i++)
+                {
+                    double freqHz = double.Parse(freqArray[i]) * 1e9;
+                    double freqGHz = double.Parse(freqArray[i]);
+
+                    double result = await MeasureP1dBAsync(freqHz) ?? double.NaN;
+                    yasuodian[i] = result.ToString();
+                }
+                WriteYasuodianToMatchingFrequencyRows(freqArray, yasuodian, "测试结果");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"压缩点测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("压缩点测试失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+        public async Task<double?> MeasureP1dBAsync(double testFreqHz)
+        {
+            double startPower_dBm = -30;
+            double stopPower_dBm = 10;
+            double step_dB = 1;
+            List<double> inputList = new List<double>();
+            List<double> outputList = new List<double>();
+            List<double> gainList = new List<double>();
+            var signalGen = new ScpiDevice();
+            var powerMeter = new ScpiDevice();
+            string sgAddress = xinhaoAddress;   // 信号源地址
+            string pmAddress = gonglvAddress; // 功率计地址
+
+            bool sgConnected = await signalGen.ConnectAsync(sgAddress);
+            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
+            if (!sgConnected || !pmConnected)
+            {
+                LogToConsole("连接失败：信号源或功率计无法连接");
+                return null;
+            }
+            await signalGen.EnableOutput(); // 打开信号源输出
+            rf_checkBox.Checked = true;
+            await signalGen.ModON(); // 打开调制输出
+            mod_checkBox.Checked = true;
+            // 设置频率
+            await signalGen.SetFrequency(testFreqHz);
+            await signalGen.QueryOpc();
+
+            for (double inputPower = startPower_dBm; inputPower <= stopPower_dBm; inputPower += step_dB)
+            {
+                await signalGen.SetPower(inputPower);
+                await signalGen.QueryOpc();
+
+                await powerMeter.SendCommandAsync(":INIT:IMM"); // 开始测量
+                await powerMeter.SendCommandAsync("*WAI");      // 等待测量完成
+                await Task.Delay(300); // 稳定等待
+
+                double[] outputPower = await powerMeter.ReadPulsePowerArrayAsync(); // 自定义方法读取功率（dBm）
+
+                double gain = outputPower[0] - inputPower;
+
+                inputList.Add(inputPower);
+                outputList.Add(outputPower[0]);
+                gainList.Add(gain);
+
+                Console.WriteLine($"In: {inputPower:F2} dBm -> Out: {outputPower[0]:F2} dBm, Gain: {gain:F2} dB");
+
+                if (gainList.Count >= 2)
+                {
+                    double refGain = gainList[0]; // 第一次增益为参考
+                    double gainDrop = refGain - gain;
+
+                    if (gainDrop >= 1.0)
+                    {
+                        Console.WriteLine($"Detected 1dB compression at input = {inputPower:F2} dBm");
+                        return inputPower;
+                    }
+                }
+            }
+
+            Console.WriteLine("No compression point detected in specified range.");
+            await signalGen.DisableOutput(); // 安全关闭输出
+            await signalGen.ModOFF();
+            rf_checkBox.Checked = false;
+            mod_checkBox.Checked = false;
+            signalGen.Disconnect();
+            powerMeter.Disconnect();
+            await CloseCharge(); // 电源关电
+
+            return null;
+        }
+        #region 定时测量顶降
+        private async void button10_Click(object sender, EventArgs e)
+        {
+            if (isMeasuring)
+            {
+                LogToConsole("测量已在进行中...");
+                return;
+            }
+
+            powerMeterPublic = new ScpiDevice();
+            string pmAddress = gonglvAddress;
+
+            bool pmConnected = await powerMeterPublic.ConnectAsync(pmAddress);
+            if (!pmConnected)
+            {
+                LogToConsole("连接失败：功率计无法连接");
+                return;
+            }
+
+            await powerMeterPublic.LoadGonglvState();
+            await Task.Delay(500);
+
+            measureTimer = new Timer();
+            measureTimer.Interval = 2000; // 每秒执行一次
+            measureTimer.Tick += async (s, args) => await MeasureDingJiang();
+            measureTimer.Start();
+
+            isMeasuring = true;
+            LogToConsole("已开始每秒自动测量顶降...");
+        }
+
+
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            measureTimer?.Stop();
+            powerMeterPublic?.Disconnect();
+            isMeasuring = false;
+            LogToConsole("已停止自动测量。");
+        }
+        private async Task MeasureDingJiang()
+        {
+            try
+            {
+                double dingjiangDouble = double.NaN;
+                int maxAttempts = 10;
+
+                for (int attempt = 0; attempt < maxAttempts; attempt++)
+                {
+                    await powerMeterPublic.SendCommandAsync(":INIT:IMM");
+                    await powerMeterPublic.SendCommandAsync("*WAI");
+                    await Task.Delay(300);
+
+                    dingjiangDouble = await powerMeterPublic.GetDingjiang() ?? double.NaN;
+
+                    if (Math.Abs(dingjiangDouble - 9.91e37) > 1e30)
+                    {
+                        LogToConsole($"顶降：{dingjiangDouble} dB");
+                        return;
+                    }
+                }
+
+                LogToConsole("多次测量未获得有效顶降值。");
+            }
+            catch (Exception ex)
+            {
+                LogToConsole($"测量异常：{ex.Message}");
+            }
+        }
+        #endregion
 
     }
 }
