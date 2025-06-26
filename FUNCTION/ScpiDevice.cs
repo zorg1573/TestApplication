@@ -32,51 +32,61 @@ namespace TestApp.FUNCTION
 
         public async Task<bool> ConnectAsync(string resourceString)
         {
-            try
+            return await Task.Run(() =>
             {
-                var rm = new NationalInstruments.Visa.ResourceManager();
-                _visaSession = (IMessageBasedSession)rm.Open(resourceString);
+                try
+                {
+                    var rm = new NationalInstruments.Visa.ResourceManager();
+                    _visaSession = (IMessageBasedSession)rm.Open(resourceString);
 
-                // 设置终止符
-                _visaSession.TerminationCharacter = (byte)'\n';
-                _visaSession.TerminationCharacterEnabled = true;
+                    _visaSession.TerminationCharacter = (byte)'\n';
+                    _visaSession.TerminationCharacterEnabled = true;
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"VISA连接失败: {ex.Message}");
-                return false;
-            }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"VISA连接失败: {ex.Message}");
+                    return false;
+                }
+            });
         }
+
+
 
         public async Task<string> QueryAsync(string command)
         {
-            if (!IsConnected) return null;
-            try
+            return await Task.Run(() =>
             {
-                _visaSession.FormattedIO.WriteLine(command);
-                return _visaSession.FormattedIO.ReadLine();
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("查询失败，请检查设备连接或命令格式。" + ex);
-                return null;
-            }
+                if (!IsConnected) return null;
+                try
+                {
+                    _visaSession.FormattedIO.WriteLine(command);
+                    return _visaSession.FormattedIO.ReadLine();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("查询失败，请检查设备连接或命令格式。" + ex);
+                    return null;
+                }
+            });
         }
 
         public async Task<bool> SendCommandAsync(string command)
         {
-            if (!IsConnected) return false;
-            try
+            return await Task.Run(() =>
             {
-                _visaSession.FormattedIO.WriteLine(command);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+                if (!IsConnected) return false;
+                try
+                {
+                    _visaSession.FormattedIO.WriteLine(command);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
         }
 
         public void Disconnect()
@@ -291,8 +301,14 @@ namespace TestApp.FUNCTION
             return parts;
         }
         #endregion
+        #region 三阶交调
+        public async Task<double?> GetIP3()
+        {
+            string resp = await QueryAsync(":FETC:TOI:IP3?");
+            return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
+        }
 
-
+        #endregion
         #endregion
 
 

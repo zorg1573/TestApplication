@@ -144,7 +144,7 @@ namespace TestApp.PAGE
             scpiDevice.Disconnect(); // 释放资源
         }
 
-        private async void manual_button_Click(object sender, EventArgs e)
+        private void manual_button_Click(object sender, EventArgs e)
         {
             SaveToJson();
             MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);

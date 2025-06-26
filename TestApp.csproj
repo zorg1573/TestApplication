@@ -349,12 +349,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewControl\FPGAControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ViewControl\FPGAControl.Designer.cs">
-      <DependentUpon>FPGAControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="ViewControl\SpectrumControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -457,9 +451,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PAGE\VNAFile_Form_Old.resx">
       <DependentUpon>VNAFile_Form_Old.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ViewControl\FPGAControl.resx">
-      <DependentUpon>FPGAControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ViewControl\SpectrumControl.resx">
       <DependentUpon>SpectrumControl.cs</DependentUpon>
