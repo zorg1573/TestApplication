@@ -28,7 +28,8 @@ namespace TestApp
 {
     public partial class Main_New : Form
     {
-    //DeviceFiles.json
+        #region 变量
+        //DeviceFiles.json
         string excelPath = "";
         string vnaFilePath = "";
         string excelMobanPath = "";
@@ -80,11 +81,11 @@ namespace TestApp
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         int fpgaFlag = 0;
         int testFlag = 0;
+        #endregion
 
         public Main_New()
         {
             InitializeComponent();
-            //InitializeDSO();
             this.Load += Main_New_Load;
         }
         private void Main_New_Load(object sender, EventArgs e)
@@ -470,6 +471,44 @@ namespace TestApp
         public double dBmToWatt(double dBm)
         {
             return Math.Pow(10, (dBm - 30) / 10.0);
+        }
+        private async Task WriteFreqArray()
+        {
+            string visaAddress = vnaAddress;
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            if (!connected)
+            {
+                LogToConsole("连接失败");
+                return;
+            }
+            GetDeviceFilesJson();
+            await scpiDevice.LoadStateFile(vnaFilePath);
+            await Task.Delay(500);
+            // 写入频率（从 A8 开始）
+            double startFreq = await scpiDevice.GetFreqStart() ?? -1;  // 单位 Hz
+            double stopFreq = await scpiDevice.GetFreqStop() ?? -1;    // 单位 Hz
+            int _pointCount = await scpiDevice.GetPointCount() ?? -1;
+
+            if (startFreq < 0 || stopFreq < 0 || _pointCount <= 0)
+            {
+                LogToConsole("获取频率或点数失败，请检查设备连接或设置。");
+                scpiDevice.Disconnect();
+                return;
+            }
+
+            double step = (stopFreq - startFreq) / (_pointCount - 1);
+            string[] freqArray = new string[_pointCount];
+            for (int i = 0; i < _pointCount; i++)
+            {
+                double freqGHz = (startFreq + step * i) / 1e9;
+                freqArray[i] = freqGHz.ToString("F6"); // 保留6位小数（GHz）
+            }
+
+            WriteArrayToExcelColumn(freqArray, 1, "测试结果");  // A列，从第8行开始
+            WriteArrayToExcelColumn(freqArray, 1, "常温");  // A列，从第8行开始
+            scpiDevice.Disconnect(); // 释放资源
         }
         #endregion
 
@@ -1093,9 +1132,67 @@ namespace TestApp
             Form form = new SqlSet_Form();
             form.ShowDialog();
         }
+        /// <summary>
+        /// 频谱分析仪控制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pinpuSet_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form form = new PinpuControl_Form(this);
+            form.ShowDialog();
+        }
+        /// <summary>
+        /// 功率计控制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void gonglvSet_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
         #endregion
 
         #region 按钮
+        private void ch1_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch1_checkBox.Checked)
+            {
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch2_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch2_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch3_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch3_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch4_checkBox.Checked = false;
+            }
+        }
+
+        private void ch4_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ch4_checkBox.Checked)
+            {
+                ch1_checkBox.Checked = false;
+                ch2_checkBox.Checked = false;
+                ch3_checkBox.Checked = false;
+            }
+        }
         /// <summary>
         /// 发射测试
         /// </summary>
@@ -1151,6 +1248,11 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), person_textBox.Text);
             }
         }
+        /// <summary>
+        /// 发射测试|功率
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void sendTest_button_Click(object sender, EventArgs e)
         {
 /*            if(testFlag == 0)
@@ -1184,7 +1286,7 @@ namespace TestApp
             await GetSendData(); // 获取功率计数据
         }
         /// <summary>
-        /// 接收测试
+        /// 接收测试|增益
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1288,44 +1390,7 @@ namespace TestApp
             vnaFlag = 1;
             scpiDevice.Disconnect(); // 释放资源
         }
-        private async Task WriteFreqArray()
-        {
-            string visaAddress = vnaAddress;
-            ScpiDevice scpiDevice = new ScpiDevice();
 
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
-            if (!connected)
-            {
-                LogToConsole("连接失败");
-                return;
-            }
-            GetDeviceFilesJson();
-            await scpiDevice.LoadStateFile(vnaFilePath);
-            await Task.Delay(500);
-            // 写入频率（从 A8 开始）
-            double startFreq = await scpiDevice.GetFreqStart() ?? -1;  // 单位 Hz
-            double stopFreq = await scpiDevice.GetFreqStop() ?? -1;    // 单位 Hz
-            int _pointCount = await scpiDevice.GetPointCount() ?? -1;
-
-            if (startFreq < 0 || stopFreq < 0 || _pointCount <= 0)
-            {
-                LogToConsole("获取频率或点数失败，请检查设备连接或设置。");
-                scpiDevice.Disconnect();
-                return;
-            }
-
-            double step = (stopFreq - startFreq) / (_pointCount - 1);
-            string[] freqArray = new string[_pointCount];
-            for (int i = 0; i < _pointCount; i++)
-            {
-                double freqGHz = (startFreq + step * i) / 1e9;
-                freqArray[i] = freqGHz.ToString("F6"); // 保留6位小数（GHz）
-            }
-
-            WriteArrayToExcelColumn(freqArray, 1, "测试结果");  // A列，从第8行开始
-            WriteArrayToExcelColumn(freqArray, 1, "常温");  // A列，从第8行开始
-            scpiDevice.Disconnect(); // 释放资源
-        }
         private async Task LoadVNAData()
         {
             recieveWaitForm.ChangeLabelText("step4_label", "进行中...");
@@ -2603,7 +2668,11 @@ namespace TestApp
             }
 
         }
-
+        /// <summary>
+        /// 更新矢网差损
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void button1_Click_1(object sender, EventArgs e)
         {
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
@@ -2750,6 +2819,426 @@ namespace TestApp
             {
                 MessageBox.Show("打开 Excel 文件失败：" + ex.Message);
             }
+        }
+        /// <summary>
+        /// 噪声采集
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = pinpuAddress;
+                string ch = "";
+                string testType = testType_comboBox.Text;
+                string componentName = componentName_textBox.Text;
+
+                if (ch1_checkBox.Checked)
+                {
+                    ch = $"通道1-{testType}";
+                }
+                if (ch2_checkBox.Checked)
+                {
+                    ch = $"通道2-{testType}";
+                }
+                if (ch3_checkBox.Checked)
+                {
+                    ch = $"通道3-{testType}";
+                }
+                if (ch4_checkBox.Checked)
+                {
+                    ch = $"通道4-{testType}";
+                }
+                if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+                {
+                    MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                int testPoint = 21; // 采集点数
+                string[] freqArray = new string[testPoint];
+                string[] data = await scpiDevice.GetZaoshengData();
+                double step = 0;
+                step = (stopFreq - startFreq) / (testPoint - 1);
+
+                for (int i = 0; i < testPoint; i++)
+                {
+                    double freqHz = startFreq + step * i;
+                    double freqGHz = freqHz / 1e9;
+                    freqArray[i] = freqGHz.ToString("F6");
+                    main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
+                }
+                WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
+                LogToConsole("噪声采集");
+
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"噪声采集失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("噪声采集失败", ex.ToString(), person_textBox.Text);
+            }
+
+        }
+
+
+
+        private async void loadState_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = pinpuAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                LogToConsole("调用频谱分析仪状态文件");
+                await scpiDevice.LoadPinpuStateAsync(pinpuZhupuStatePath);
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+
+        private async void loadGonglvState_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = gonglvAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                LogToConsole("调用功率计状态文件");
+                await scpiDevice.LoadGonglvState();
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"调用功率计状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("调用功率计状态文件失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+        /// <summary>
+        /// 接收测试（多指标）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            if (testType_comboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(person_textBox.Text))
+            {
+                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LogToConsole("开始接收测试...");
+            WritePersonToAllSheets();
+            recieveWaitForm.Show(); // 显示等待界面
+            if (vnaFlag == 0)
+            {
+                LoadVNAState(); // 调用矢网文件
+            }
+            recieveWaitForm.ChangeLabelText("step1_label", "已完成");
+            await ChargeRecievePowerON(); // 接收加电
+            await RecieveTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
+            await LoadVNAData_New(); // 获取矢网数据
+            //testFlag = 1;
+        }
+
+        /// <summary>
+        /// 发射测试（多指标）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button4_Click(object sender, EventArgs e)
+        {
+            /*            if (testFlag == 0)
+                        {
+                            MessageBox.Show("请先进行接收测试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }*/
+            if (testType_comboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(person_textBox.Text))
+            {
+                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            WritePersonToAllSheets();
+            sendWaitForm.Show(); // 显示等待界面
+            LogToConsole("开始发射测试...");
+            await ChargeSendPowerON(); // 发射加电
+            jieshouChargePower = await GetJieshouPower();
+            await LoadGonglvState(); // 调用功率计文件
+            await SendTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
+            await WriteFreqArray();
+            await GetSendData_New(); // 获取发射数据
+        }
+        /// <summary>
+        /// 效率测试
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            await WriteFreqArray();
+            await ChargeSendPowerON(); // 发射加电
+            double jieshouPower = await GetJieshouPower();
+            await LoadGonglvState(); // 调用功率计文件
+            await SendTestUDP(); //FPGA发包
+            await Task.Delay(500); // 延时保证设备稳定
+            await WriteFreqArray();
+
+            string pmAddress = gonglvAddress; // 功率计地址
+            var powerMeter = new ScpiDevice();
+            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
+            string[] freqArray = new string[pointCount];
+            string[] xiaolvString = new string[pointCount];
+            string[] compensatedPowerString = new string[pointCount];
+            var compensationTable = LoadCompensationTable(buchangFilePath);
+            double sendChargePower = await GetSendChargePower(); // 获取电源功率
+
+            if (!pmConnected)
+            {
+                LogToConsole("连接失败：功率计无法连接");
+                return;
+            }
+            try
+            {
+                freqArray = GetFilterFreqArray();
+                for (int i = 0; i < pointCount; i++)
+                {
+                    double freqHz = double.Parse(freqArray[i]) * 1e9;
+                    double freqGHz = double.Parse(freqArray[i]);
+                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
+                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
+                    await Task.Delay(500); // 延时保证设备稳定
+                    await powerMeter.ReadPulsePowerArrayAsync(); // 预读取一次丢弃
+
+                    // 读取功率计峰值功率（dBm）
+                    double[] pulsePower = await powerMeter.ReadPulsePowerArrayAsync();
+
+                    double compensation = InterpolateCompensation(freqGHz, compensationTable);
+                    double compensatedPower = pulsePower[0] - compensation;
+                    double PowerWatt = dBmToWatt(compensatedPower); // dBm 转 W
+
+                    double chargePower = sendChargePower + jieshouPower;
+                    xiaolvString[i] = PowerWatt / chargePower * 100.0 + "%"; // 计算效率百分比
+
+                    //main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"效率测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                powerMeter.Disconnect();
+                await CloseCharge(); // 电源关电
+                LogToConsole("效率测试已完成");
+            }
+
+        }
+        /// <summary>
+        /// 发射抑制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button6_Click(object sender, EventArgs e)
+        {
+            var signalGen = new ScpiDevice();
+            try
+            {
+                await ChargeSendPowerON(); // 发射加电
+                await SendTestUDP(); //FPGA发包
+                await Task.Delay(500); // 延时保证设备稳定
+                await WriteFreqArray();
+                string[] freqArray = GetFilterFreqArray();
+                string[] fasheYizhi = new string[pointCount]; //发射抑制
+
+                bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
+                if (!sgConnected)
+                {
+                    LogToConsole("连接失败：信号源无法连接");
+                    return;
+                }
+                signalGen.EnableOutput(); // 打开信号源输出
+                rf_checkBox.Checked = true;
+                signalGen.ModON(); // 打开调制输出
+                mod_checkBox.Checked = true;
+                for (int i = 0; i < pointCount; i++)
+                {
+                    double freqHz = double.Parse(freqArray[i]) * 1e9;
+                    double freqGHz = double.Parse(freqArray[i]);
+
+                    await signalGen.SetFrequency(freqHz);
+                    await signalGen.QueryOpc();
+                    await signalGen.SetPower(power);
+                    await signalGen.QueryOpc();
+                    await Task.Delay(2000); // 延时保证设备稳定
+                    fasheYizhi[i] = (await GetFasheyizhi(freqHz)).ToString();
+                }
+
+                //fasheYizhi = await GetFasheyizhiAsync(freqArray);
+                WriteFasheyizhiToMatchingFrequencyRows(freqArray, fasheYizhi, "测试结果");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+            }
+            finally
+            {
+                await signalGen.DisableOutput(); // 安全关闭输出
+                signalGen.Disconnect();
+                CloseCharge(); // 电源关电
+                CloseRFOutPut();
+                CloseModOutPut();
+                rf_checkBox.Checked = false;
+                mod_checkBox.Checked = false;
+            }
+        }
+        /// <summary>
+        /// 顶降测试
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button7_Click(object sender, EventArgs e)
+        {
+
+            var signalGen = new ScpiDevice();
+            var powerMeter = new ScpiDevice();
+            string sgAddress = xinhaoAddress;   // 信号源地址
+            string pmAddress = gonglvAddress; // 功率计地址
+
+            bool sgConnected = await signalGen.ConnectAsync(sgAddress);
+            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
+            if (!sgConnected || !pmConnected)
+            {
+                LogToConsole("连接失败：信号源或功率计无法连接");
+                return;
+            }
+            try
+            {
+                await WriteFreqArray();
+                await powerMeter.LoadGonglvState();
+                string[] dingJiang = new string[pointCount]; //顶降
+                string[] freqArray = GetFilterFreqArray();
+
+                for (int i = 0; i < pointCount; i++)
+                {
+                    double freqHz = double.Parse(freqArray[i]) * 1e9;
+                    double freqGHz = double.Parse(freqArray[i]);
+
+                    await signalGen.SetFrequency(freqHz);
+                    await signalGen.QueryOpc();
+                    await signalGen.SetPower(power);
+                    await signalGen.QueryOpc();
+
+                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
+                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
+                    await Task.Delay(500); // 延时保证设备稳定
+                    await powerMeter.GetDingjiang(); // 预读取一次丢弃
+
+                    // 读取功率计峰值功率（dBm）
+                    double dingjiangDouble = await powerMeter.GetDingjiang() ?? double.NaN;
+                    dingJiang[i] = dingjiangDouble.ToString();
+                }
+                WriteDingjiangToMatchingFrequencyRows(freqArray, dingJiang, "测试结果");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
+            }
+            finally
+            {
+                await signalGen.DisableOutput(); // 安全关闭输出
+                signalGen.Disconnect();
+                powerMeter.Disconnect();
+            }
+        }
+
+        /// <summary>
+        /// 加载频谱分析仪带外抑制状态文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void loadPinpudwyz_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string visaAddress = pinpuAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+                LogToConsole("调用频谱分析仪状态文件");
+                await scpiDevice.LoadPinpuStateAsync(pinpuDaiwaiyizhiPath);
+                scpiDevice.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
+            }
+        }
+
+        /// <summary>
+        /// 三阶交调测试
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button8_Click(object sender, EventArgs e)
+        {
+
         }
         #endregion
 
@@ -3068,364 +3557,6 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), person_textBox.Text);
             }
         }
-
-        #endregion
-
-
-
-        private void ch1_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch1_checkBox.Checked)
-            {
-                ch2_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch2_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if(ch2_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch3_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch3_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch2_checkBox.Checked = false;
-                ch4_checkBox.Checked = false;
-            }
-        }
-
-        private void ch4_checkBox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ch4_checkBox.Checked)
-            {
-                ch1_checkBox.Checked = false;
-                ch2_checkBox.Checked = false;
-                ch3_checkBox.Checked = false;
-            }
-        }
-        /// <summary>
-        /// 噪声采集
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void button2_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = pinpuAddress;
-                string ch = "";
-                string testType = testType_comboBox.Text;
-                string componentName = componentName_textBox.Text;
-
-                if (ch1_checkBox.Checked)
-                {
-                    ch = $"通道1-{testType}";
-                }
-                if (ch2_checkBox.Checked)
-                {
-                    ch = $"通道2-{testType}";
-                }
-                if (ch3_checkBox.Checked)
-                {
-                    ch = $"通道3-{testType}";
-                }
-                if (ch4_checkBox.Checked)
-                {
-                    ch = $"通道4-{testType}";
-                }
-                if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
-                {
-                    MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                int testPoint = 21; // 采集点数
-                string[] freqArray = new string[testPoint];
-                string[] data = await scpiDevice.GetZaoshengData();
-                double step = 0;
-                step = (stopFreq - startFreq) / (testPoint - 1);
-
-                for (int i = 0; i < testPoint; i++)
-                {
-                    double freqHz = startFreq + step * i;
-                    double freqGHz = freqHz / 1e9;
-                    freqArray[i] = freqGHz.ToString("F6");
-                    main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
-                }
-                WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
-                LogToConsole("噪声采集");
-
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"噪声采集失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("噪声采集失败", ex.ToString(), person_textBox.Text);
-            }
-
-        }
-
-        private void pinpuSet_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form form = new PinpuControl_Form(this);
-            form.ShowDialog();
-        }
-
-        private async void loadState_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = pinpuAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                LogToConsole("调用频谱分析仪状态文件");
-                await scpiDevice.LoadPinpuStateAsync(pinpuZhupuStatePath);
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
-            }
-        }
-
-        private async void loadGonglvState_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = gonglvAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                LogToConsole("调用功率计状态文件");
-                await scpiDevice.LoadGonglvState();
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"调用功率计状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计状态文件失败", ex.ToString(), person_textBox.Text);
-            }
-        }
-
-        private void gonglvSet_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void button3_Click(object sender, EventArgs e)
-        {
-            if (testType_comboBox.SelectedIndex == -1)
-            {
-                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
-            {
-                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            if (string.IsNullOrEmpty(person_textBox.Text))
-            {
-                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            LogToConsole("开始接收测试...");
-            WritePersonToAllSheets();
-            recieveWaitForm.Show(); // 显示等待界面
-            if (vnaFlag == 0)
-            {
-                LoadVNAState(); // 调用矢网文件
-            }
-            recieveWaitForm.ChangeLabelText("step1_label", "已完成");
-            await ChargeRecievePowerON(); // 接收加电
-            await RecieveTestUDP(); //FPGA发包
-            await Task.Delay(500); // 延时保证设备稳定
-            await LoadVNAData_New(); // 获取矢网数据
-            //testFlag = 1;
-        }
-
-
-        private async void button4_Click(object sender, EventArgs e)
-        {
-/*            if (testFlag == 0)
-            {
-                MessageBox.Show("请先进行接收测试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }*/
-            if (testType_comboBox.SelectedIndex == -1)
-            {
-                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
-            {
-                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            if (string.IsNullOrEmpty(person_textBox.Text))
-            {
-                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            WritePersonToAllSheets();
-            sendWaitForm.Show(); // 显示等待界面
-            LogToConsole("开始发射测试...");
-            await ChargeSendPowerON(); // 发射加电
-            jieshouChargePower = await GetJieshouPower();
-            await LoadGonglvState(); // 调用功率计文件
-            await SendTestUDP(); //FPGA发包
-            await Task.Delay(500); // 延时保证设备稳定
-            await WriteFreqArray();
-            await GetSendData_New(); // 获取发射数据
-        }
-
-        private async void button5_Click(object sender, EventArgs e)
-        {
-            await WriteFreqArray();
-            await ChargeSendPowerON(); // 发射加电
-            double jieshouPower = await GetJieshouPower();
-            await LoadGonglvState(); // 调用功率计文件
-            await SendTestUDP(); //FPGA发包
-            await Task.Delay(500); // 延时保证设备稳定
-            await WriteFreqArray();
-
-            string pmAddress = gonglvAddress; // 功率计地址
-            var powerMeter = new ScpiDevice();
-            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
-            string[] freqArray = new string[pointCount];
-            string[] xiaolvString = new string[pointCount];
-            string[] compensatedPowerString = new string[pointCount];
-            var compensationTable = LoadCompensationTable(buchangFilePath);
-            double sendChargePower = await GetSendChargePower(); // 获取电源功率
-
-            if (!pmConnected)
-            {
-                LogToConsole("连接失败：功率计无法连接");
-                return;
-            }
-            try
-            {
-                freqArray = GetFilterFreqArray();
-                for (int i = 0; i < pointCount; i++)
-                {
-                    double freqHz = double.Parse(freqArray[i]) * 1e9;
-                    double freqGHz = double.Parse(freqArray[i]);
-                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
-                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
-                    await Task.Delay(500); // 延时保证设备稳定
-                    await powerMeter.ReadPulsePowerArrayAsync(); // 预读取一次丢弃
-
-                    // 读取功率计峰值功率（dBm）
-                    double[] pulsePower = await powerMeter.ReadPulsePowerArrayAsync();
-
-                    double compensation = InterpolateCompensation(freqGHz, compensationTable);
-                    double compensatedPower = pulsePower[0] - compensation;
-                    double PowerWatt = dBmToWatt(compensatedPower); // dBm 转 W
-
-                    double chargePower = sendChargePower + jieshouPower;
-                    xiaolvString[i] = PowerWatt / chargePower * 100.0 + "%"; // 计算效率百分比
-
-                    //main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"效率测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                powerMeter.Disconnect();
-                await CloseCharge(); // 电源关电
-                LogToConsole("效率测试已完成");
-            }
-
-        }
-
-        private async void button6_Click(object sender, EventArgs e)
-        {
-            var signalGen = new ScpiDevice();
-            try
-            {
-                await ChargeSendPowerON(); // 发射加电
-                await SendTestUDP(); //FPGA发包
-                await Task.Delay(500); // 延时保证设备稳定
-                await WriteFreqArray();
-                string[] freqArray = GetFilterFreqArray();
-                string[] fasheYizhi = new string[pointCount]; //发射抑制
-                
-                bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
-                if (!sgConnected)
-                {
-                    LogToConsole("连接失败：信号源无法连接");
-                    return;
-                }
-                signalGen.EnableOutput(); // 打开信号源输出
-                rf_checkBox.Checked = true;
-                signalGen.ModON(); // 打开调制输出
-                mod_checkBox.Checked = true;
-                for (int i = 0; i < pointCount; i++)
-                {
-                    double freqHz = double.Parse(freqArray[i]) * 1e9;
-                    double freqGHz = double.Parse(freqArray[i]);
-
-                    await signalGen.SetFrequency(freqHz);
-                    await signalGen.QueryOpc();
-                    await signalGen.SetPower(power);
-                    await signalGen.QueryOpc();
-                    await Task.Delay(2000); // 延时保证设备稳定
-                    fasheYizhi[i] = (await GetFasheyizhi(freqHz)).ToString();
-                }
-
-                    //fasheYizhi = await GetFasheyizhiAsync(freqArray);
-                WriteFasheyizhiToMatchingFrequencyRows(freqArray, fasheYizhi, "测试结果");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
-            }
-            finally
-            {
-                await signalGen.DisableOutput(); // 安全关闭输出
-                signalGen.Disconnect();
-                CloseCharge(); // 电源关电
-                CloseRFOutPut();
-                CloseModOutPut();
-                rf_checkBox.Checked = false;
-                mod_checkBox.Checked = false;
-            }
-        }
-
         private async Task<double> GetFasheyizhi(double freq)
         {
             try
@@ -3502,7 +3633,7 @@ namespace TestApp
                 // 2. 开启 marker 并设置位置
                 await scpiDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
                 //double freq1 = freq - 0.3 * 1e9;
-                double rbw = 300*1e6;
+                double rbw = 300 * 1e6;
                 double freq1 = freq - rbw;
 
                 double power1 = double.NaN;
@@ -3521,7 +3652,7 @@ namespace TestApp
                     await Task.Delay(200); // 等待波形稳定
                 }
                 double result = power - power1;
-                LogToConsole("发射抑制测试:" + freq/1e9 + ": "+power+" - "+power1+" = " + result);
+                LogToConsole("发射抑制测试:" + freq / 1e9 + ": " + power + " - " + power1 + " = " + result);
                 scpiDevice.Disconnect();
                 return result;
             }
@@ -3554,7 +3685,7 @@ namespace TestApp
                 {
                     if (double.TryParse(f, out double parsed))
                     {
-                        freqs.Add(parsed*1e9);
+                        freqs.Add(parsed * 1e9);
                     }
                     else
                     {
@@ -3655,63 +3786,6 @@ namespace TestApp
                 return results.ToArray();
             }
         }
-
-
-        private async void button7_Click(object sender, EventArgs e)
-        {
-            
-            var signalGen = new ScpiDevice();
-            var powerMeter = new ScpiDevice();
-            string sgAddress = xinhaoAddress;   // 信号源地址
-            string pmAddress = gonglvAddress; // 功率计地址
-
-            bool sgConnected = await signalGen.ConnectAsync(sgAddress);
-            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
-            if (!sgConnected || !pmConnected)
-            {
-                LogToConsole("连接失败：信号源或功率计无法连接");
-                return;
-            }
-            try
-            {
-                await WriteFreqArray();
-                await powerMeter.LoadGonglvState();
-                string[] dingJiang = new string[pointCount]; //顶降
-                string[] freqArray = GetFilterFreqArray();
-
-                for (int i = 0; i < pointCount; i++)
-                {
-                    double freqHz = double.Parse(freqArray[i]) * 1e9;
-                    double freqGHz = double.Parse(freqArray[i]);
-
-                    await signalGen.SetFrequency(freqHz);
-                    await signalGen.QueryOpc();
-                    await signalGen.SetPower(power);
-                    await signalGen.QueryOpc();
-
-                    await powerMeter.SendCommandAsync(":INIT:IMM");         // 开始测量
-                    await powerMeter.SendCommandAsync("*WAI");              // 等待测量完成
-                    await Task.Delay(500); // 延时保证设备稳定
-                    await powerMeter.GetDingjiang(); // 预读取一次丢弃
-
-                    // 读取功率计峰值功率（dBm）
-                    double dingjiangDouble = await powerMeter.GetDingjiang() ?? double.NaN;
-                    dingJiang[i] = dingjiangDouble.ToString();
-                }
-                WriteDingjiangToMatchingFrequencyRows(freqArray, dingJiang, "测试结果");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
-            }
-            finally
-            {
-                await signalGen.DisableOutput(); // 安全关闭输出
-                signalGen.Disconnect();
-                powerMeter.Disconnect();
-            }
-        }
         private async Task<double> GetGonglvDingjiang()
         {
             try
@@ -3739,31 +3813,6 @@ namespace TestApp
                 return 0;
             }
         }
-
-        private async void loadPinpudwyz_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string visaAddress = pinpuAddress;
-
-                ScpiDevice scpiDevice = new ScpiDevice();
-
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
-                if (!connected)
-                {
-                    LogToConsole("连接失败");
-                    return;
-                }
-                LogToConsole("调用频谱分析仪状态文件");
-                await scpiDevice.LoadPinpuStateAsync(pinpuDaiwaiyizhiPath);
-                scpiDevice.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
-            }
-        }
         /// <summary>
         /// 切换至负载态
         /// </summary>
@@ -3787,13 +3836,11 @@ namespace TestApp
             await RecieveTestUDP();
             await Task.Delay(500);
             double jieshouPower = await GetRecieveChargePower();
-            double result = (jieshouPower - jitaiPower*3/4)*0.8;
+            double result = (jieshouPower - jitaiPower * 3 / 4) * 0.8;
             return result;
         }
+        #endregion
 
-        private void button8_Click(object sender, EventArgs e)
-        {
 
-        }
     }
 }
