@@ -266,7 +266,7 @@ namespace TestApp.FUNCTION
         public async Task EnterNoiseFigureModeAsync() => await SendCommandAsync(":INST:SEL NFIGURE");
 
         // 加载噪声系数测量预设状态文件
-        public async Task LoadPinpuStateAsync(string filePath) => await SendCommandAsync($":MMEM:LOAD:STATe '{filePath}'");
+        public async Task LoadPinpuStateAsync(string filePath) => await SendCommandAsync($":MMEM:LOAD:STAT 1,'{filePath}'");
 
         // 设置是否连续测量
         public async Task SetContinuousMeasurementAsync(bool enable) =>
@@ -288,13 +288,33 @@ namespace TestApp.FUNCTION
 
         public async Task<string[]> GetZaoshengData()
         {
-            await SendCommandAsync(":INST:SEL NFIGURE");
-            await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
-            await SendCommandAsync(":INIT:CONT OFF");
-            await SendCommandAsync(":INIT:REST");
-            string opc = await QueryAsync("*OPC?");
+            /*            await SendCommandAsync(":INST:SEL NFIGURE");
+                        await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
+                        await SendCommandAsync(":INIT:CONT OFF");
+                        await SendCommandAsync(":INIT:REST");
+                        string opc = await QueryAsync("*OPC?");
 
-            string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
+                        string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
+                        if (string.IsNullOrWhiteSpace(data)) return null;
+
+                        string[] parts = data.Split(',');
+                        return parts;*/
+            await SendCommandAsync("INST:SEL NOISE");
+            //await SendCommandAsync(":MMEM:LOAD:STAT '/usrdata/Data/1517.sta'");
+            await SendCommandAsync("SENS:CORR:ENR:MODE TABL");
+            await SendCommandAsync("SENS:CORR:ENR:MEAS:TABL:DATA 100e3, 15.77, 10e6, 15.77, 100e6, 15.35, 1e9, 15.12, 2e9, 14.70, 3e9, 14.57\r\n");
+            await SendCommandAsync("SENS:SWE:TIME 0.3");
+            await SendCommandAsync("SENS:CONF:CORR");
+            await SendCommandAsync("INIT:IMM");
+            await SendCommandAsync("*OPC");
+            await SendCommandAsync("SENS:CORR:STAT ON");
+            await SendCommandAsync("SENS:CONF:LIST:SINGL");
+            await SendCommandAsync("INIT:IMM");
+            await SendCommandAsync("*OPC");
+
+
+
+            string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
             if (string.IsNullOrWhiteSpace(data)) return null;
 
             string[] parts = data.Split(',');

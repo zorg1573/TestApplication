@@ -2,23 +2,17 @@
 using SharpPcap;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TestApp.PAGE;
 using AxDSOFramer;
 using System.IO;
 using System.Text.Json;
-using Excel;
 using TestApp.FUNCTION;
-using Keysight.KtNA;
-using TestApp.DAL.Dapper;
 using TestApp.MODEL;
 using TestApp.DAL;
 using ExcelDataReader;
@@ -1073,6 +1067,11 @@ namespace TestApp
                 MessageBox.Show("写入噪声系数失败：" + ex.Message);
             }
         }
+        /// <summary>
+        /// 加载补偿数据
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         private Dictionary<double, double> LoadCompensationTable(string filePath)
         {
             try
@@ -1102,7 +1101,6 @@ namespace TestApp
                 MessageBox.Show("加载补偿表失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return new Dictionary<double, double>();
             }
-
         }
 
 
@@ -2044,7 +2042,7 @@ namespace TestApp
             string[] pulsePowerString = new string[pointCount];
 
             string[] compensatedPowerString = new string[pointCount];
-            var compensationTable = LoadCompensationTable(buchangFilePath);
+            var compensationTable = LoadCompensationTable(buchangFilePath); //获取补偿数据
 
             sendWaitForm.ChangeLabelText("step4_label", "已完成");
 
@@ -4065,7 +4063,11 @@ namespace TestApp
             }
         }
         #endregion
-
+        /// <summary>
+        /// 压缩点测试
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void button9_Click(object sender, EventArgs e)
         {
             try
@@ -4237,5 +4239,9 @@ namespace TestApp
         }
         #endregion
 
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

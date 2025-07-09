@@ -60,6 +60,8 @@
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -87,8 +89,6 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button11 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -105,9 +105,9 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton3,
-            this.toolStripButton6,
-            this.toolStripDropDownButton1,
             this.toolStripButton10,
+            this.toolStripDropDownButton1,
+            this.toolStripButton6,
             this.toolStripButton9});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -425,6 +425,30 @@
             this.splitContainer2.SplitterDistance = 112;
             this.splitContainer2.TabIndex = 0;
             // 
+            // button11
+            // 
+            this.button11.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button11.Location = new System.Drawing.Point(451, 84);
+            this.button11.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(91, 25);
+            this.button11.TabIndex = 48;
+            this.button11.Text = "停止读取顶降";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // button10
+            // 
+            this.button10.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button10.Location = new System.Drawing.Point(354, 84);
+            this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(91, 25);
+            this.button10.TabIndex = 47;
+            this.button10.Text = "开始读取顶降";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // button9
             // 
             this.button9.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -732,30 +756,6 @@
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.console_textBox.Size = new System.Drawing.Size(1405, 145);
             this.console_textBox.TabIndex = 1;
-            // 
-            // button10
-            // 
-            this.button10.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button10.Location = new System.Drawing.Point(354, 84);
-            this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(91, 25);
-            this.button10.TabIndex = 47;
-            this.button10.Text = "开始读取顶降";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
-            // button11
-            // 
-            this.button11.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button11.Location = new System.Drawing.Point(451, 84);
-            this.button11.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(91, 25);
-            this.button11.TabIndex = 48;
-            this.button11.Text = "停止读取顶降";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // Main_New
             // 
