@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel;
@@ -190,7 +191,8 @@ namespace TestApp.FUNCTION
 
         public async Task<double?> ReadMarkerPowerAsync()
         {
-            string resp = await QueryAsync(":CALC:MARK1:Y?");
+            //string resp = await QueryAsync(":CALC:MARK1:Y?");
+            string resp = await QueryAsync(":CALC:MARK:Y?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
         }
         public async Task<double?> ReadPowerAtFrequencyAsync(double freqHz)
@@ -299,26 +301,36 @@ namespace TestApp.FUNCTION
 
                         string[] parts = data.Split(',');
                         return parts;*/
-            await SendCommandAsync("INST:SEL NOISE");
-            //await SendCommandAsync(":MMEM:LOAD:STAT '/usrdata/Data/1517.sta'");
-            await SendCommandAsync("SENS:CORR:ENR:MODE TABL");
-            await SendCommandAsync("SENS:CORR:ENR:MEAS:TABL:DATA 100e3, 15.77, 10e6, 15.77, 100e6, 15.35, 1e9, 15.12, 2e9, 14.70, 3e9, 14.57\r\n");
-            await SendCommandAsync("SENS:SWE:TIME 0.3");
-            await SendCommandAsync("SENS:CONF:CORR");
-            await SendCommandAsync("INIT:IMM");
+            await SendCommandAsync(":MMEM:LOAD:STAT 1,'C:/R_S/Instr/user/QuickSave/zaosheng.dfl'");
             await SendCommandAsync("*OPC");
-            await SendCommandAsync("SENS:CORR:STAT ON");
-            await SendCommandAsync("SENS:CONF:LIST:SINGL");
             await SendCommandAsync("INIT:IMM");
             await SendCommandAsync("*OPC");
 
-
-
-            string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
+            //string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
+            string data = await QueryAsync("TRAC? TRACE1, NOISe");
             if (string.IsNullOrWhiteSpace(data)) return null;
 
             string[] parts = data.Split(',');
-            return parts;
+
+            // 将每个字符串尝试转换为 double，否则设为 NaN
+            string[] values = parts
+                .Select(p =>
+                {
+                    if (double.TryParse(p, out double val))
+                    {
+                        // 检查是否是无效的特殊值
+                        if (Math.Abs(val - 9.9099995E+37) < 1e30)
+                            return double.NaN.ToString();
+                        else
+                            return val.ToString();
+                    }
+                    else
+                    {
+                        return double.NaN.ToString();
+                    }
+                })
+                .ToArray();
+            return values;
         }
         #endregion
         #region 三阶交调
@@ -392,6 +404,48 @@ namespace TestApp.FUNCTION
             await SendCommandAsync("INIT:CONT OFF");
             await SendCommandAsync("INIT:IMM; *WAI");
         }
+        public async Task ScanStart()
+        {
+            await SendCommandAsync("INIT:CONT ON");
+        }
+        public async Task SetNormalize()
+        {
+            // 选中 Trace 3 再 normalize
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S21_3'");
+            await SendCommandAsync(":CALC:MEAS3:MATH:NORM");
+
+            // 选中 Trace 4 再 normalize
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S22_4'");
+            await SendCommandAsync(":CALC:MEAS4:MATH:NORM");
+        }
+        public async Task<string[]> SetNormalize_Tr3()
+        {
+            await SendCommandAsync(":INIT:CONT OFF");
+            await SendCommandAsync(":INIT:IMM; *WAI");
+            string data = await QueryAsync(":CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+
+            // 选中 Trace 3 再 normalize
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S21_3'");
+            await SendCommandAsync(":CALC:MEAS3:MATH:NORM");
+
+            return parts;
+
+        }
+        public async Task<string[]> SetNormalize_Tr4()
+        {
+            await SendCommandAsync(":INIT:CONT OFF");
+            await SendCommandAsync(":INIT:IMM; *WAI");
+            string data = await QueryAsync(":CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+
+            // 选中 Trace 4 再 normalize
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S22_4'");
+            await SendCommandAsync(":CALC:MEAS4:MATH:NORM");
+
+            return parts;
+        }
+
         // 获取 S12 增益（对数幅度，dB）
         public async Task<double?> GetGainAsync()
         {
@@ -399,7 +453,6 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetGainStringAsync()
         {
-            double freqHz = await GetFreqStart() ?? 0;
             //await SelectSParameterAsync("CH1_S21_3", "S12");
             await SelectSParameterAsync("CH1_S12_3", "S12");
             //await SendCommandAsync("CALC:PAR:SEL 'CH1_S21_3'");
@@ -410,6 +463,18 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
             //return await GetAllData("CH1_S21_3", "MLOG");
+        }
+        public async Task<string[]> GetGainStringAsync_New()
+        {
+            //await SelectSParameterAsync("CH1_S12_3", "S12");
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S21_3'");
+            //await SendCommandAsync(":CALC:MEAS3:MATH:NORM");
+            //await SendCommandAsync(":INIT:CONT OFF");
+            //await SendCommandAsync(":INIT:IMM; *WAI");
+            await SendCommandAsync(":CALC:FORM MLOG");
+            string data = await QueryAsync(":CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
         }
         // 获取 S12 相位（单位度）
         public async Task<double?> GetPhaseAsync()
@@ -475,17 +540,31 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetInitialPhaseStringAsync()
         {
-            double freqHz = await GetFreqStart() ?? 0;
             //await SelectSParameterAsync("CH1_S22_4", "S12");
             await SelectSParameterAsync("CH1_S12_4", "S12");
             //await SendCommandAsync("CALC:PAR:SEL 'CH1_S22_4'");
-            await SendCommandAsync("CALC:FORM PHAS");
+            //await SendCommandAsync("CALC:FORM PHAS");
+            await SendCommandAsync("CALC:FORM UPH");
             //await SendCommandAsync("INIT:CONT OFF");
             //await SendCommandAsync("INIT:IMM; *WAI");
             string data = await QueryAsync("CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetInitialPhaseStringAsync_New()
+        {
+            //await SelectSParameterAsync("CH1_S12_4", "S12");
+            await SendCommandAsync(":CALC:PAR:SEL 'CH1_S22_4'");
+            //await SendCommandAsync(":CALC:MEAS4:MATH:NORM");
+            //await SendCommandAsync(":INIT:CONT OFF");
+            //await SendCommandAsync(":INIT:IMM; *WAI");
+            await SendCommandAsync(":CALC:FORM UPH");
+            string data = await QueryAsync(":CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
+
+
         public async Task<double?> GetFreqStart()
         {
             string freq = await QueryAsync(":SENS:FREQ:STAR?");

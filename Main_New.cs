@@ -16,6 +16,8 @@ using TestApp.FUNCTION;
 using TestApp.MODEL;
 using TestApp.DAL;
 using ExcelDataReader;
+using System.Globalization;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 
 namespace TestApp
@@ -360,7 +362,7 @@ namespace TestApp
                 _axFramerControl.Titlebar = false;
 
                 // Excel 文件路径
-                excelPath = Path.Combine(excelPath, "多指标模板.xls");
+                excelPath = Path.Combine(excelPath, "测试模板.xls");
                 if (File.Exists(excelPath))
                 {
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
@@ -429,10 +431,10 @@ namespace TestApp
                             }, TaskScheduler.FromCurrentSynchronizationContext());
 
                             // 可选：清除数据
-                            foreach (Excel.Worksheet ws in workbook.Worksheets)
+/*                            foreach (Excel.Worksheet ws in workbook.Worksheets)
                             {
                                 ClearExcelContentBelowRow(ws, 8);
-                            }
+                            }*/
 
                             workbook.Save();
                         }
@@ -714,6 +716,47 @@ namespace TestApp
                 for (int i = 0; i < cleanedData.Length; i++)
                 {
                     worksheet.Cells[8 + i, columnIndex] = cleanedData[i];
+                }
+
+                workbook.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("写入 Excel 失败：" + ex.Message);
+            }
+        }
+        private void WriteArrayToExcelColumn_New(string[] data, int columnIndex, string sheetName)
+        {
+            try
+            {
+                // 去除每个字符串的空格
+                string[] cleanedData = data.Select(s => s.Replace("\n", "")).ToArray();
+
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                Excel.Workbook workbook = excelApp.ActiveWorkbook;
+
+                // 根据名称获取指定的工作表
+                Excel.Worksheet worksheet = null;
+                foreach (Excel.Worksheet sheet in workbook.Sheets)
+                {
+                    if (sheet.Name == sheetName)
+                    {
+                        worksheet = sheet;
+                        break;
+                    }
+                }
+
+                if (worksheet == null)
+                {
+                    MessageBox.Show($"未找到名为“{sheetName}”的工作表。");
+                    return;
+                }
+
+
+                // 写入数据，从第8行开始
+                for (int i = 0; i < cleanedData.Length; i++)
+                {
+                    worksheet.Cells[4 + i, columnIndex] = cleanedData[i];
                 }
 
                 workbook.Save();
@@ -1336,7 +1379,7 @@ namespace TestApp
 
                     LogToConsole("FPGA发包:" + chSum);
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-                    sendWaitForm.ChangeLabelText("step3_label", "已完成");
+                    
                     operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}", person_textBox.Text);
 
                 }
@@ -1417,6 +1460,7 @@ namespace TestApp
             recieveWaitForm.ChangeLabelText("step1_label","已完成");
             await ChargeRecievePowerON(); // 接收加电
             await RecieveTestUDP(); //FPGA发包
+            recieveWaitForm.ChangeLabelText("step3_label", "已完成");
             await Task.Delay(500); // 延时保证设备稳定
             await LoadVNAData(); // 获取矢网数据
             //testFlag = 1;
@@ -1457,7 +1501,7 @@ namespace TestApp
                     }
 
                     LogToConsole("FPGA发包:" + chSum);
-                    recieveWaitForm.ChangeLabelText("step3_label", "已完成");
+                    
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
                     operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}", person_textBox.Text);
@@ -1469,7 +1513,30 @@ namespace TestApp
                 }
             });
         }
+        private async Task CloseFPGA()
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    LogToConsole("切换至负载态");
+                    string ch1 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch2 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch3 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch4 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
+                    string ch5 = new string('0', 16);
+                    modelValue = StringToByteArray("01 03 03 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
 
+                    SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                }
+                catch (Exception ex)
+                {
+                    LogToConsole("切换至负载态失败: " + ex);
+                    operateLog_DAL.InsertOperateLog_DT("切换至负载态失败", ex.ToString(), person_textBox.Text);
+                }
+            });
+        }
         /// <summary>
         /// 调用矢网文件
         /// </summary>
@@ -1492,7 +1559,6 @@ namespace TestApp
             vnaFlag = 1;
             scpiDevice.Disconnect(); // 释放资源
         }
-
         private async Task LoadVNAData()
         {
             recieveWaitForm.ChangeLabelText("step4_label", "进行中...");
@@ -1529,6 +1595,7 @@ namespace TestApp
             }
 
             await scpiDevice.ScanOnce();
+            await scpiDevice.SetNormalize();
             string[] gain = await scpiDevice.GetGainStringAsync();               // 增益（dB）
             string[] initial = await scpiDevice.GetInitialPhaseStringAsync();    // 初相（°）
             string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
@@ -1737,6 +1804,7 @@ namespace TestApp
             finally
             {
                 scpiDevice.Disconnect(); // 释放资源
+                await CloseFPGA();
                 await CloseCharge(); // 电源关电
                 LogToConsole("接收测试已完成");
                 recieveWaitForm.Close(); // 关闭等待界面
@@ -1996,6 +2064,7 @@ namespace TestApp
             finally
             {
                 scpiDevice.Disconnect(); // 释放资源
+                await CloseFPGA();
                 await CloseCharge(); // 电源关电
                 LogToConsole("接收测试已完成");
                 recieveWaitForm.Close(); // 关闭等待界面
@@ -2139,6 +2208,7 @@ namespace TestApp
                 mod_checkBox.Checked = false;
                 signalGen.Disconnect();
                 powerMeter.Disconnect();
+                await CloseFPGA();
                 await CloseCharge(); // 电源关电
                 LogToConsole("发射测试已完成");
                 sendWaitForm.Close(); // 关闭等待界面
@@ -2316,6 +2386,7 @@ namespace TestApp
                 mod_checkBox.Checked = false;
                 signalGen.Disconnect();
                 powerMeter.Disconnect();
+                await CloseFPGA();
                 await CloseCharge(); // 电源关电
                 LogToConsole("发射测试已完成");
                 sendWaitForm.Close(); // 关闭等待界面
@@ -2963,18 +3034,36 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
-                int testPoint = 21; // 采集点数
+                int testPoint = 11; // 采集点数
                 string[] freqArray = new string[testPoint];
                 string[] data = await scpiDevice.GetZaoshengData();
                 double step = 0;
                 step = (stopFreq - startFreq) / (testPoint - 1);
 
+                /*                for (int i = 0; i < testPoint; i++)
+                                {
+                                    double freqHz = startFreq + step * i;
+                                    double freqGHz = freqHz / 1e9;
+                                    freqArray[i] = freqGHz.ToString("F6");
+                                    main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
+                                }*/
                 for (int i = 0; i < testPoint; i++)
                 {
                     double freqHz = startFreq + step * i;
                     double freqGHz = freqHz / 1e9;
                     freqArray[i] = freqGHz.ToString("F6");
-                    main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
+
+                    // 判断是否为仪表无效值或无法解析
+                    if (data[i] == "NaN")
+                    {
+                        // 插入 NULL
+                        main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, freqGHz, null);
+                    }
+                    else
+                    {
+                        // 正常插入数值
+                        main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
+                    }
                 }
                 WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
                 LogToConsole("噪声采集");
@@ -3072,6 +3161,7 @@ namespace TestApp
             recieveWaitForm.ChangeLabelText("step1_label", "已完成");
             await ChargeRecievePowerON(); // 接收加电
             await RecieveTestUDP(); //FPGA发包
+            recieveWaitForm.ChangeLabelText("step3_label", "已完成");
             await Task.Delay(500); // 延时保证设备稳定
             await LoadVNAData_New(); // 获取矢网数据
             //testFlag = 1;
@@ -3111,6 +3201,7 @@ namespace TestApp
             jieshouChargePower = await GetJieshouPower();
             await LoadGonglvState(); // 调用功率计文件
             await SendTestUDP(); //FPGA发包
+            sendWaitForm.ChangeLabelText("step3_label", "已完成");
             await Task.Delay(500); // 延时保证设备稳定
             await WriteFreqArray();
             await GetSendData_New(); // 获取发射数据
@@ -3791,7 +3882,7 @@ namespace TestApp
                 {
                     // 将 marker 设置为最大点
                     await scpiDevice.SendCommandAsync(":CALC:MARK1:MAX");
-
+                    await Task.Delay(200); // 让设备处理
                     // 读取 Marker 的功率值
                     power = await scpiDevice.ReadMarkerPowerAsync() ?? double.NaN;
 
@@ -3817,7 +3908,7 @@ namespace TestApp
                 for (int j = 0; j < maxRetries; j++)
                 {
                     await scpiDevice.SendCommandAsync($":CALC:MARK1:X {freq1}");
-
+                    await Task.Delay(200); // 让设备处理
                     // 读取 Marker 的功率值
                     power1 = await scpiDevice.ReadMarkerPowerAsync() ?? double.NaN;
 
@@ -4073,23 +4164,93 @@ namespace TestApp
             try
             {
                 await ChargeSendPowerON(); // 发射加电
-                await SendTestUDP(); //FPGA发包
-                await Task.Delay(500); // 延时保证设备稳定
+                await SendTestUDP();       // FPGA发包
+                await Task.Delay(500);     // 延时保证设备稳定
                 await WriteFreqArray();
 
-                string[] yasuodian = new string[pointCount]; //顶降
+                string[] yasuodian = new string[pointCount]; // 顶降结果数组
                 string[] freqArray = GetFilterFreqArray();
                 LogToConsole("压缩点测试");
-                
+
+                var signalGen = new ScpiDevice();
+                var powerMeter = new ScpiDevice();
+                string sgAddress = xinhaoAddress;
+                string pmAddress = gonglvAddress;
+
+                bool sgConnected = await signalGen.ConnectAsync(sgAddress);
+                bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
+
+                if (!sgConnected || !pmConnected)
+                {
+                    LogToConsole("连接失败：信号源或功率计无法连接");
+                    return;
+                }
+
+                await signalGen.EnableOutput();
+                rf_checkBox.Checked = true;
+                await signalGen.ModON();
+                mod_checkBox.Checked = true;
+
                 for (int i = 0; i < pointCount; i++)
                 {
                     double freqHz = double.Parse(freqArray[i]) * 1e9;
                     double freqGHz = double.Parse(freqArray[i]);
 
-                    double result = await MeasureP1dBAsync(freqHz) ?? double.NaN;
-                    yasuodian[i] = result.ToString();
+                    double? p1dBResult = null;
+
+                    await signalGen.SetFrequency(freqHz);
+                    await signalGen.QueryOpc();
+
+                    double startPower_dBm = -30;
+                    double stopPower_dBm = 10;
+                    double step_dB = 1;
+
+                    List<double> gainList = new List<double>();
+
+                    for (double inputPower = startPower_dBm; inputPower <= stopPower_dBm; inputPower += step_dB)
+                    {
+                        await signalGen.SetPower(inputPower);
+                        await signalGen.QueryOpc();
+
+                        await powerMeter.SendCommandAsync(":INIT:IMM");
+                        await powerMeter.SendCommandAsync("*WAI");
+                        await Task.Delay(300);
+
+                        double[] outputPower = await powerMeter.ReadPulsePowerArrayAsync();
+                        double gain = outputPower[0] - inputPower;
+
+                        gainList.Add(gain);
+
+                        Console.WriteLine($"Freq: {freqGHz} GHz, In: {inputPower:F2} dBm -> Out: {outputPower[0]:F2} dBm, Gain: {gain:F2} dB");
+
+                        if (gainList.Count >= 2)
+                        {
+                            double refGain = gainList[0];
+                            double gainDrop = refGain - gain;
+
+                            if (gainDrop >= 1.0)
+                            {
+                                Console.WriteLine($"Detected 1dB compression at input = {inputPower:F2} dBm");
+                                p1dBResult = inputPower;
+                                break;
+                            }
+                        }
+                    }
+
+                    yasuodian[i] = p1dBResult?.ToString() ?? "未检测到";
+                    await Task.Delay(500);
                 }
+
+                await signalGen.DisableOutput();
+                await signalGen.ModOFF();
+                rf_checkBox.Checked = false;
+                mod_checkBox.Checked = false;
+                signalGen.Disconnect();
+                powerMeter.Disconnect();
+                await CloseCharge();
+
                 WriteYasuodianToMatchingFrequencyRows(freqArray, yasuodian, "测试结果");
+                LogToConsole("压缩点测试完成");
             }
             catch (Exception ex)
             {
@@ -4097,6 +4258,7 @@ namespace TestApp
                 operateLog_DAL.InsertOperateLog_DT("压缩点测试失败", ex.ToString(), person_textBox.Text);
             }
         }
+
         public async Task<double?> MeasureP1dBAsync(double testFreqHz)
         {
             double startPower_dBm = -30;
@@ -4242,6 +4404,410 @@ namespace TestApp
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
 
+        }
+        public static string[] UnwrapPhase(string[] wrappedPhaseStrings)
+        {
+            List<double> result = new List<double>();
+            double previous = 0;
+            double offset = 0;
+
+            for (int i = 0; i < wrappedPhaseStrings.Length; i++)
+            {
+                if (!double.TryParse(wrappedPhaseStrings[i], out double current))
+                {
+                    result.Add(0); // 无法解析，记为 0
+                    continue;
+                }
+
+                if (i > 0)
+                {
+                    // 只要当前值比前一个值大，就视为“跳跃”（针对单调递减数据）
+                    if (current > previous)
+                        offset -= 360;
+                }
+
+                double unwrapped = current + offset;
+                result.Add(unwrapped);
+                previous = current;
+            }
+
+            return result.Select(x => x.ToString("F3")).ToArray();
+        }
+        /// <summary>
+        /// 移相精度
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button12_Click(object sender, EventArgs e)
+        {
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LogToConsole("开始移相精度测试...");
+            WritePersonToAllSheets();
+            LoadVNAState(); // 调用矢网文件
+            await ChargeRecievePowerON(); // 接收加电
+
+            string ch = "";
+            string testType = testType_comboBox.Text;
+            string componentName = componentName_textBox.Text;
+            if (ch1_checkBox.Checked)
+            {
+                ch = $"通道1-{testType}";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = $"通道2-{testType}";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = $"通道3-{testType}";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = $"通道4-{testType}";
+            }
+
+            string visaAddress = vnaAddress;
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            if (!connected)
+            {
+                LogToConsole("矢网连接失败");
+                return;
+            }
+            await scpiDevice.SetNormalize();
+            List<double[]> unwrappedPhases = new List<double[]>();
+            double[] previousPhase = null;
+            double[] phaseOffset = null;
+            /*            for (int i = 0; i <= 63; i++)
+                        {
+                            await RecieveTestUDP(i, "移相"); //FPGA发包
+                            await Task.Delay(500); // 延时保证设备稳定
+                            await scpiDevice.ScanOnce();
+                            string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
+                            string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
+
+                            WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
+                            WriteArrayToExcelColumn_New(initial, i + 2, "接收通道相移精度测试结果");
+                        }*/
+            for (int i = 0; i <= 63; i++)
+            {
+                await RecieveTestUDP(i, "移相"); // FPGA发码
+                await Task.Delay(500);           // 等待设备稳定
+                await scpiDevice.ScanOnce();
+
+                string[] gain = await scpiDevice.GetGainStringAsync_New();             // 衰减
+                string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();  // 初相
+
+                // 转换为 double[]
+                double[] currentPhase = initial.Select(s =>
+                {
+                    double.TryParse(s, out double v);
+                    return v;
+                }).ToArray();
+
+                if (previousPhase == null)
+                {
+                    previousPhase = currentPhase;
+                    phaseOffset = new double[currentPhase.Length];
+                    unwrappedPhases.Add(currentPhase.ToArray());
+                }
+                else
+                {
+                    double[] unwrapped = new double[currentPhase.Length];
+
+                    for (int j = 0; j < currentPhase.Length; j++)
+                    {
+                        double diff = currentPhase[j] - previousPhase[j];
+
+                        if (diff > 180)
+                            phaseOffset[j] -= 360;
+                        else if (diff < -180)
+                            phaseOffset[j] += 360;
+
+                        unwrapped[j] = currentPhase[j] + phaseOffset[j];
+                    }
+
+                    unwrappedPhases.Add(unwrapped);
+                    previousPhase = currentPhase;
+                }
+
+                // 写入增益
+                WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
+            }
+            // 写入解包后的初相（第 i + 2 列）
+            for (int i = 0; i < unwrappedPhases.Count; i++)
+            {
+                string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
+                WriteArrayToExcelColumn_New(phaseStrings, i + 2, "接收通道相移精度测试结果");
+            }
+
+
+            scpiDevice.Disconnect(); // 释放资源
+            await CloseFPGA();
+            await CloseCharge(); // 电源关电
+            SubtractStandardAndWriteResult("接收通道相移精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel("接收通道相移精度测试结果");
+        }
+        public void SubtractStandardAndWriteResult(string sheetName)
+        {
+            LogToConsole("开始写入数据差值");
+            var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            var workbook = excelApp.ActiveWorkbook;
+            Excel.Worksheet phaseSheet = workbook.Sheets[sheetName];
+
+            int startCol = 2;  // 从第2列开始
+            int endCol = 65;
+
+            for (int col = startCol; col <= endCol; col++)
+            {
+                // 获取标准值（第3行）
+                object standardObj = phaseSheet.Cells[3, col].Value;
+                if (standardObj == null || !double.TryParse(standardObj.ToString(), out double standardValue))
+                    continue; // 跳过该列
+
+                // 遍历第4~154行
+                for (int row = 4; row <= 154; row++)
+                {
+                    object cellValueObj = phaseSheet.Cells[row, col].Value;
+                    if (cellValueObj != null && double.TryParse(cellValueObj.ToString(), out double measuredValue))
+                    {
+                        double result = measuredValue - standardValue;
+                        int targetRow = 161 + (row - 4);
+                        phaseSheet.Cells[targetRow, col].Value = result;
+                    }
+                }
+            }
+
+            LogToConsole("数据差值写入完成");
+        }
+
+
+        private void CalculatePhaseAccuracyAndWriteToExcel(string sheetName)
+        {
+            try
+            {
+                LogToConsole("开始计算精度...");
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook; ;
+                Excel.Worksheet phaseSheet = workbook.Sheets[sheetName];
+                Excel.Worksheet resultSheet = workbook.Sheets["测试结果"];
+
+                // 获取频率点行数
+                int startRow = 161;
+                int currentRow = startRow;
+
+                while (true)
+                {
+                    Excel.Range freqCell = phaseSheet.Cells[currentRow, 1]; // A列
+                    if (freqCell == null || freqCell.Value == null)
+                        break;
+
+                    string freqStr = freqCell.Value.ToString();
+                    if (!double.TryParse(freqStr, out double freqGHz))
+                        break;
+
+                    // 读取 B 到 BM 列（64 个值）
+                    List<double> phaseValues = new List<double>();
+                    for (int col = 2; col <= 65; col++) // B = 2, BM = 65
+                    {
+                        var cell = phaseSheet.Cells[currentRow, col];
+                        double val = 0; // 先初始化
+                        if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
+                        {
+                            phaseValues.Add(val);
+                        }
+                    }
+
+                    // 计算均方根（RMS）误差
+                    double avg = phaseValues.Average();
+                    double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+
+                    // 在“测试结果”中查找对应频率行并写入 RMS 到 I 列（第9列）
+                    int resultRow = FindRowByFrequency(resultSheet, freqGHz);
+                    if (resultRow > 0)
+                    {
+                        if (sheetName.Equals("接收通道相移精度测试结果"))
+                        {
+                            resultSheet.Cells[resultRow, 9].Value = rms.ToString("F3");
+                        }
+                        if (sheetName.Equals("接收通道衰减精度测试结果"))
+                        {
+                            resultSheet.Cells[resultRow, 11].Value = rms.ToString("F3");
+                        }
+                    }
+                        
+
+                    currentRow++;
+                }
+
+                workbook.Save();
+                LogToConsole("精度计算完成");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("处理移相精度时出错：" + ex.Message);
+            }
+        }
+        private int FindRowByFrequency(Excel.Worksheet sheet, double freqGHz)
+        {
+            int row = 8; // 从第8行开始查找
+            while (true)
+            {
+                var cell = sheet.Cells[row, 1]; // A列
+                if (cell == null || cell.Value == null)
+                    break;
+
+                if (double.TryParse(cell.Value.ToString(), out double f) &&
+                    Math.Abs(f - freqGHz) < 0.0001)
+                {
+                    return row;
+                }
+
+                row++;
+            }
+
+            return -1; // 未找到
+        }
+
+        private async Task RecieveTestUDP(int num,string yixiangOrshuaijian)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // 获取勾选的通道数量
+                    int selectedCount = 0;
+                    if (ch1_checkBox.Checked) selectedCount++;
+                    if (ch2_checkBox.Checked) selectedCount++;
+                    if (ch3_checkBox.Checked) selectedCount++;
+                    if (ch4_checkBox.Checked) selectedCount++;
+
+                    // 判断是否仅选择一个
+                    if (selectedCount != 1)
+                    {
+                        MessageBox.Show("请只选择一个接收通道！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // 终止方法
+                    }
+                    string numToString = ToSixBitBinaryString(num);
+                    // 分别设置通道值
+                    string ch1recive = ch1_checkBox.Checked ? "0" : "1";
+                    string ch2recive = ch2_checkBox.Checked ? "0" : "1";
+                    string ch3recive = ch3_checkBox.Checked ? "0" : "1";
+                    string ch4recive = ch4_checkBox.Checked ? "0" : "1";
+
+                    string ch1 = "";
+                    string ch2 = "";
+                    string ch3 = "";
+                    string ch4 = "";
+                    if (yixiangOrshuaijian.Equals("移相"))
+                    {
+                        ch1 = ch1recive + "000000" + numToString + "000000" + "000000" + "1";
+                        ch2 = ch2recive + "000000" + numToString + "000000" + "000000" + "1";
+                        ch3 = ch3recive + "000000" + numToString + "000000" + "000000" + "1";
+                        ch4 = ch4recive + "000000" + numToString + "000000" + "000000" + "1";
+                    }
+                    if(yixiangOrshuaijian.Equals("衰减"))
+                    {
+                        ch1 = ch1recive + "000000" + "000000" + "000000" + numToString + "1";
+                        ch2 = ch2recive + "000000" + "000000" + "000000" + numToString + "1";
+                        ch3 = ch3recive + "000000" + "000000" + "000000" + numToString + "1";
+                        ch4 = ch4recive + "000000" + "000000" + "000000" + numToString + "1";
+                    }
+                    string ch5 = new string('0', 16);
+                    modelValue = StringToByteArray("01 03 02 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+
+                    SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                    LogToConsole(numToString);
+                }
+                catch (Exception ex)
+                {
+                    LogToConsole("接收测试失败: " + ex);
+                    operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), person_textBox.Text);
+                }
+            });
+        }
+        public string ToSixBitBinaryString(int number)
+        {
+            if (number < 0 || number > 63)
+                throw new ArgumentOutOfRangeException(nameof(number), "输入必须在 0 到 63 之间。");
+
+            //return Convert.ToString(number, 2).PadLeft(6, '0');
+            string binary = Convert.ToString(number, 2).PadLeft(6, '0');
+            char[] reversed = binary.ToCharArray();
+            Array.Reverse(reversed);
+            return new string(reversed);
+        }
+        /// <summary>
+        /// 衰减精度
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button13_Click(object sender, EventArgs e)
+        {
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LogToConsole("开始衰减精度测试...");
+            WritePersonToAllSheets();
+            LoadVNAState(); // 调用矢网文件
+            await ChargeRecievePowerON(); // 接收加电
+
+            string ch = "";
+            string testType = testType_comboBox.Text;
+            string componentName = componentName_textBox.Text;
+            if (ch1_checkBox.Checked)
+            {
+                ch = $"通道1-{testType}";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = $"通道2-{testType}";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = $"通道3-{testType}";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = $"通道4-{testType}";
+            }
+
+            string visaAddress = vnaAddress;
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            if (!connected)
+            {
+                LogToConsole("矢网连接失败");
+                return;
+            }
+            await scpiDevice.SetNormalize();
+
+            for (int i = 0; i <= 63; i++)
+            {
+                await RecieveTestUDP(i, "衰减"); //FPGA发包
+                await Task.Delay(500); // 延时保证设备稳定
+                await scpiDevice.ScanOnce();
+                string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
+                string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
+
+                WriteArrayToExcelColumn_New(gain, i + 2, "接收通道衰减精度测试结果");
+                WriteArrayToExcelColumn_New(initial, i + 2, "接收寄生调相");
+            }
+
+            scpiDevice.Disconnect(); // 释放资源
+            await CloseFPGA();
+            await CloseCharge(); // 电源关电
+            SubtractStandardAndWriteResult("接收通道衰减精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel("接收通道衰减精度测试结果");
         }
     }
 }

@@ -32,12 +32,6 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.device_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deviceFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton10 = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
             this.电源设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,9 +51,16 @@
             this.gonglvSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadGonglvState_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.device_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviceFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button12 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
@@ -89,6 +90,7 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
+            this.button13 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -136,58 +138,6 @@
             this.toolStripButton3.Text = "新建Excel";
             this.toolStripButton3.Visible = false;
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
-            // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(77, 22);
-            this.toolStripButton6.Text = "另存为Excel";
-            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.device_ToolStripMenuItem,
-            this.deviceFile_ToolStripMenuItem,
-            this.testSet_ToolStripMenuItem,
-            this.SqlSet_ToolStripMenuItem});
-            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 22);
-            this.toolStripDropDownButton1.Text = "配置设置";
-            // 
-            // device_ToolStripMenuItem
-            // 
-            this.device_ToolStripMenuItem.Name = "device_ToolStripMenuItem";
-            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.device_ToolStripMenuItem.Text = "仪表地址设置";
-            this.device_ToolStripMenuItem.Click += new System.EventHandler(this.device_ToolStripMenuItem_Click);
-            // 
-            // deviceFile_ToolStripMenuItem
-            // 
-            this.deviceFile_ToolStripMenuItem.Name = "deviceFile_ToolStripMenuItem";
-            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.deviceFile_ToolStripMenuItem.Text = "调用文件设置";
-            this.deviceFile_ToolStripMenuItem.Click += new System.EventHandler(this.deviceFile_ToolStripMenuItem_Click);
-            // 
-            // testSet_ToolStripMenuItem
-            // 
-            this.testSet_ToolStripMenuItem.Name = "testSet_ToolStripMenuItem";
-            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.testSet_ToolStripMenuItem.Text = "测试设置";
-            this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
-            // 
-            // SqlSet_ToolStripMenuItem
-            // 
-            this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
-            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
-            this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
             // 
             // toolStripButton10
             // 
@@ -356,6 +306,58 @@
             this.toolStripButton4.Text = "信号发生器设置";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.device_ToolStripMenuItem,
+            this.deviceFile_ToolStripMenuItem,
+            this.testSet_ToolStripMenuItem,
+            this.SqlSet_ToolStripMenuItem});
+            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 22);
+            this.toolStripDropDownButton1.Text = "配置设置";
+            // 
+            // device_ToolStripMenuItem
+            // 
+            this.device_ToolStripMenuItem.Name = "device_ToolStripMenuItem";
+            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.device_ToolStripMenuItem.Text = "仪表地址设置";
+            this.device_ToolStripMenuItem.Click += new System.EventHandler(this.device_ToolStripMenuItem_Click);
+            // 
+            // deviceFile_ToolStripMenuItem
+            // 
+            this.deviceFile_ToolStripMenuItem.Name = "deviceFile_ToolStripMenuItem";
+            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.deviceFile_ToolStripMenuItem.Text = "调用文件设置";
+            this.deviceFile_ToolStripMenuItem.Click += new System.EventHandler(this.deviceFile_ToolStripMenuItem_Click);
+            // 
+            // testSet_ToolStripMenuItem
+            // 
+            this.testSet_ToolStripMenuItem.Name = "testSet_ToolStripMenuItem";
+            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.testSet_ToolStripMenuItem.Text = "测试设置";
+            this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
+            // 
+            // SqlSet_ToolStripMenuItem
+            // 
+            this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
+            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
+            this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(77, 22);
+            this.toolStripButton6.Text = "另存为Excel";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
             // toolStripButton9
             // 
             this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -393,6 +395,8 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.button13);
+            this.splitContainer2.Panel1.Controls.Add(this.button12);
             this.splitContainer2.Panel1.Controls.Add(this.button11);
             this.splitContainer2.Panel1.Controls.Add(this.button10);
             this.splitContainer2.Panel1.Controls.Add(this.button9);
@@ -424,6 +428,18 @@
             this.splitContainer2.Size = new System.Drawing.Size(1405, 487);
             this.splitContainer2.SplitterDistance = 112;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // button12
+            // 
+            this.button12.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button12.Location = new System.Drawing.Point(723, 84);
+            this.button12.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(91, 25);
+            this.button12.TabIndex = 49;
+            this.button12.Text = "移相精度";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
             // button11
             // 
@@ -757,6 +773,18 @@
             this.console_textBox.Size = new System.Drawing.Size(1405, 145);
             this.console_textBox.TabIndex = 1;
             // 
+            // button13
+            // 
+            this.button13.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button13.Location = new System.Drawing.Point(820, 84);
+            this.button13.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(91, 25);
+            this.button13.TabIndex = 50;
+            this.button13.Text = "衰减精度";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
             // Main_New
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -846,5 +874,7 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button13;
     }
 }

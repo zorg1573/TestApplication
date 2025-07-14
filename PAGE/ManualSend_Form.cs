@@ -134,7 +134,7 @@ namespace TestApp.PAGE
 
                 if (radioButton2.Checked)
                 {
-                    mainForm.LogToConsole("开始发射测试");
+                    mainForm.LogToConsole("开始发射测试"); //接收开关 发射移相 接收移相 发射衰减 接收衰减 发射开关
                     string ch1send = checkBox1.Checked ? "0" : "1";
                     string ch2send = checkBox2.Checked ? "0" : "1";
                     string ch3send = checkBox3.Checked ? "0" : "1";
