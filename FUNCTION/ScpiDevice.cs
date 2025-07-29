@@ -693,11 +693,11 @@ namespace TestApp.FUNCTION
         }
         public async Task<bool> LoadGonglvState()
         {
-            return await SendCommandAsync("*RCL 1");
+            return await SendCommandAsync("*RCL 2");
         }
         public async Task<bool> SaveGonglvState()
         {
-            return await SendCommandAsync("*SAV 1");
+            return await SendCommandAsync("*SAV 2");
         }
         public async Task<double[]> ReadPulsePowerArrayAsync()
         {

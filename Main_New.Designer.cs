@@ -60,6 +60,7 @@
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button13 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
@@ -90,7 +91,6 @@
             this.sendTest_button = new System.Windows.Forms.Button();
             this.receiveTest_button = new System.Windows.Forms.Button();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.button13 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -425,9 +425,24 @@
             this.splitContainer2.Panel1.Controls.Add(this.ch4_checkBox);
             this.splitContainer2.Panel1.Controls.Add(this.sendTest_button);
             this.splitContainer2.Panel1.Controls.Add(this.receiveTest_button);
+            // 
+            // splitContainer2.Panel2
+            // 
             this.splitContainer2.Size = new System.Drawing.Size(1405, 487);
             this.splitContainer2.SplitterDistance = 112;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // button13
+            // 
+            this.button13.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button13.Location = new System.Drawing.Point(820, 84);
+            this.button13.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(91, 25);
+            this.button13.TabIndex = 50;
+            this.button13.Text = "衰减精度";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // button12
             // 
@@ -772,18 +787,6 @@
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.console_textBox.Size = new System.Drawing.Size(1405, 145);
             this.console_textBox.TabIndex = 1;
-            // 
-            // button13
-            // 
-            this.button13.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button13.Location = new System.Drawing.Point(820, 84);
-            this.button13.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(91, 25);
-            this.button13.TabIndex = 50;
-            this.button13.Text = "衰减精度";
-            this.button13.UseVisualStyleBackColor = true;
-            this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // Main_New
             // 
