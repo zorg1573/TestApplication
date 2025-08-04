@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Resources;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +20,7 @@ using TestApp.DAL;
 using TestApp.FUNCTION;
 using TestApp.MODEL;
 using TestApp.PAGE;
+using NationalInstruments.Visa;
 
 
 namespace TestApp
@@ -1401,6 +1404,64 @@ namespace TestApp
                 }
             });
         }
+        private async Task SendTestUDP(int num, string yixiangOrshuaijian)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // 获取勾选的通道数量
+                    int selectedCount = 0;
+                    if (ch1_checkBox.Checked) selectedCount++;
+                    if (ch2_checkBox.Checked) selectedCount++;
+                    if (ch3_checkBox.Checked) selectedCount++;
+                    if (ch4_checkBox.Checked) selectedCount++;
+
+                    // 判断是否仅选择一个
+                    if (selectedCount != 1)
+                    {
+                        MessageBox.Show("请只选择一个接收通道！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // 终止方法
+                    }
+                    string numToString = ToSixBitBinaryString(num);
+                    // 分别设置通道值
+                    string ch1send = ch1_checkBox.Checked ? "0" : "1";
+                    string ch2send = ch2_checkBox.Checked ? "0" : "1";
+                    string ch3send = ch3_checkBox.Checked ? "0" : "1";
+                    string ch4send = ch4_checkBox.Checked ? "0" : "1";
+
+                    string ch1 = "";
+                    string ch2 = "";
+                    string ch3 = "";
+                    string ch4 = "";
+                    if (yixiangOrshuaijian.Equals("移相"))
+                    {
+                        ch1 = "1" + numToString + "000000" + "000000" + "000000" + ch1send;
+                        ch2 = "1" + numToString + "000000" + "000000" + "000000" + ch2send;
+                        ch3 = "1" + numToString + "000000" + "000000" + "000000" + ch3send;
+                        ch4 = "1" + numToString + "000000" + "000000" + "000000" + ch4send;
+                    }
+                    if (yixiangOrshuaijian.Equals("衰减"))
+                    {
+                        ch1 = "1" + "000000" + "000000" + numToString + "000000" + ch1send;
+                        ch2 = "1" + "000000" + "000000" + numToString + "000000" + ch2send;
+                        ch3 = "1" + "000000" + "000000" + numToString + "000000" + ch3send;
+                        ch4 = "1" + "000000" + "000000" + numToString + "000000" + ch4send;
+                    }
+                    string ch5 = new string('0', 16);
+                    modelValue = StringToByteArray("01 03 01 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+
+                    SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                    LogToConsole(numToString);
+                }
+                catch (Exception ex)
+                {
+                    LogToConsole("发射测试失败: " + ex);
+                    operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), person_textBox.Text);
+                }
+            });
+        }
         /// <summary>
         /// 发射测试|功率
         /// </summary>
@@ -1862,6 +1923,7 @@ namespace TestApp
             }
 
             await scpiDevice.ScanOnce();
+            await Task.Delay(500);
             string[] gain = await scpiDevice.GetGainStringAsync();               // 增益（dB）
             string[] initial = await scpiDevice.GetInitialPhaseStringAsync();    // 初相（°）
             string[] inputVswr = await scpiDevice.GetInputVSWRStringAsync();     // 输入驻波比
@@ -2363,8 +2425,8 @@ namespace TestApp
                     I_T5 = await GetCurrent(2);
 
                     double fenmu1 = 8.5 * I_T85;
-                    double fenmu2 = 5 * (I_T5 - 3 / 4 * I_DQ5);
-                    double fenmu3 = 0.8 * 5 * (I_R5 - 3 / 4 * I_DQ5);
+                    double fenmu2 = 5 * (I_T5 - 0.75 * I_DQ5);
+                    double fenmu3 = 0.8 * 5 * (I_R5 - 0.75 * I_DQ5);
 
                     double chargePower = fenmu1 + fenmu2 + fenmu3;
                     xiaolvString[i] = PowerWatt * 0.2 / chargePower * 10 + "%"; // 计算效率百分比
@@ -3216,8 +3278,8 @@ namespace TestApp
                     double PowerWatt = dBmToWatt(compensatedPower); // dBm 转 W
 
                     double fenmu1 = 8.5 * I_T85;
-                    double fenmu2 = 5 * (I_T5 - 3 / 4 * I_DQ5);
-                    double fenmu3 = 0.8 * 5 * (I_R5 - 3 / 4 * I_DQ5);
+                    double fenmu2 = 5 * (I_T5 - 0.75 * I_DQ5);
+                    double fenmu3 = 0.8 * 5 * (I_R5 - 0.75 * I_DQ5);
 
                     double chargePower = fenmu1 + fenmu2 + fenmu3;
                     xiaolvString[i] = PowerWatt * 0.2 / chargePower * 100.0 + "%"; // 计算效率百分比
@@ -3403,9 +3465,9 @@ namespace TestApp
         /// <param name="e"></param>
         private async void button8_Click(object sender, EventArgs e)
         {
-            //ScpiDevice signalGen = new ScpiDevice();
-            try
-            {
+            ScpiDevice signalGen = new ScpiDevice();
+            //try
+            //{
                 await ChargeRecievePowerON(); // 接收加电
                 await RecieveTestUDP(); //FPGA发包
                 await Task.Delay(500); // 延时保证设备稳定
@@ -3416,7 +3478,7 @@ namespace TestApp
                 ScpiDevice scpiDevice = new ScpiDevice();
                 ScpiDevice vnaDevice = new ScpiDevice();
                 bool connected = await scpiDevice.ConnectAsync(pinpuAddress);
-                //bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
+                bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
                 bool vnaConnected = await vnaDevice.ConnectAsync(vnaAddress);
                 if (!connected)
                 {
@@ -3429,6 +3491,12 @@ namespace TestApp
 
                 await scpiDevice.LoadPinpuStateAsync(sanjieJiaotiaoPath);
 
+                await vnaDevice.SendsjjtStart();
+
+                await signalGen.EnableOutput(); // 打开信号源输出
+                await signalGen.ModON(); // 打开调制输出
+                rf_checkBox.Checked = true;
+                mod_checkBox.Checked = true;
                 int maxRetryCount = 10; // 测量次数
                 double toiDefault = -90; // 默认最小值，保证后续比较时不会误判为最大
 
@@ -3439,29 +3507,81 @@ namespace TestApp
                     double freqHz3 = freqHz + 0.0005 * 1e9;
 
                     await vnaDevice.SetVNACWFreq(freqHz2);
+                    await signalGen.SetFrequency(freqHz);
+                    await signalGen.QueryOpc();
+                    await signalGen.SetPower(-34);
+                    await signalGen.QueryOpc();
 
-                    await scpiDevice.SendCommandAsync(":CALC:MARK:FUNC:TOI:STAT ON");
+
+                    await scpiDevice.SendCommandAsync(":CALC:MARK1:FUNC:TOI:STAT ON");
+                    await scpiDevice.SendCommandAsync(":CALC:MARK2:FUNC:TOI:STAT ON");
+                    await scpiDevice.SendCommandAsync(":CALC:MARK3:FUNC:TOI:STAT ON");
+                    await scpiDevice.SendCommandAsync(":CALC:MARK4:FUNC:TOI:STAT ON");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK1:FUNC:TOI:SEAR ONCE");
                     await scpiDevice.SendCommandAsync(":CALC1:MARK2:FUNC:TOI:SEAR ONCE");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK3:FUNC:TOI:SEAR ONCE");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK4:FUNC:TOI:SEAR ONCE");
                     await scpiDevice.SendCommandAsync($":SENS:FREQ:CENT {freqHz3}");
 
                     double maxToi = toiDefault;
+                    double result = 0;
 
                     for (int attempt = 0; attempt < maxRetryCount; attempt++)
                     {
-                        await Task.Delay(500); // 等待设备稳定
+                        await Task.Delay(200); // 等待设备稳定
 
-                        string ip3Str = await scpiDevice.QueryAsync(":CALC:MARK:FUNC:TOI:RES:MIN?");
-                        if (double.TryParse(ip3Str, out double val))
+                    //string ip3Str = await scpiDevice.QueryAsync(":CALC:MARK:FUNC:TOI:RES:MIN?");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK1:FUNC:TOI:SEAR ONCE");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK2:FUNC:TOI:SEAR ONCE");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK3:FUNC:TOI:SEAR ONCE");
+                    await scpiDevice.SendCommandAsync(":CALC1:MARK4:FUNC:TOI:SEAR ONCE");
+                    string m1 = await scpiDevice.QueryAsync(":CALC:MARK1:Y?");
+                        string m2 = await scpiDevice.QueryAsync(":CALC:MARK2:Y?");
+                        string m3 = await scpiDevice.QueryAsync(":CALC:MARK3:Y?");
+                        string m4 = await scpiDevice.QueryAsync(":CALC:MARK4:Y?");
+                        double m1D = 0;
+                        double m2D = 0;
+                        double m3D = 0;
+                        double m4D = 0;
+                        if (m1 != null)
                         {
-                            if (val > maxToi)
-                            {
-                                maxToi = val;
-                            }
+                            m1D = double.Parse(m1);
                         }
+                        if (m2 != null)
+                        {
+                            m2D = double.Parse(m2);
+                        }
+                        if (m3 != null)
+                        {
+                            m3D = double.Parse(m3);
+                        }
+                        if (m4 != null)
+                        {
+                            m4D = double.Parse(m4);
+                        }
+                        double res1 = m1D - m3D;
+                        double res2 = m2D - m4D;
+                        
+                        if (res1 >= res2)
+                        {
+                            result = res2;
+                        }
+                        else
+                        {
+                            result = res1;
+                        }
+                        //if (double.TryParse(ip3Str, out double val))
+                        //{
+                        //    if (val > maxToi)
+                        //    {
+                        //        maxToi = val;
+                        //    }
+                        //}
                     }
 
                     // 保存最大值，若始终无效则为默认值
-                    sanjieJiaotiao[i] = maxToi == toiDefault ? toiDefault.ToString() : maxToi.ToString();
+                    //sanjieJiaotiao[i] = maxToi == toiDefault ? toiDefault.ToString() : maxToi.ToString();
+                    sanjieJiaotiao[i] = result.ToString();
                 }
 
 
@@ -3470,16 +3590,20 @@ namespace TestApp
                 scpiDevice.Disconnect();
                 vnaDevice.Disconnect();
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"三阶交调测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("三阶交调测试失败", ex.ToString(), person_textBox.Text);
-            }
-            finally
-            {
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show($"三阶交调测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    operateLog_DAL.InsertOperateLog_DT("三阶交调测试失败", ex.ToString(), person_textBox.Text);
+            //}
+            //finally
+            //{
                 await CloseCharge(); // 电源关电
-            }
+                await signalGen.DisableOutput(); // 安全关闭输出
+                await signalGen.ModOFF();
+                rf_checkBox.Checked = false;
+                mod_checkBox.Checked = false;
+            //}
         }
         #endregion
 
@@ -4150,7 +4274,7 @@ namespace TestApp
 
                 double startPower = -35;
                 double stopPower = -8;
-                double stepPower = 1.0;
+                double stepPower = 1;
 
                 double[] refGains = new double[pointCount];
                 //double[] compressionPoints = new double[freqCount];
@@ -4422,6 +4546,8 @@ namespace TestApp
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await RecieveTestUDP(0, "移相"); // FPGA发码
+            await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize();
             List<double[]> unwrappedPhases = new List<double[]>();
             double[] previousPhase = null;
@@ -4495,6 +4621,7 @@ namespace TestApp
             await CloseCharge(); // 电源关电
             SubtractStandardAndWriteResult("接收通道相移精度测试结果");
             CalculatePhaseAccuracyAndWriteToExcel("接收通道相移精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel_Jisheng("接收寄生调幅");
         }
         public void SubtractStandardAndWriteResult(string sheetName)
         {
@@ -4582,8 +4709,82 @@ namespace TestApp
                         {
                             resultSheet.Cells[resultRow, 11].Value = rms.ToString("F3");
                         }
+                        if (sheetName.Equals("发射通道相移精度测试结果"))
+                        {
+                            resultSheet.Cells[resultRow, 23].Value = rms.ToString("F3");
+                        }
                     }
                         
+
+                    currentRow++;
+                }
+
+                workbook.Save();
+                LogToConsole("精度计算完成");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("处理移相精度时出错：" + ex.Message);
+            }
+        }
+        private void CalculatePhaseAccuracyAndWriteToExcel_Jisheng(string sheetName)
+        {
+            try
+            {
+                LogToConsole("开始计算寄生精度...");
+                var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                var workbook = excelApp.ActiveWorkbook; ;
+                Excel.Worksheet phaseSheet = workbook.Sheets[sheetName];
+                Excel.Worksheet resultSheet = workbook.Sheets["测试结果"];
+
+                // 获取频率点行数
+                int startRow = 4;
+                int currentRow = startRow;
+
+                while (true)
+                {
+                    Excel.Range freqCell = phaseSheet.Cells[currentRow, 1]; // A列
+                    if (freqCell == null || freqCell.Value == null)
+                        break;
+
+                    string freqStr = freqCell.Value.ToString();
+                    if (!double.TryParse(freqStr, out double freqGHz))
+                        break;
+
+                    // 读取 B 到 BM 列（64 个值）
+                    List<double> phaseValues = new List<double>();
+                    for (int col = 2; col <= 65; col++) // B = 2, BM = 65
+                    {
+                        var cell = phaseSheet.Cells[currentRow, col];
+                        double val = 0; // 先初始化
+                        if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
+                        {
+                            phaseValues.Add(val);
+                        }
+                    }
+
+                    // 计算均方根（RMS）误差
+                    double avg = phaseValues.Average();
+                    double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+
+                    // 在“测试结果”中查找对应频率行并写入 RMS 到 I 列（第9列）
+                    int resultRow = FindRowByFrequency(resultSheet, freqGHz);
+                    if (resultRow > 0)
+                    {
+                        if (sheetName.Equals("接收寄生调幅"))
+                        {
+                            resultSheet.Cells[resultRow, 10].Value = rms.ToString("F3");
+                        }
+                        if (sheetName.Equals("接收寄生调相"))
+                        {
+                            resultSheet.Cells[resultRow, 13].Value = rms.ToString("F3");
+                        }
+                        if (sheetName.Equals("发射寄生调幅"))
+                        {
+                            resultSheet.Cells[resultRow, 24].Value = rms.ToString("F3");
+                        }
+                    }
+
 
                     currentRow++;
                 }
@@ -4732,13 +4933,15 @@ namespace TestApp
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await RecieveTestUDP(0, "移相"); // FPGA发码
+            await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize();
 
             for (int i = 0; i <= 63; i++)
             {
                 await RecieveTestUDP(i, "衰减"); //FPGA发包
-                await Task.Delay(500); // 延时保证设备稳定
-                await scpiDevice.ScanOnce();
+                await Task.Delay(1000); // 延时保证设备稳定
+                await scpiDevice.ScanOnce(2);
                 string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
                 string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
 
@@ -4751,6 +4954,7 @@ namespace TestApp
             await CloseCharge(); // 电源关电
             SubtractStandardAndWriteResult("接收通道衰减精度测试结果");
             CalculatePhaseAccuracyAndWriteToExcel("接收通道衰减精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel_Jisheng("接收寄生调相");
         }
 
         private async void button14_Click(object sender, EventArgs e)
@@ -4773,7 +4977,7 @@ namespace TestApp
             LogToConsole("开始发射测试|增益...");
             WritePersonToAllSheets();
             LoadVNAState(); // 调用矢网文件
-            await ChargeSendPowerON(); // 发射加电
+            //await ChargeSendPowerON(); // 发射加电
             //await SendTestUDP(); //FPGA发包
             //await Task.Delay(500); // 延时保证设备稳定
             await LoadSendTestVNAData(); // 获取矢网数据
@@ -4839,18 +5043,18 @@ namespace TestApp
                     gainChasun = ReadChaSunData("Sheet1", 5);
                 }
 
-                int len = gain.Length;
+                //int len = gain.Length;
 
-                // 初始化差值数组
-                gainPlusChasun = new string[len];
+                //// 初始化差值数组
+                //gainPlusChasun = new string[len];
 
-                for (int i = 0; i < len; i++)
-                {
-                    double g = Parse(gain[i]);
-                    double gN = Parse(gainChasun[i]);
-                    gainPlusChasun[i] = (g - gN).ToString();
-                }
-                gain = gainPlusChasun; // 替换原有增益数据
+                //for (int i = 0; i < len; i++)
+                //{
+                //    double g = Parse(gain[i]);
+                //    double gN = Parse(gainChasun[i]);
+                //    gainPlusChasun[i] = (g - gN).ToString();
+                //}
+                //gain = gainPlusChasun; // 替换原有增益数据
             }
 
             WriteArrayToExcelColumn(gain, 17, sheetName);
@@ -4888,6 +5092,7 @@ namespace TestApp
 
             WriteArrayToExcelColumn(freqArray, 1, sheetName);  // A列，从第8行开始
             LogToConsole("写入Excel完成");
+
             // 写入数据库
             try
             {
@@ -4909,10 +5114,144 @@ namespace TestApp
                 await scpiDevice.SendCommandAsync(":SENS4:SWE:MODE HOLD");
                 scpiDevice.Disconnect(); // 释放资源
                 await CloseFPGA();
-                await CloseCharge(); // 电源关电
+                //await CloseCharge(); // 电源关电
                 LogToConsole("发射测试|增益已完成");
             }
 
+        }
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+            NationalInstruments.Visa.ResourceManager rm = new NationalInstruments.Visa.ResourceManager();
+            string[] resources = (string[])rm.Find("?*INSTER");
+            foreach(string resource in resources)
+            {
+                LogToConsole(resource);
+            }
+        }
+
+        private async void button7_Click_1(object sender, EventArgs e)
+        {
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LogToConsole("开始移相精度测试...");
+            WritePersonToAllSheets();
+            LoadVNAState(); // 调用矢网文件
+            //await ChargeSendPowerON(); // 发射加电
+
+            string ch = "";
+            string testType = testType_comboBox.Text;
+            string componentName = componentName_textBox.Text;
+            if (ch1_checkBox.Checked)
+            {
+                ch = $"通道1-{testType}";
+            }
+            if (ch2_checkBox.Checked)
+            {
+                ch = $"通道2-{testType}";
+            }
+            if (ch3_checkBox.Checked)
+            {
+                ch = $"通道3-{testType}";
+            }
+            if (ch4_checkBox.Checked)
+            {
+                ch = $"通道4-{testType}";
+            }
+
+            string visaAddress = vnaAddress;
+            ScpiDevice scpiDevice = new ScpiDevice();
+
+            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            if (!connected)
+            {
+                LogToConsole("矢网连接失败");
+                return;
+            }
+            await SendTestUDP(0, "移相"); // FPGA发码
+            await Task.Delay(1000);           // 等待设备稳定
+            await scpiDevice.SetNormalize_Send();
+            List<double[]> unwrappedPhases = new List<double[]>();
+            double[] previousPhase = null;
+            double[] phaseOffset = null;
+            /*            for (int i = 0; i <= 63; i++)
+                        {
+                            await RecieveTestUDP(i, "移相"); //FPGA发包
+                            await Task.Delay(500); // 延时保证设备稳定
+                            await scpiDevice.ScanOnce();
+                            string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
+                            string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
+
+                            WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
+                            WriteArrayToExcelColumn_New(initial, i + 2, "接收通道相移精度测试结果");
+                        }*/
+            for (int i = 0; i <= 63; i++)
+            {
+                await SendTestUDP(i, "移相"); // FPGA发码
+                await Task.Delay(500);           // 等待设备稳定
+                await scpiDevice.ScanOnce(4);
+
+                string[] gain = await scpiDevice.GetGain_Send();               // 增益（dB）
+                string[] initial = await scpiDevice.GetPhase_Send();    // 初相（°）
+
+                // 转换为 double[]
+                double[] currentPhase = initial.Select(s =>
+                {
+                    double.TryParse(s, out double v);
+                    return v;
+                }).ToArray();
+
+                if (previousPhase == null)
+                {
+                    previousPhase = currentPhase;
+                    phaseOffset = new double[currentPhase.Length];
+                    unwrappedPhases.Add(currentPhase.ToArray());
+                }
+                else
+                {
+                    double[] unwrapped = new double[currentPhase.Length];
+
+                    for (int j = 0; j < currentPhase.Length; j++)
+                    {
+                        double diff = currentPhase[j] - previousPhase[j];
+
+                        if (diff > 180)
+                            phaseOffset[j] -= 360;
+                        else if (diff < -180)
+                            phaseOffset[j] += 360;
+
+                        unwrapped[j] = currentPhase[j] + phaseOffset[j];
+                    }
+
+                    unwrappedPhases.Add(unwrapped);
+                    previousPhase = currentPhase;
+                }
+
+                // 写入增益
+                WriteArrayToExcelColumn_New(gain, i + 2, "发射寄生调幅");
+            }
+            // 写入解包后的初相（第 i + 2 列）
+            for (int i = 0; i < unwrappedPhases.Count; i++)
+            {
+                string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
+                WriteArrayToExcelColumn_New(phaseStrings, i + 2, "发射通道相移精度测试结果");
+            }
+
+
+            scpiDevice.Disconnect(); // 释放资源
+            await CloseFPGA();
+            //await CloseCharge(); // 电源关电
+            SubtractStandardAndWriteResult("发射通道相移精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel("发射通道相移精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel_Jisheng("发射寄生调幅");
+        }
+
+        private void button5_Click_2(object sender, EventArgs e)
+        {
+            CalculatePhaseAccuracyAndWriteToExcel("发射通道相移精度测试结果");
         }
     }
 }

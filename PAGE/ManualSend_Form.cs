@@ -123,14 +123,38 @@ namespace TestApp.PAGE
                     MessageBox.Show("请选择发送或接收模式！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                ch1Yixiang = GetBinaryFromTextBox(ch1_yixiang_textBox, 6);
-                ch2Yixiang = GetBinaryFromTextBox(ch2_yixiang_textBox, 6);
-                ch3Yixiang = GetBinaryFromTextBox(ch3_yixiang_textBox, 6);
-                ch4Yixiang = GetBinaryFromTextBox(ch4_yixiang_textBox, 6);
-                ch1Shuaijian = GetBinaryFromTextBox(ch1_shuaijian_textBox, 6);
-                ch2Shuaijian = GetBinaryFromTextBox(ch2_shuaijian_textBox, 6);
-                ch3Shuaijian = GetBinaryFromTextBox(ch3_shuaijian_textBox, 6);
-                ch4Shuaijian = GetBinaryFromTextBox(ch4_shuaijian_textBox, 6);
+                if (ch1_yixiang_textBox.Text != "")
+                {
+                    ch1Yixiang = GetBinaryFromTextBox(int.Parse(ch1_yixiang_textBox.Text));
+                }
+                if (ch2_yixiang_textBox.Text != "")
+                {
+                    ch2Yixiang = GetBinaryFromTextBox(int.Parse(ch2_yixiang_textBox.Text));
+                }
+                if (ch3_yixiang_textBox.Text != "")
+                {
+                    ch3Yixiang = GetBinaryFromTextBox(int.Parse(ch3_yixiang_textBox.Text));
+                }
+                if (ch4_yixiang_textBox.Text != "")
+                {
+                    ch4Yixiang = GetBinaryFromTextBox(int.Parse(ch4_yixiang_textBox.Text));
+                }
+                if (ch1_shuaijian_textBox.Text != "")
+                {
+                    ch1Shuaijian = GetBinaryFromTextBox(int.Parse(ch1_shuaijian_textBox.Text));
+                }
+                if (ch2_shuaijian_textBox.Text != "")
+                {
+                    ch2Shuaijian = GetBinaryFromTextBox(int.Parse(ch2_shuaijian_textBox.Text));
+                }
+                if (ch3_shuaijian_textBox.Text != "")
+                {
+                    ch3Shuaijian = GetBinaryFromTextBox(int.Parse(ch3_shuaijian_textBox.Text));
+                }
+                if (ch4_shuaijian_textBox.Text != "")
+                {
+                    ch4Shuaijian = GetBinaryFromTextBox(int.Parse(ch4_shuaijian_textBox.Text));
+                }
 
                 if (radioButton2.Checked)
                 {
@@ -303,22 +327,16 @@ namespace TestApp.PAGE
             }
 
         }
-        private string GetBinaryFromTextBox(TextBox textBox, int bitLength)
+        private string GetBinaryFromTextBox(int number)
         {
-            if (string.IsNullOrWhiteSpace(textBox.Text))
-                return new string('0', bitLength);
+            if (number < 0 || number > 63)
+                throw new ArgumentOutOfRangeException(nameof(number), "输入必须在 0 到 63 之间。");
 
-            if (int.TryParse(textBox.Text, out int value))
-            {
-                if (value >= 0 && value <= 63)
-                {
-                    return DecimalToBinary(value, bitLength);
-                }
-            }
-
-            // 超出范围或格式错误，返回默认值或抛异常，按需修改
-            MessageBox.Show($"请输入一个 0 到 63 之间的整数：{textBox.Name}", "输入错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return new string('0', bitLength);
+            //return Convert.ToString(number, 2).PadLeft(6, '0');
+            string binary = Convert.ToString(number, 2).PadLeft(6, '0');
+            char[] reversed = binary.ToCharArray();
+            Array.Reverse(reversed);
+            return new string(reversed);
         }
 
         public string DecimalToBinary(int number, int totalBits)

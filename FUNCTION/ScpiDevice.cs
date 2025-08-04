@@ -355,66 +355,25 @@ namespace TestApp.FUNCTION
         }
 
         // 读取某格式下的 S 参数数据（返回第一点，或者你可以扩展为返回数组）
-        private async Task<double?> ReadSParameterAsync(string traceName, string format)
-        {
-            await SelectSParameterAsync(traceName, "S12");
-            await SendCommandAsync($"CALC:FORM {format}");
-            /*            await SendCommandAsync("INIT:IMM; *WAI");
-                        string data = await QueryAsync("CALC:DATA? FDATA");
-                        if (string.IsNullOrWhiteSpace(data)) return null;
-
-                        // 仅取第一个点
-                        string[] parts = data.Split(',');
-                        return double.TryParse(parts[0].Trim(), out double val) ? (double?)val : null;*/
-            // 关闭连续扫描，改用手动单次扫描
-            await SendCommandAsync("INIT:CONT OFF");
-
-            // 触发单次测量
-            await SendCommandAsync("INIT:IMM");
-
-            // 等待操作完成，仪器返回“1”表示完成
-            string opc = await QueryAsync("*OPC?");
-
-            string data = await QueryAsync("CALC:DATA? FDATA");
-            if (string.IsNullOrWhiteSpace(data)) return null;
-
-            string[] parts = data.Split(',');
-            return double.TryParse(parts[0].Trim(), out double val) ? (double?)val : null;
-        }
-        private async Task<string[]> GetAllData(string traceName, string format)
-        {
-            await SelectSParameterAsync(traceName, "S12");
-            await SendCommandAsync($"CALC:FORM {format}");
-
-            // 关闭连续扫描，改用手动单次扫描
-            await SendCommandAsync("INIT:CONT OFF");
-
-            // 触发单次测量
-            await SendCommandAsync("INIT:IMM");
-
-            // 等待操作完成，仪器返回“1”表示完成
-            string opc = await QueryAsync("*OPC?");
-
-            string data = await QueryAsync("CALC:DATA? FDATA");
-            if (string.IsNullOrWhiteSpace(data)) return null;
-
-            string[] parts = data.Split(',');
-            return parts;
-        }
         public async Task ScanOnce()
         {
-            await SendCommandAsync(":SENS:SWE:MODE SINGle");
+            //await SendCommandAsync(":SENS:SWE:MODE SINGle");
+            await SendCommandAsync(":INIT:CONT OFF");
             await SendCommandAsync(":INIT:IMM; *WAI");
         }
         public async Task ScanOnce(int channel)
         {
             await SendCommandAsync($":SENS{channel}:SWE:MODE SINGle");
-            await SendCommandAsync($":INIT{channel}:IMM; *WAI");
         }
         public async Task SendGainStart()
         {
             await SendCommandAsync(":SENS4:SWE:MODE CONTinuous");
             await SendCommandAsync(":TRIG:SEQ:SOUR IMMediate");
+        }
+        public async Task SendsjjtStart()
+        {
+            await SendCommandAsync(":SENS5:SWE:MODE CONTinuous");
+            //await SendCommandAsync(":TRIG:SEQ:SOUR IMMediate");
         }
         public async Task ScanStart()
         {
@@ -423,8 +382,8 @@ namespace TestApp.FUNCTION
         public async Task SetNormalize()
         {
             // 触发单次测量
-            await ScanOnce(2); 
-
+            await ScanOnce(2);
+            await Task.Delay(1000);
             // 选中 Trace 3 再 normalize
             await SendCommandAsync(":CALC2:PAR:SEL 'TRC5'");
             await SendCommandAsync(":CALC2:MEAS5:MATH:NORM");
@@ -432,6 +391,20 @@ namespace TestApp.FUNCTION
             // 选中 Trace 4 再 normalize
             await SendCommandAsync(":CALC2:PAR:SEL 'TRC6'");
             await SendCommandAsync(":CALC2:MEAS6:MATH:NORM");
+        }
+
+        public async Task SetNormalize_Send()
+        {
+            // 触发单次测量
+            await ScanOnce(4);
+            await Task.Delay(1000);
+            // 选中 Trace 3 再 normalize
+            await SendCommandAsync(":CALC4:PAR:SEL 'TRC8'");
+            await SendCommandAsync(":CALC4:MEAS8:MATH:NORM");
+
+            // 选中 Trace 4 再 normalize
+            await SendCommandAsync(":CALC4:PAR:SEL 'TRC9'");
+            await SendCommandAsync(":CALC4:MEAS9:MATH:NORM");
         }
 
         // 获取 S12 增益（对数幅度，dB）
@@ -445,9 +418,9 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetGain_Yasuodian()
         {
-            await SendCommandAsync(":CALC3:PAR:SEL 'TRC7'");
-            await SendCommandAsync(":CALC3:FORM MLOG");
-            string data = await QueryAsync(":CALC3:DATA? FDATA");
+            await SendCommandAsync(":CALC:PAR:SEL 'TRC1'");
+            await SendCommandAsync(":CALC:FORM MLOG");
+            string data = await QueryAsync(":CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -644,11 +617,11 @@ namespace TestApp.FUNCTION
         }
         public async Task<bool> LoadGonglvState()
         {
-            return await SendCommandAsync("*RCL 1");
+            return await SendCommandAsync("*RCL 2");
         }
         public async Task<bool> SaveGonglvState()
         {
-            return await SendCommandAsync("*SAV 1");
+            return await SendCommandAsync("*SAV 2");
         }
         public async Task<double[]> ReadPulsePowerArrayAsync()
         {
