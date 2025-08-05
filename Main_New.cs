@@ -4689,13 +4689,18 @@ namespace TestApp
                         double val = 0; // 先初始化
                         if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
                         {
-                            phaseValues.Add(val);
+                            if(val != 0)
+                            {
+                                phaseValues.Add(val);
+                            }
+
                         }
                     }
 
                     // 计算均方根（RMS）误差
-                    double avg = phaseValues.Average();
-                    double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+                    //double avg = phaseValues.Average();
+                    //double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+                    double rms = Math.Sqrt(phaseValues.Average(v => v * v));
 
                     // 在“测试结果”中查找对应频率行并写入 RMS 到 I 列（第9列）
                     int resultRow = FindRowByFrequency(resultSheet, freqGHz);
@@ -4703,15 +4708,15 @@ namespace TestApp
                     {
                         if (sheetName.Equals("接收通道相移精度测试结果"))
                         {
-                            resultSheet.Cells[resultRow, 9].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 9].Value = rms.ToString();
                         }
                         if (sheetName.Equals("接收通道衰减精度测试结果"))
                         {
-                            resultSheet.Cells[resultRow, 11].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 11].Value = rms.ToString();
                         }
                         if (sheetName.Equals("发射通道相移精度测试结果"))
                         {
-                            resultSheet.Cells[resultRow, 23].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 23].Value = rms.ToString();
                         }
                     }
                         
@@ -4759,13 +4764,17 @@ namespace TestApp
                         double val = 0; // 先初始化
                         if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
                         {
-                            phaseValues.Add(val);
+                            if (val != 0)
+                            {
+                                phaseValues.Add(val);
+                            }
                         }
                     }
 
                     // 计算均方根（RMS）误差
-                    double avg = phaseValues.Average();
-                    double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+                    //double avg = phaseValues.Average();
+                    //double rms = Math.Sqrt(phaseValues.Average(v => Math.Pow(v - avg, 2)));
+                    double rms = Math.Sqrt(phaseValues.Average(v => v * v));
 
                     // 在“测试结果”中查找对应频率行并写入 RMS 到 I 列（第9列）
                     int resultRow = FindRowByFrequency(resultSheet, freqGHz);
@@ -4773,15 +4782,15 @@ namespace TestApp
                     {
                         if (sheetName.Equals("接收寄生调幅"))
                         {
-                            resultSheet.Cells[resultRow, 10].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 10].Value = rms.ToString();
                         }
                         if (sheetName.Equals("接收寄生调相"))
                         {
-                            resultSheet.Cells[resultRow, 13].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 13].Value = rms.ToString();
                         }
                         if (sheetName.Equals("发射寄生调幅"))
                         {
-                            resultSheet.Cells[resultRow, 24].Value = rms.ToString("F3");
+                            resultSheet.Cells[resultRow, 24].Value = rms.ToString();
                         }
                     }
 
@@ -5252,6 +5261,7 @@ namespace TestApp
         private void button5_Click_2(object sender, EventArgs e)
         {
             CalculatePhaseAccuracyAndWriteToExcel("发射通道相移精度测试结果");
+            CalculatePhaseAccuracyAndWriteToExcel_Jisheng("发射寄生调幅");
         }
     }
 }

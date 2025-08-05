@@ -60,6 +60,8 @@
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
@@ -86,8 +88,6 @@
             this.ch3_checkBox = new System.Windows.Forms.CheckBox();
             this.ch4_checkBox = new System.Windows.Forms.CheckBox();
             this.console_textBox = new System.Windows.Forms.TextBox();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -422,6 +422,28 @@
             this.splitContainer2.SplitterDistance = 120;
             this.splitContainer2.TabIndex = 0;
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(954, 80);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 53;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click_2);
+            // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button7.Location = new System.Drawing.Point(938, 42);
+            this.button7.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(112, 29);
+            this.button7.TabIndex = 52;
+            this.button7.Text = "发射移相精度";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click_1);
+            // 
             // button14
             // 
             this.button14.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -717,28 +739,6 @@
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.console_textBox.Size = new System.Drawing.Size(1405, 146);
             this.console_textBox.TabIndex = 1;
-            // 
-            // button7
-            // 
-            this.button7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button7.Location = new System.Drawing.Point(938, 42);
-            this.button7.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(112, 29);
-            this.button7.TabIndex = 52;
-            this.button7.Text = "发射移相精度";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click_1);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(962, 80);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 53;
-            this.button5.Text = "button5";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click_2);
             // 
             // Main_New
             // 
