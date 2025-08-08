@@ -1,7 +1,6 @@
 ﻿using AxDSOFramer;
-using Excel;
 using ExcelDataReader;
-using Org.BouncyCastle.Ocsp;
+using MetroFramework.Forms;
 using PacketDotNet;
 using SharpPcap;
 using System;
@@ -9,10 +8,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Resources;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,12 +18,11 @@ using TestApp.FUNCTION;
 using TestApp.MODEL;
 using TestApp.PAGE;
 using TestApp.PAGE.WaitForm;
-using NationalInstruments.Visa;
 
 
 namespace TestApp
 {
-    public partial class Main_New : Form
+    public partial class Main_New : MetroForm
     {
         private Timer measureTimer;
         private ScpiDevice powerMeterPublic;
@@ -4432,14 +4428,6 @@ namespace TestApp
         }
 
 
-
-        private void button11_Click(object sender, EventArgs e)
-        {
-            measureTimer?.Stop();
-            powerMeterPublic?.Disconnect();
-            isMeasuring = false;
-            LogToConsole("已停止自动测量。");
-        }
         private async Task MeasureDingJiang()
         {
             try
@@ -5277,5 +5265,28 @@ namespace TestApp
             fashejingduWaitForm.ChangeLabelText("step5_label", "等待中");
             fashejingduWaitForm.ChangeLabelText("step6_label", "等待中");
         }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close(); // 或 Application.Exit();
+        }
+
     }
 }
