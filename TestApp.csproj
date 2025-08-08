@@ -68,7 +68,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AxInterop.DSOFramer">
-      <HintPath>..\..\RoudianProject\demo-interop-office-master\src\Demo.WinApp\obj\Debug\AxInterop.DSOFramer.dll</HintPath>
+      <HintPath>..\..\Environment\DsoFramer-master\AxInterop.DSOFramer.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
       <HintPath>packages\BouncyCastle.Cryptography.2.3.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
@@ -95,7 +95,7 @@
       <HintPath>packages\SharpZipLib.1.4.2\lib\netstandard2.0\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Interop.Excel">
-      <HintPath>obj\Debug\Interop.Excel.dll</HintPath>
+      <HintPath>..\..\Environment\DsoFramer-master\Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Ivi.Driver, Version=1.5.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL">
@@ -231,16 +231,28 @@
     <Compile Include="PAGE\PinpuControl_Form.Designer.cs">
       <DependentUpon>PinpuControl_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="PAGE\SendTestWait_Form.cs">
+    <Compile Include="PAGE\WaitForm\JieshoujingduWait_Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PAGE\SendTestWait_Form.Designer.cs">
+    <Compile Include="PAGE\WaitForm\JieshoujingduWait_Form.Designer.cs">
+      <DependentUpon>JieshoujingduWait_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PAGE\WaitForm\FashejingduWait_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\WaitForm\FashejingduWait_Form.Designer.cs">
+      <DependentUpon>FashejingduWait_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PAGE\WaitForm\SendTestWait_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PAGE\WaitForm\SendTestWait_Form.Designer.cs">
       <DependentUpon>SendTestWait_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="PAGE\RecieveTestWait_Form.cs">
+    <Compile Include="PAGE\WaitForm\RecieveTestWait_Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PAGE\RecieveTestWait_Form.Designer.cs">
+    <Compile Include="PAGE\WaitForm\RecieveTestWait_Form.Designer.cs">
       <DependentUpon>RecieveTestWait_Form.cs</DependentUpon>
     </Compile>
     <Compile Include="PAGE\SqlSet_Form.cs">
@@ -406,10 +418,16 @@
     <EmbeddedResource Include="PAGE\PinpuControl_Form.resx">
       <DependentUpon>PinpuControl_Form.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PAGE\SendTestWait_Form.resx">
+    <EmbeddedResource Include="PAGE\WaitForm\JieshoujingduWait_Form.resx">
+      <DependentUpon>JieshoujingduWait_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PAGE\WaitForm\FashejingduWait_Form.resx">
+      <DependentUpon>FashejingduWait_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PAGE\WaitForm\SendTestWait_Form.resx">
       <DependentUpon>SendTestWait_Form.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PAGE\RecieveTestWait_Form.resx">
+    <EmbeddedResource Include="PAGE\WaitForm\RecieveTestWait_Form.resx">
       <DependentUpon>RecieveTestWait_Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PAGE\SqlSet_Form.resx">

@@ -20,6 +20,7 @@ using TestApp.DAL;
 using TestApp.FUNCTION;
 using TestApp.MODEL;
 using TestApp.PAGE;
+using TestApp.PAGE.WaitForm;
 using NationalInstruments.Visa;
 
 
@@ -79,6 +80,8 @@ namespace TestApp
         private OperateLog_DAL operateLog_DAL = new OperateLog_DAL();
         RecieveTestWait_Form recieveWaitForm = new RecieveTestWait_Form();
         SendTestWait_Form sendWaitForm = new SendTestWait_Form();
+        FashejingduWait_Form fashejingduWaitForm = new FashejingduWait_Form();
+        JieshoujingduWait_Form jieshoujingduWaitForm = new JieshoujingduWait_Form();
         //string[] jieshouGonglv = new string[200];
         double jieshouChargePower = 0; // 接收电源功率
 
@@ -4512,10 +4515,13 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            jieshoujingduWaitForm.Show();
             LogToConsole("开始移相精度测试...");
             WritePersonToAllSheets();
             LoadVNAState(); // 调用矢网文件
             await ChargeRecievePowerON(); // 接收加电
+            jieshoujingduWaitForm.ChangeLabelText("step1_label", "已完成");
+            jieshoujingduWaitForm.ChangeLabelText("step2_label", "已完成");
 
             string ch = "";
             string testType = testType_comboBox.Text;
@@ -4552,19 +4558,10 @@ namespace TestApp
             List<double[]> unwrappedPhases = new List<double[]>();
             double[] previousPhase = null;
             double[] phaseOffset = null;
-            /*            for (int i = 0; i <= 63; i++)
-                        {
-                            await RecieveTestUDP(i, "移相"); //FPGA发包
-                            await Task.Delay(500); // 延时保证设备稳定
-                            await scpiDevice.ScanOnce();
-                            string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
-                            string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
-
-                            WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
-                            WriteArrayToExcelColumn_New(initial, i + 2, "接收通道相移精度测试结果");
-                        }*/
-            for (int i = 0; i <= 63; i++)
+            for (int i = 1; i <= 63; i++)
             {
+                jieshoujingduWaitForm.ChangeLabelText("step3_label", "(" + i + "/63)");
+                jieshoujingduWaitForm.ChangeLabelText("step4_label", "(" + i + "/63)");
                 await RecieveTestUDP(i, "移相"); // FPGA发码
                 await Task.Delay(500);           // 等待设备稳定
                 await scpiDevice.ScanOnce(2);
@@ -4606,22 +4603,39 @@ namespace TestApp
                 }
 
                 // 写入增益
-                WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
+                WriteArrayToExcelColumn_New(gain, i + 3, "接收寄生调幅");
             }
-            // 写入解包后的初相（第 i + 2 列）
-            for (int i = 0; i < unwrappedPhases.Count; i++)
-            {
-                string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
-                WriteArrayToExcelColumn_New(phaseStrings, i + 2, "接收通道相移精度测试结果");
-            }
-
 
             scpiDevice.Disconnect(); // 释放资源
             await CloseFPGA();
             await CloseCharge(); // 电源关电
+
+            // 写入解包后的初相（第 i + 2 列）
+            for (int i = 0; i < unwrappedPhases.Count; i++)
+            {
+                string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
+                WriteArrayToExcelColumn_New(phaseStrings, i + 3, "接收通道相移精度测试结果");
+            }
+            jieshoujingduWaitForm.ChangeLabelText("step3_label", "已完成");
+            jieshoujingduWaitForm.ChangeLabelText("step4_label", "已完成");
+
             SubtractStandardAndWriteResult("接收通道相移精度测试结果");
+
+            jieshoujingduWaitForm.ChangeLabelText("step5_label", "进行中");
             CalculatePhaseAccuracyAndWriteToExcel("接收通道相移精度测试结果");
+            jieshoujingduWaitForm.ChangeLabelText("step5_label", "已完成");
+
+            jieshoujingduWaitForm.ChangeLabelText("step6_label", "进行中");
             CalculatePhaseAccuracyAndWriteToExcel_Jisheng("接收寄生调幅");
+            jieshoujingduWaitForm.ChangeLabelText("step6_label", "已完成");
+
+            jieshoujingduWaitForm.Hide();
+            jieshoujingduWaitForm.ChangeLabelText("step1_label", "等待中");
+            jieshoujingduWaitForm.ChangeLabelText("step2_label", "等待中");
+            jieshoujingduWaitForm.ChangeLabelText("step3_label", "等待中");
+            jieshoujingduWaitForm.ChangeLabelText("step4_label", "等待中");
+            jieshoujingduWaitForm.ChangeLabelText("step5_label", "等待中");
+            jieshoujingduWaitForm.ChangeLabelText("step6_label", "等待中");
         }
         public void SubtractStandardAndWriteResult(string sheetName)
         {
@@ -4683,17 +4697,13 @@ namespace TestApp
 
                     // 读取 B 到 BM 列（64 个值）
                     List<double> phaseValues = new List<double>();
-                    for (int col = 2; col <= 65; col++) // B = 2, BM = 65
+                    for (int col = 3; col <= 65; col++) // C = 3, BM = 65
                     {
                         var cell = phaseSheet.Cells[currentRow, col];
                         double val = 0; // 先初始化
                         if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
                         {
-                            if(val != 0)
-                            {
                                 phaseValues.Add(val);
-                            }
-
                         }
                     }
 
@@ -4758,16 +4768,13 @@ namespace TestApp
 
                     // 读取 B 到 BM 列（64 个值）
                     List<double> phaseValues = new List<double>();
-                    for (int col = 2; col <= 65; col++) // B = 2, BM = 65
+                    for (int col = 3; col <= 65; col++) // C = 3, BM = 65
                     {
                         var cell = phaseSheet.Cells[currentRow, col];
                         double val = 0; // 先初始化
                         if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
                         {
-                            if (val != 0)
-                            {
                                 phaseValues.Add(val);
-                            }
                         }
                     }
 
@@ -5146,10 +5153,13 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            fashejingduWaitForm.Show();
             LogToConsole("开始移相精度测试...");
             WritePersonToAllSheets();
             LoadVNAState(); // 调用矢网文件
-            //await ChargeSendPowerON(); // 发射加电
+            await ChargeSendPowerON(); // 发射加电
+            fashejingduWaitForm.ChangeLabelText("step1_label", "已完成");
+            fashejingduWaitForm.ChangeLabelText("step2_label", "已完成");
 
             string ch = "";
             string testType = testType_comboBox.Text;
@@ -5186,19 +5196,12 @@ namespace TestApp
             List<double[]> unwrappedPhases = new List<double[]>();
             double[] previousPhase = null;
             double[] phaseOffset = null;
-            /*            for (int i = 0; i <= 63; i++)
-                        {
-                            await RecieveTestUDP(i, "移相"); //FPGA发包
-                            await Task.Delay(500); // 延时保证设备稳定
-                            await scpiDevice.ScanOnce();
-                            string[] gain = await scpiDevice.GetGainStringAsync_New();               // 增益（dB）
-                            string[] initial = await scpiDevice.GetInitialPhaseStringAsync_New();    // 初相（°）
 
-                            WriteArrayToExcelColumn_New(gain, i + 2, "接收寄生调幅");
-                            WriteArrayToExcelColumn_New(initial, i + 2, "接收通道相移精度测试结果");
-                        }*/
-            for (int i = 0; i <= 63; i++)
+            for (int i = 1; i <= 63; i++)
             {
+                fashejingduWaitForm.ChangeLabelText("step3_label", "(" + i + "/63)");
+                fashejingduWaitForm.ChangeLabelText("step4_label", "(" + i + "/63)");
+
                 await SendTestUDP(i, "移相"); // FPGA发码
                 await Task.Delay(500);           // 等待设备稳定
                 await scpiDevice.ScanOnce(4);
@@ -5240,28 +5243,39 @@ namespace TestApp
                 }
 
                 // 写入增益
-                WriteArrayToExcelColumn_New(gain, i + 2, "发射寄生调幅");
+                WriteArrayToExcelColumn_New(gain, i + 3, "发射寄生调幅");
             }
+
+            scpiDevice.Disconnect(); // 释放资源
+            await CloseFPGA();
+            await CloseCharge(); // 电源关电
+
             // 写入解包后的初相（第 i + 2 列）
             for (int i = 0; i < unwrappedPhases.Count; i++)
             {
                 string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
-                WriteArrayToExcelColumn_New(phaseStrings, i + 2, "发射通道相移精度测试结果");
+                WriteArrayToExcelColumn_New(phaseStrings, i + 3, "发射通道相移精度测试结果");
             }
+            fashejingduWaitForm.ChangeLabelText("step3_label", "已完成");
+            fashejingduWaitForm.ChangeLabelText("step4_label", "已完成");
 
-
-            scpiDevice.Disconnect(); // 释放资源
-            await CloseFPGA();
-            //await CloseCharge(); // 电源关电
             SubtractStandardAndWriteResult("发射通道相移精度测试结果");
-            CalculatePhaseAccuracyAndWriteToExcel("发射通道相移精度测试结果");
-            CalculatePhaseAccuracyAndWriteToExcel_Jisheng("发射寄生调幅");
-        }
 
-        private void button5_Click_2(object sender, EventArgs e)
-        {
+            fashejingduWaitForm.ChangeLabelText("step5_label", "进行中");
             CalculatePhaseAccuracyAndWriteToExcel("发射通道相移精度测试结果");
+            fashejingduWaitForm.ChangeLabelText("step5_label", "已完成");
+
+            fashejingduWaitForm.ChangeLabelText("step6_label", "进行中");
             CalculatePhaseAccuracyAndWriteToExcel_Jisheng("发射寄生调幅");
+            fashejingduWaitForm.ChangeLabelText("step6_label", "已完成");
+
+            fashejingduWaitForm.Hide();
+            fashejingduWaitForm.ChangeLabelText("step1_label", "等待中");
+            fashejingduWaitForm.ChangeLabelText("step2_label", "等待中");
+            fashejingduWaitForm.ChangeLabelText("step3_label", "等待中");
+            fashejingduWaitForm.ChangeLabelText("step4_label", "等待中");
+            fashejingduWaitForm.ChangeLabelText("step5_label", "等待中");
+            fashejingduWaitForm.ChangeLabelText("step6_label", "等待中");
         }
     }
 }
