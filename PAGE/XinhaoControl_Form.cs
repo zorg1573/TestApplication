@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MetroFramework.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,7 +13,7 @@ using System.Windows.Forms;
 using TestApp.FUNCTION;
 namespace TestApp.PAGE
 {
-    public partial class XinhaoControl_Form : Form
+    public partial class XinhaoControl_Form : MetroForm
     {
         private Main_New mainForm;
         string deviceAddress = "";
@@ -206,6 +207,28 @@ namespace TestApp.PAGE
             await scpiDevice.SetPower(power);
             mainForm.LogToConsole("执行修改：" + ", 频率：" + freq + comboBox1.Text + ", 功率：" + power);
             scpiDevice.Disconnect(); // 释放资源
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

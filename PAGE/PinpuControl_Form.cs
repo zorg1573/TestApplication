@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Ocsp;
+﻿using MetroFramework.Forms;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +16,7 @@ using TestApp.MODEL;
 
 namespace TestApp.PAGE
 {
-    public partial class PinpuControl_Form : Form
+    public partial class PinpuControl_Form : MetroForm
     {
         private Main_New mainForm;
         string deviceAddress = "";
@@ -222,6 +223,28 @@ namespace TestApp.PAGE
             {
                 MessageBox.Show("单次扫描失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

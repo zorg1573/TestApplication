@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MetroFramework.Forms;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -7,7 +8,7 @@ using TestApp.FUNCTION;
 
 namespace TestApp.PAGE
 {
-    public partial class ChargeControl_Form : Form
+    public partial class ChargeControl_Form : MetroForm
     {
         private Main_New mainForm;
         string deviceAddress = "";
@@ -103,9 +104,26 @@ namespace TestApp.PAGE
             scpiDevice.Disconnect(); // 释放资源
         }
 
-        private void disconnect_button_Click(object sender, EventArgs e)
+        private void pictureBox3_Click(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Minimized;
+        }
 
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

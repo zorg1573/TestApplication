@@ -37,7 +37,7 @@ namespace TestApp
         string pinpuZhupuStatePath = ""; //频谱分析仪主谱状态文件
         string pinpuDaiwaiyizhiPath = ""; //频谱分析仪带外抑制状态文件
         string sanjieJiaotiaoPath = ""; //三阶交调文件路径
-        string vnaSjjtPath = "";
+        //string vnaSjjtPath = "";
 
 
     //DeviceAddressNew.json
@@ -242,11 +242,11 @@ namespace TestApp
                     sanjieJiaotiaoPath = value8.ToString();
                 }
 
-                data.TryGetValue("textBox10", out object value9);
-                if (value9 != null)
-                {
-                    vnaSjjtPath = value9.ToString();
-                }
+                //data.TryGetValue("textBox10", out object value9);
+                //if (value9 != null)
+                //{
+                //    vnaSjjtPath = value9.ToString();
+                //}
 
             }
             catch(Exception ex)
@@ -1466,7 +1466,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void sendTest_button_Click(object sender, EventArgs e)
+        private async void start_fasheceshi_gonglv_Click(object sender, EventArgs e)
         {
 /*            if(testFlag == 0)
             {
@@ -2837,7 +2837,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button1_Click_1(object sender, EventArgs e)
+        private async void update_shiwangchasun_Click(object sender, EventArgs e)
         {
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
@@ -2989,7 +2989,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button2_Click(object sender, EventArgs e)
+        private async void start_zaosheng_test_Click(object sender, EventArgs e)
         {
             try
             {
@@ -3127,7 +3127,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button3_Click(object sender, EventArgs e)
+        private async void start_recieve_test_Click(object sender, EventArgs e)
         {
             if (testType_comboBox.SelectedIndex == -1)
             {
@@ -3308,7 +3308,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button6_Click(object sender, EventArgs e)
+        private async void start_fasheyizhi_Click(object sender, EventArgs e)
         {
             var signalGen = new ScpiDevice();
             try
@@ -3462,7 +3462,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button8_Click(object sender, EventArgs e)
+        private async void start_sjjt_test_Click(object sender, EventArgs e)
         {
             ScpiDevice signalGen = new ScpiDevice();
             //try
@@ -4245,7 +4245,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button9_Click(object sender, EventArgs e)
+        private async void start_yasuodian_test_Click(object sender, EventArgs e)
         {
             try
             {
@@ -4496,7 +4496,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button12_Click(object sender, EventArgs e)
+        private async void start_jieshouyixiang_test_Click(object sender, EventArgs e)
         {
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
@@ -4896,7 +4896,7 @@ namespace TestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button13_Click(object sender, EventArgs e)
+        private async void start_shuaijian_test_Click(object sender, EventArgs e)
         {
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
@@ -4961,7 +4961,12 @@ namespace TestApp
             CalculatePhaseAccuracyAndWriteToExcel_Jisheng("接收寄生调相");
         }
 
-        private async void button14_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 发射测试|增益
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void start_fasheceshiVNA_Click(object sender, EventArgs e)
         {
             if (testType_comboBox.SelectedIndex == -1)
             {
@@ -5134,7 +5139,7 @@ namespace TestApp
             }
         }
 
-        private async void button7_Click_1(object sender, EventArgs e)
+        private async void start_fasheyixiang_test_Click(object sender, EventArgs e)
         {
             if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
             {
@@ -5285,8 +5290,9 @@ namespace TestApp
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            this.Close(); // 或 Application.Exit();
+            this.Close();
         }
+
 
     }
 }

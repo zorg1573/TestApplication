@@ -566,7 +566,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="IMAGES\loading.gif" />
     <None Include="IMAGES\Loading.png" />
     <Content Include="IMAGES\savefile.png" />
     <Content Include="IMAGES\search.png" />

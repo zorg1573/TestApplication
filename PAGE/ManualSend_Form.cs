@@ -1,4 +1,5 @@
-﻿using PacketDotNet;
+﻿using MetroFramework.Forms;
+using PacketDotNet;
 using SharpPcap;
 using System;
 using System.Collections.Generic;
@@ -7,8 +8,8 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using TestApp.DAL;
 
 namespace TestApp.PAGE
 {
-    public partial class ManualSend_Form : Form
+    public partial class ManualSend_Form : MetroForm
     {
         //string ifaceName = @"\Device\NPF_{3A0CA248-4796-4CBA-B275-E9C8E0A766CF}"; // 注意：需要和系统中接口名称完全匹配
         string ifaceName = "";
@@ -344,5 +345,26 @@ namespace TestApp.PAGE
             return Convert.ToString(number, 2).PadLeft(totalBits, '0');
         }
         #endregion
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

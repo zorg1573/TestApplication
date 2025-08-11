@@ -1,4 +1,5 @@
 ﻿using Ivi.Visa;
+using MetroFramework.Forms;
 using NationalInstruments.Visa;
 using SharpPcap;
 using System;
@@ -16,7 +17,7 @@ using System.Windows.Forms;
 
 namespace TestApp.PAGE
 {
-    public partial class DeviceAddressNew_Form : Form
+    public partial class DeviceAddressNew_Form : MetroForm
     {
         private Main_New mainForm;
         public DeviceAddressNew_Form(Main_New mainForm)
@@ -184,9 +185,26 @@ namespace TestApp.PAGE
             }
         }
 
-        private void DeviceAddressNew_Form_Load_1(object sender, EventArgs e)
+        private void pictureBox3_Click(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Minimized;
+        }
 
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

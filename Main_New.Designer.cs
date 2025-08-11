@@ -397,7 +397,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.console_textBox);
             this.splitContainer1.Size = new System.Drawing.Size(1178, 556);
-            this.splitContainer1.SplitterDistance = 424;
+            this.splitContainer1.SplitterDistance = 468;
             this.splitContainer1.TabIndex = 1;
             // 
             // splitContainer2
@@ -410,8 +410,8 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.panel1);
-            this.splitContainer2.Size = new System.Drawing.Size(1178, 424);
-            this.splitContainer2.SplitterDistance = 91;
+            this.splitContainer2.Size = new System.Drawing.Size(1178, 468);
+            this.splitContainer2.SplitterDistance = 75;
             this.splitContainer2.TabIndex = 0;
             // 
             // panel1
@@ -436,35 +436,35 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1178, 91);
+            this.panel1.Size = new System.Drawing.Size(1178, 75);
             this.panel1.TabIndex = 39;
             // 
             // person_textBox
             // 
-            this.person_textBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.person_textBox.Location = new System.Drawing.Point(250, 7);
+            this.person_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.person_textBox.Location = new System.Drawing.Point(243, 10);
             this.person_textBox.Name = "person_textBox";
-            this.person_textBox.Size = new System.Drawing.Size(74, 26);
+            this.person_textBox.Size = new System.Drawing.Size(74, 29);
             this.person_textBox.TabIndex = 54;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(173, 15);
+            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(163, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 16);
+            this.label4.Size = new System.Drawing.Size(74, 21);
             this.label4.TabIndex = 53;
             this.label4.Text = "测试人：";
             // 
             // chasun_checkBox
             // 
             this.chasun_checkBox.AutoSize = true;
-            this.chasun_checkBox.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chasun_checkBox.Location = new System.Drawing.Point(1039, 49);
+            this.chasun_checkBox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chasun_checkBox.Location = new System.Drawing.Point(1050, 49);
             this.chasun_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.chasun_checkBox.Name = "chasun_checkBox";
-            this.chasun_checkBox.Size = new System.Drawing.Size(120, 16);
+            this.chasun_checkBox.Size = new System.Drawing.Size(123, 21);
             this.chasun_checkBox.TabIndex = 52;
             this.chasun_checkBox.Text = "测试结果加上差损";
             this.chasun_checkBox.UseVisualStyleBackColor = true;
@@ -472,11 +472,11 @@
             // mod_checkBox
             // 
             this.mod_checkBox.AutoSize = true;
-            this.mod_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.mod_checkBox.Location = new System.Drawing.Point(983, 14);
+            this.mod_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.mod_checkBox.Location = new System.Drawing.Point(973, 12);
             this.mod_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.mod_checkBox.Name = "mod_checkBox";
-            this.mod_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.mod_checkBox.Size = new System.Drawing.Size(70, 25);
             this.mod_checkBox.TabIndex = 51;
             this.mod_checkBox.Text = "MOD";
             this.mod_checkBox.UseVisualStyleBackColor = true;
@@ -485,64 +485,65 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(2, 15);
+            this.label3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.Location = new System.Drawing.Point(3, 13);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 16);
+            this.label3.Size = new System.Drawing.Size(74, 21);
             this.label3.TabIndex = 50;
             this.label3.Text = "测试项：";
             // 
             // testType_comboBox
             // 
-            this.testType_comboBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.testType_comboBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.testType_comboBox.FormattingEnabled = true;
             this.testType_comboBox.Items.AddRange(new object[] {
             "常温",
             "低温",
             "高温"});
-            this.testType_comboBox.Location = new System.Drawing.Point(79, 9);
+            this.testType_comboBox.Location = new System.Drawing.Point(83, 10);
             this.testType_comboBox.Name = "testType_comboBox";
-            this.testType_comboBox.Size = new System.Drawing.Size(74, 24);
+            this.testType_comboBox.Size = new System.Drawing.Size(74, 29);
             this.testType_comboBox.TabIndex = 49;
             // 
             // componentName_textBox
             // 
-            this.componentName_textBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.componentName_textBox.Location = new System.Drawing.Point(425, 7);
+            this.componentName_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.componentName_textBox.Location = new System.Drawing.Point(403, 10);
             this.componentName_textBox.Name = "componentName_textBox";
-            this.componentName_textBox.Size = new System.Drawing.Size(100, 26);
+            this.componentName_textBox.Size = new System.Drawing.Size(100, 29);
             this.componentName_textBox.TabIndex = 48;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(348, 15);
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(323, 13);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 16);
+            this.label2.Size = new System.Drawing.Size(74, 21);
             this.label2.TabIndex = 47;
             this.label2.Text = "组件名：";
             // 
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(1039, 5);
+            this.button1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button1.Location = new System.Drawing.Point(1049, 5);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 36);
             this.button1.TabIndex = 46;
             this.button1.Text = "更新矢网差损";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.update_shiwangchasun_Click);
             // 
             // rf_checkBox
             // 
             this.rf_checkBox.AutoSize = true;
-            this.rf_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rf_checkBox.Location = new System.Drawing.Point(928, 14);
+            this.rf_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.rf_checkBox.Location = new System.Drawing.Point(928, 12);
             this.rf_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.rf_checkBox.Name = "rf_checkBox";
-            this.rf_checkBox.Size = new System.Drawing.Size(42, 20);
+            this.rf_checkBox.Size = new System.Drawing.Size(48, 25);
             this.rf_checkBox.TabIndex = 45;
             this.rf_checkBox.Text = "RF";
             this.rf_checkBox.UseVisualStyleBackColor = true;
@@ -551,9 +552,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(889, 19);
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(889, 14);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(17, 12);
+            this.label1.Size = new System.Drawing.Size(26, 17);
             this.label1.TabIndex = 44;
             this.label1.Text = "0%";
             // 
@@ -567,11 +569,11 @@
             // ch1_checkBox
             // 
             this.ch1_checkBox.AutoSize = true;
-            this.ch1_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch1_checkBox.Location = new System.Drawing.Point(547, 16);
+            this.ch1_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch1_checkBox.Location = new System.Drawing.Point(516, 12);
             this.ch1_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
             this.ch1_checkBox.Name = "ch1_checkBox";
-            this.ch1_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.ch1_checkBox.Size = new System.Drawing.Size(61, 25);
             this.ch1_checkBox.TabIndex = 39;
             this.ch1_checkBox.Text = "CH1";
             this.ch1_checkBox.UseVisualStyleBackColor = true;
@@ -579,11 +581,11 @@
             // ch2_checkBox
             // 
             this.ch2_checkBox.AutoSize = true;
-            this.ch2_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch2_checkBox.Location = new System.Drawing.Point(603, 16);
+            this.ch2_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch2_checkBox.Location = new System.Drawing.Point(583, 12);
             this.ch2_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch2_checkBox.Name = "ch2_checkBox";
-            this.ch2_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.ch2_checkBox.Size = new System.Drawing.Size(61, 25);
             this.ch2_checkBox.TabIndex = 40;
             this.ch2_checkBox.Text = "CH2";
             this.ch2_checkBox.UseVisualStyleBackColor = true;
@@ -591,11 +593,11 @@
             // ch3_checkBox
             // 
             this.ch3_checkBox.AutoSize = true;
-            this.ch3_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch3_checkBox.Location = new System.Drawing.Point(659, 16);
+            this.ch3_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch3_checkBox.Location = new System.Drawing.Point(650, 12);
             this.ch3_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch3_checkBox.Name = "ch3_checkBox";
-            this.ch3_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.ch3_checkBox.Size = new System.Drawing.Size(61, 25);
             this.ch3_checkBox.TabIndex = 41;
             this.ch3_checkBox.Text = "CH3";
             this.ch3_checkBox.UseVisualStyleBackColor = true;
@@ -603,11 +605,11 @@
             // ch4_checkBox
             // 
             this.ch4_checkBox.AutoSize = true;
-            this.ch4_checkBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch4_checkBox.Location = new System.Drawing.Point(715, 16);
+            this.ch4_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch4_checkBox.Location = new System.Drawing.Point(717, 12);
             this.ch4_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.ch4_checkBox.Name = "ch4_checkBox";
-            this.ch4_checkBox.Size = new System.Drawing.Size(50, 20);
+            this.ch4_checkBox.Size = new System.Drawing.Size(61, 25);
             this.ch4_checkBox.TabIndex = 42;
             this.ch4_checkBox.Text = "CH4";
             this.ch4_checkBox.UseVisualStyleBackColor = true;
@@ -616,12 +618,12 @@
             // 
             this.console_textBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.console_textBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.console_textBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.console_textBox.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.console_textBox.Location = new System.Drawing.Point(0, 0);
             this.console_textBox.Multiline = true;
             this.console_textBox.Name = "console_textBox";
             this.console_textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.console_textBox.Size = new System.Drawing.Size(1178, 128);
+            this.console_textBox.Size = new System.Drawing.Size(1178, 84);
             this.console_textBox.TabIndex = 1;
             // 
             // splitContainer3
@@ -677,7 +679,7 @@
             // 
             this.button16.BackColor = System.Drawing.Color.White;
             this.button16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button16.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button16.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button16.Location = new System.Drawing.Point(95, 461);
             this.button16.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button16.Name = "button16";
@@ -685,12 +687,13 @@
             this.button16.TabIndex = 76;
             this.button16.Text = "发射抑制";
             this.button16.UseVisualStyleBackColor = false;
+            this.button16.Click += new System.EventHandler(this.start_fasheyizhi_Click);
             // 
             // button10
             // 
             this.button10.BackColor = System.Drawing.Color.White;
             this.button10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button10.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button10.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button10.Location = new System.Drawing.Point(4, 461);
             this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button10.Name = "button10";
@@ -698,12 +701,13 @@
             this.button10.TabIndex = 82;
             this.button10.Text = "发射移相精度";
             this.button10.UseVisualStyleBackColor = false;
+            this.button10.Click += new System.EventHandler(this.start_fasheyixiang_test_Click);
             // 
             // button5
             // 
             this.button5.BackColor = System.Drawing.Color.White;
             this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button5.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button5.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button5.Location = new System.Drawing.Point(4, 362);
             this.button5.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button5.Name = "button5";
@@ -711,16 +715,17 @@
             this.button5.TabIndex = 81;
             this.button5.Text = "发射测试\r\n(增益)";
             this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.start_fasheceshiVNA_Click);
             // 
             // label5
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.label5.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.label5, 2);
-            this.label5.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(67, 1);
+            this.label5.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(66, 1);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(49, 28);
+            this.label5.Size = new System.Drawing.Size(50, 28);
             this.label5.TabIndex = 0;
             this.label5.Text = "接收";
             // 
@@ -728,7 +733,7 @@
             // 
             this.button18.BackColor = System.Drawing.Color.White;
             this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button18.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button18.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button18.Location = new System.Drawing.Point(95, 362);
             this.button18.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button18.Name = "button18";
@@ -736,12 +741,13 @@
             this.button18.TabIndex = 75;
             this.button18.Text = "发射测试\r\n(功率)";
             this.button18.UseVisualStyleBackColor = false;
+            this.button18.Click += new System.EventHandler(this.start_fasheceshi_gonglv_Click);
             // 
             // button11
             // 
             this.button11.BackColor = System.Drawing.Color.White;
             this.button11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button11.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button11.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button11.Location = new System.Drawing.Point(4, 36);
             this.button11.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button11.Name = "button11";
@@ -749,12 +755,13 @@
             this.button11.TabIndex = 74;
             this.button11.Text = "接收测试";
             this.button11.UseVisualStyleBackColor = false;
+            this.button11.Click += new System.EventHandler(this.start_recieve_test_Click);
             // 
             // button15
             // 
             this.button15.BackColor = System.Drawing.Color.White;
             this.button15.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button15.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button15.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button15.Location = new System.Drawing.Point(4, 135);
             this.button15.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button15.Name = "button15";
@@ -762,12 +769,13 @@
             this.button15.TabIndex = 79;
             this.button15.Text = "接收移相精度";
             this.button15.UseVisualStyleBackColor = false;
+            this.button15.Click += new System.EventHandler(this.start_jieshouyixiang_test_Click);
             // 
             // button17
             // 
             this.button17.BackColor = System.Drawing.Color.White;
             this.button17.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button17.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button17.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button17.Location = new System.Drawing.Point(95, 36);
             this.button17.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button17.Name = "button17";
@@ -775,12 +783,13 @@
             this.button17.TabIndex = 78;
             this.button17.Text = "压缩点";
             this.button17.UseVisualStyleBackColor = false;
+            this.button17.Click += new System.EventHandler(this.start_yasuodian_test_Click);
             // 
             // button20
             // 
             this.button20.BackColor = System.Drawing.Color.White;
             this.button20.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button20.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button20.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button20.Location = new System.Drawing.Point(95, 234);
             this.button20.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button20.Name = "button20";
@@ -788,12 +797,13 @@
             this.button20.TabIndex = 77;
             this.button20.Text = "三阶交调";
             this.button20.UseVisualStyleBackColor = false;
+            this.button20.Click += new System.EventHandler(this.start_sjjt_test_Click);
             // 
             // button19
             // 
             this.button19.BackColor = System.Drawing.Color.White;
             this.button19.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button19.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button19.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button19.Location = new System.Drawing.Point(95, 135);
             this.button19.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button19.Name = "button19";
@@ -801,28 +811,30 @@
             this.button19.TabIndex = 80;
             this.button19.Text = "接收衰减精度";
             this.button19.UseVisualStyleBackColor = false;
+            this.button19.Click += new System.EventHandler(this.start_shuaijian_test_Click);
             // 
             // button21
             // 
             this.button21.BackColor = System.Drawing.Color.White;
             this.button21.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button21.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button21.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button21.Location = new System.Drawing.Point(4, 231);
             this.button21.Name = "button21";
             this.button21.Size = new System.Drawing.Size(84, 92);
             this.button21.TabIndex = 73;
             this.button21.Text = "噪声采集";
             this.button21.UseVisualStyleBackColor = false;
+            this.button21.Click += new System.EventHandler(this.start_zaosheng_test_Click);
             // 
             // label6
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.label6.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.label6, 2);
-            this.label6.Font = new System.Drawing.Font("宋体", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(67, 327);
+            this.label6.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label6.Location = new System.Drawing.Point(66, 327);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(49, 28);
+            this.label6.Size = new System.Drawing.Size(50, 28);
             this.label6.TabIndex = 83;
             this.label6.Text = "发射";
             // 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MetroFramework.Forms;
+using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using TestApp.DAL;
@@ -6,7 +7,7 @@ using TestApp.MODEL;
 
 namespace TestApp.PAGE
 {
-    public partial class SqlSet_Form : Form
+    public partial class SqlSet_Form : MetroForm
     {
         public SqlSet_Form()
         {
@@ -68,6 +69,28 @@ namespace TestApp.PAGE
             {
                 MessageBox.Show("保存失败：" + ex.Message);
             }
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
