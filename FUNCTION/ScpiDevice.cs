@@ -497,7 +497,7 @@ namespace TestApp.FUNCTION
         }
         public async Task<int?> GetPointCount()
         {
-            string count = await QueryAsync(":SENS:SWE:POIN?");
+            string count = await QueryAsync(":SENS:SWE:POIN?");     
             return int.TryParse(count?.Trim(), out int val) ? (int?)val : null;
         }
         public async Task<bool> AutoScan()

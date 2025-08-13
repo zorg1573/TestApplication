@@ -61,6 +61,23 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.testType_comboBox = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.person_textBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.componentName_textBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.ch1_checkBox = new System.Windows.Forms.CheckBox();
+            this.ch2_checkBox = new System.Windows.Forms.CheckBox();
+            this.ch3_checkBox = new System.Windows.Forms.CheckBox();
+            this.ch4_checkBox = new System.Windows.Forms.CheckBox();
+            this.rf_checkBox = new System.Windows.Forms.CheckBox();
+            this.mod_checkBox = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.chasun_checkBox = new System.Windows.Forms.CheckBox();
             this.console_textBox = new System.Windows.Forms.TextBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -80,23 +97,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.person_textBox = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.chasun_checkBox = new System.Windows.Forms.CheckBox();
-            this.mod_checkBox = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.testType_comboBox = new System.Windows.Forms.ComboBox();
-            this.componentName_textBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.rf_checkBox = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.ch1_checkBox = new System.Windows.Forms.CheckBox();
-            this.ch2_checkBox = new System.Windows.Forms.CheckBox();
-            this.ch3_checkBox = new System.Windows.Forms.CheckBox();
-            this.ch4_checkBox = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -106,6 +106,7 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -115,7 +116,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -426,6 +426,202 @@
             this.panel1.Size = new System.Drawing.Size(1324, 51);
             this.panel1.TabIndex = 39;
             // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.Controls.Add(this.label3);
+            this.flowLayoutPanel2.Controls.Add(this.testType_comboBox);
+            this.flowLayoutPanel2.Controls.Add(this.label4);
+            this.flowLayoutPanel2.Controls.Add(this.person_textBox);
+            this.flowLayoutPanel2.Controls.Add(this.label2);
+            this.flowLayoutPanel2.Controls.Add(this.componentName_textBox);
+            this.flowLayoutPanel2.Controls.Add(this.label1);
+            this.flowLayoutPanel2.Controls.Add(this.progressBar1);
+            this.flowLayoutPanel2.Controls.Add(this.ch1_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.ch2_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.ch3_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.ch4_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.rf_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.mod_checkBox);
+            this.flowLayoutPanel2.Controls.Add(this.button1);
+            this.flowLayoutPanel2.Controls.Add(this.chasun_checkBox);
+            this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(1322, 49);
+            this.flowLayoutPanel2.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.Location = new System.Drawing.Point(3, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(74, 21);
+            this.label3.TabIndex = 66;
+            this.label3.Text = "测试项：";
+            // 
+            // testType_comboBox
+            // 
+            this.testType_comboBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.testType_comboBox.FormattingEnabled = true;
+            this.testType_comboBox.Items.AddRange(new object[] {
+            "常温",
+            "低温",
+            "高温"});
+            this.testType_comboBox.Location = new System.Drawing.Point(83, 3);
+            this.testType_comboBox.Name = "testType_comboBox";
+            this.testType_comboBox.Size = new System.Drawing.Size(74, 29);
+            this.testType_comboBox.TabIndex = 65;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(163, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(74, 21);
+            this.label4.TabIndex = 69;
+            this.label4.Text = "测试人：";
+            // 
+            // person_textBox
+            // 
+            this.person_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.person_textBox.Location = new System.Drawing.Point(243, 3);
+            this.person_textBox.Name = "person_textBox";
+            this.person_textBox.Size = new System.Drawing.Size(74, 29);
+            this.person_textBox.TabIndex = 70;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(323, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(74, 21);
+            this.label2.TabIndex = 63;
+            this.label2.Text = "组件名：";
+            // 
+            // componentName_textBox
+            // 
+            this.componentName_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.componentName_textBox.Location = new System.Drawing.Point(403, 3);
+            this.componentName_textBox.Name = "componentName_textBox";
+            this.componentName_textBox.Size = new System.Drawing.Size(100, 29);
+            this.componentName_textBox.TabIndex = 64;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(509, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(26, 17);
+            this.label1.TabIndex = 60;
+            this.label1.Text = "0%";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(541, 3);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(100, 20);
+            this.progressBar1.TabIndex = 59;
+            // 
+            // ch1_checkBox
+            // 
+            this.ch1_checkBox.AutoSize = true;
+            this.ch1_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch1_checkBox.Location = new System.Drawing.Point(654, 15);
+            this.ch1_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
+            this.ch1_checkBox.Name = "ch1_checkBox";
+            this.ch1_checkBox.Size = new System.Drawing.Size(61, 25);
+            this.ch1_checkBox.TabIndex = 55;
+            this.ch1_checkBox.Text = "CH1";
+            this.ch1_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // ch2_checkBox
+            // 
+            this.ch2_checkBox.AutoSize = true;
+            this.ch2_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch2_checkBox.Location = new System.Drawing.Point(721, 15);
+            this.ch2_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
+            this.ch2_checkBox.Name = "ch2_checkBox";
+            this.ch2_checkBox.Size = new System.Drawing.Size(61, 25);
+            this.ch2_checkBox.TabIndex = 56;
+            this.ch2_checkBox.Text = "CH2";
+            this.ch2_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // ch3_checkBox
+            // 
+            this.ch3_checkBox.AutoSize = true;
+            this.ch3_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch3_checkBox.Location = new System.Drawing.Point(788, 15);
+            this.ch3_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
+            this.ch3_checkBox.Name = "ch3_checkBox";
+            this.ch3_checkBox.Size = new System.Drawing.Size(61, 25);
+            this.ch3_checkBox.TabIndex = 57;
+            this.ch3_checkBox.Text = "CH3";
+            this.ch3_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // ch4_checkBox
+            // 
+            this.ch4_checkBox.AutoSize = true;
+            this.ch4_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ch4_checkBox.Location = new System.Drawing.Point(855, 15);
+            this.ch4_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
+            this.ch4_checkBox.Name = "ch4_checkBox";
+            this.ch4_checkBox.Size = new System.Drawing.Size(61, 25);
+            this.ch4_checkBox.TabIndex = 58;
+            this.ch4_checkBox.Text = "CH4";
+            this.ch4_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // rf_checkBox
+            // 
+            this.rf_checkBox.AutoSize = true;
+            this.rf_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.rf_checkBox.Location = new System.Drawing.Point(929, 15);
+            this.rf_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
+            this.rf_checkBox.Name = "rf_checkBox";
+            this.rf_checkBox.Size = new System.Drawing.Size(48, 25);
+            this.rf_checkBox.TabIndex = 61;
+            this.rf_checkBox.Text = "RF";
+            this.rf_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // mod_checkBox
+            // 
+            this.mod_checkBox.AutoSize = true;
+            this.mod_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.mod_checkBox.Location = new System.Drawing.Point(990, 15);
+            this.mod_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
+            this.mod_checkBox.Name = "mod_checkBox";
+            this.mod_checkBox.Size = new System.Drawing.Size(70, 25);
+            this.mod_checkBox.TabIndex = 67;
+            this.mod_checkBox.Text = "MOD";
+            this.mod_checkBox.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button1.Location = new System.Drawing.Point(1066, 6);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(120, 36);
+            this.button1.TabIndex = 62;
+            this.button1.Text = "更新矢网差损";
+            this.button1.UseVisualStyleBackColor = false;
+            // 
+            // chasun_checkBox
+            // 
+            this.chasun_checkBox.AutoSize = true;
+            this.chasun_checkBox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chasun_checkBox.Location = new System.Drawing.Point(1192, 15);
+            this.chasun_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
+            this.chasun_checkBox.Name = "chasun_checkBox";
+            this.chasun_checkBox.Size = new System.Drawing.Size(123, 21);
+            this.chasun_checkBox.TabIndex = 68;
+            this.chasun_checkBox.Text = "测试结果加上差损";
+            this.chasun_checkBox.UseVisualStyleBackColor = true;
+            // 
             // console_textBox
             // 
             this.console_textBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -511,7 +707,7 @@
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(94, 35);
             this.button10.TabIndex = 82;
-            this.button10.Text = "发射移相精度";
+            this.button10.Text = "FS移相精度";
             this.button10.UseVisualStyleBackColor = false;
             this.button10.Click += new System.EventHandler(this.start_fasheyixiang_test_Click);
             // 
@@ -579,7 +775,7 @@
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(94, 34);
             this.button15.TabIndex = 79;
-            this.button15.Text = "接收移相精度";
+            this.button15.Text = "JS移相精度";
             this.button15.UseVisualStyleBackColor = false;
             this.button15.Click += new System.EventHandler(this.start_jieshouyixiang_test_Click);
             // 
@@ -621,7 +817,7 @@
             this.button19.Name = "button19";
             this.button19.Size = new System.Drawing.Size(95, 34);
             this.button19.TabIndex = 80;
-            this.button19.Text = "接收衰减精度";
+            this.button19.Text = "JS衰减精度";
             this.button19.UseVisualStyleBackColor = false;
             this.button19.Click += new System.EventHandler(this.start_shuaijian_test_Click);
             // 
@@ -695,202 +891,6 @@
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
-            // flowLayoutPanel2
-            // 
-            this.flowLayoutPanel2.Controls.Add(this.label3);
-            this.flowLayoutPanel2.Controls.Add(this.testType_comboBox);
-            this.flowLayoutPanel2.Controls.Add(this.label4);
-            this.flowLayoutPanel2.Controls.Add(this.person_textBox);
-            this.flowLayoutPanel2.Controls.Add(this.label2);
-            this.flowLayoutPanel2.Controls.Add(this.componentName_textBox);
-            this.flowLayoutPanel2.Controls.Add(this.label1);
-            this.flowLayoutPanel2.Controls.Add(this.progressBar1);
-            this.flowLayoutPanel2.Controls.Add(this.ch1_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.ch2_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.ch3_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.ch4_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.rf_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.mod_checkBox);
-            this.flowLayoutPanel2.Controls.Add(this.button1);
-            this.flowLayoutPanel2.Controls.Add(this.chasun_checkBox);
-            this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(1322, 49);
-            this.flowLayoutPanel2.TabIndex = 0;
-            // 
-            // person_textBox
-            // 
-            this.person_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.person_textBox.Location = new System.Drawing.Point(243, 3);
-            this.person_textBox.Name = "person_textBox";
-            this.person_textBox.Size = new System.Drawing.Size(74, 29);
-            this.person_textBox.TabIndex = 70;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(163, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(74, 21);
-            this.label4.TabIndex = 69;
-            this.label4.Text = "测试人：";
-            // 
-            // chasun_checkBox
-            // 
-            this.chasun_checkBox.AutoSize = true;
-            this.chasun_checkBox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chasun_checkBox.Location = new System.Drawing.Point(1192, 15);
-            this.chasun_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
-            this.chasun_checkBox.Name = "chasun_checkBox";
-            this.chasun_checkBox.Size = new System.Drawing.Size(123, 21);
-            this.chasun_checkBox.TabIndex = 68;
-            this.chasun_checkBox.Text = "测试结果加上差损";
-            this.chasun_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // mod_checkBox
-            // 
-            this.mod_checkBox.AutoSize = true;
-            this.mod_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.mod_checkBox.Location = new System.Drawing.Point(990, 15);
-            this.mod_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
-            this.mod_checkBox.Name = "mod_checkBox";
-            this.mod_checkBox.Size = new System.Drawing.Size(70, 25);
-            this.mod_checkBox.TabIndex = 67;
-            this.mod_checkBox.Text = "MOD";
-            this.mod_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(3, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(74, 21);
-            this.label3.TabIndex = 66;
-            this.label3.Text = "测试项：";
-            // 
-            // testType_comboBox
-            // 
-            this.testType_comboBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.testType_comboBox.FormattingEnabled = true;
-            this.testType_comboBox.Items.AddRange(new object[] {
-            "常温",
-            "低温",
-            "高温"});
-            this.testType_comboBox.Location = new System.Drawing.Point(83, 3);
-            this.testType_comboBox.Name = "testType_comboBox";
-            this.testType_comboBox.Size = new System.Drawing.Size(74, 29);
-            this.testType_comboBox.TabIndex = 65;
-            // 
-            // componentName_textBox
-            // 
-            this.componentName_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.componentName_textBox.Location = new System.Drawing.Point(403, 3);
-            this.componentName_textBox.Name = "componentName_textBox";
-            this.componentName_textBox.Size = new System.Drawing.Size(100, 29);
-            this.componentName_textBox.TabIndex = 64;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(323, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 21);
-            this.label2.TabIndex = 63;
-            this.label2.Text = "组件名：";
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(1066, 6);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 36);
-            this.button1.TabIndex = 62;
-            this.button1.Text = "更新矢网差损";
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // rf_checkBox
-            // 
-            this.rf_checkBox.AutoSize = true;
-            this.rf_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.rf_checkBox.Location = new System.Drawing.Point(929, 15);
-            this.rf_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
-            this.rf_checkBox.Name = "rf_checkBox";
-            this.rf_checkBox.Size = new System.Drawing.Size(48, 25);
-            this.rf_checkBox.TabIndex = 61;
-            this.rf_checkBox.Text = "RF";
-            this.rf_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(509, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(26, 17);
-            this.label1.TabIndex = 60;
-            this.label1.Text = "0%";
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(541, 3);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(100, 20);
-            this.progressBar1.TabIndex = 59;
-            // 
-            // ch1_checkBox
-            // 
-            this.ch1_checkBox.AutoSize = true;
-            this.ch1_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch1_checkBox.Location = new System.Drawing.Point(654, 15);
-            this.ch1_checkBox.Margin = new System.Windows.Forms.Padding(10, 15, 3, 3);
-            this.ch1_checkBox.Name = "ch1_checkBox";
-            this.ch1_checkBox.Size = new System.Drawing.Size(61, 25);
-            this.ch1_checkBox.TabIndex = 55;
-            this.ch1_checkBox.Text = "CH1";
-            this.ch1_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // ch2_checkBox
-            // 
-            this.ch2_checkBox.AutoSize = true;
-            this.ch2_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch2_checkBox.Location = new System.Drawing.Point(721, 15);
-            this.ch2_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
-            this.ch2_checkBox.Name = "ch2_checkBox";
-            this.ch2_checkBox.Size = new System.Drawing.Size(61, 25);
-            this.ch2_checkBox.TabIndex = 56;
-            this.ch2_checkBox.Text = "CH2";
-            this.ch2_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // ch3_checkBox
-            // 
-            this.ch3_checkBox.AutoSize = true;
-            this.ch3_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch3_checkBox.Location = new System.Drawing.Point(788, 15);
-            this.ch3_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
-            this.ch3_checkBox.Name = "ch3_checkBox";
-            this.ch3_checkBox.Size = new System.Drawing.Size(61, 25);
-            this.ch3_checkBox.TabIndex = 57;
-            this.ch3_checkBox.Text = "CH3";
-            this.ch3_checkBox.UseVisualStyleBackColor = true;
-            // 
-            // ch4_checkBox
-            // 
-            this.ch4_checkBox.AutoSize = true;
-            this.ch4_checkBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ch4_checkBox.Location = new System.Drawing.Point(855, 15);
-            this.ch4_checkBox.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
-            this.ch4_checkBox.Name = "ch4_checkBox";
-            this.ch4_checkBox.Size = new System.Drawing.Size(61, 25);
-            this.ch4_checkBox.TabIndex = 58;
-            this.ch4_checkBox.Text = "CH4";
-            this.ch4_checkBox.UseVisualStyleBackColor = true;
-            // 
             // Main_New
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -916,6 +916,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel2.PerformLayout();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
@@ -926,8 +928,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            this.flowLayoutPanel2.ResumeLayout(false);
-            this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

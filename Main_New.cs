@@ -2561,7 +2561,7 @@ namespace TestApp
                 if (ch2_vol <= 0 || ch2_cur <= 0)
                 {
                     MessageBox.Show("电压或电流值设置有误，请检查测试设置。");
-                }
+                } 
                 await scpiDevice.SelectChannel(2);
                 await scpiDevice.EnableOutput();
                 await scpiDevice.SetVoltage(ch2_vol);
