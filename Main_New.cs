@@ -5000,7 +5000,7 @@ namespace TestApp
                 LogToConsole("矢网连接失败");
                 return;
             }
-            await RecieveTestUDP(0, "移相"); // FPGA发码
+            await RecieveTestUDP(0, "衰减"); // FPGA发码
             await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize();
 
