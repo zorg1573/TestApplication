@@ -62,7 +62,7 @@ namespace TestApp.PAGE
         }
         private void LoadFromJson()
         {
-            string filePath = "TestSet.json";
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestSet.json");
             if (!File.Exists(filePath))
                 return;
 

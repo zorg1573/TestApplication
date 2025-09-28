@@ -45,7 +45,7 @@ namespace TestApp.PAGE
         {
             try
             {
-                string filePath = "DeviceAddressNew.json";
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew.json");
                 if (!File.Exists(filePath))
                     return;
 
@@ -86,7 +86,7 @@ namespace TestApp.PAGE
 
         private void LoadFromJson()
         {
-            string filePath = "XinhaoSet.json";
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XinhaoSet.json");
             if (!File.Exists(filePath))
                 return;
 
