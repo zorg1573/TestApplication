@@ -46,6 +46,7 @@ namespace TestApp
         string gonglvAddress = "";
         string xinhaoAddress = "";
         string pinpuAddress = "";
+        string kaiguanAddress = "";
         string ifaceName = "";
         //string ifaceName = @"\Device\NPF_{3A0CA248-4796-4CBA-B275-E9C8E0A766CF}"; // 注意：需要和系统中接口名称完全匹配
         //static string dstMacStr = "00:0a:35:01:fe:c0";
@@ -175,6 +176,12 @@ namespace TestApp
                 if (pinpu != null)
                 {
                     pinpuAddress = pinpu.ToString();
+                }
+
+                data.TryGetValue("kaiguan_textBox", out object kaiguan);
+                if (kaiguan != null)
+                {
+                    kaiguanAddress = kaiguan.ToString();
                 }
             }
             catch(Exception ex)
@@ -1908,18 +1915,21 @@ namespace TestApp
                 ch = $"通道4-{testType}";
             }
 
-            string visaAddress = vnaAddress;
-            string pmAddress = gonglvAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
             var powerMeter = new ScpiDevice();
 
-            //bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            //bool pmConnected = await powerMeter.ConnectAsync(gonglvAddress);
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            bool connected2 = await kaiguanDevice.ConnectAsync(kaiguanAddress);
             if (!connected)
             {
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_2 TX_OUT1/RX_IN1");
+            await Task.Delay(500);
 
             await scpiDevice.ScanOnce();
             await Task.Delay(500);
@@ -2135,6 +2145,9 @@ namespace TestApp
             }
             finally
             {
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2 TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 scpiDevice.Disconnect(); // 释放资源
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
@@ -2174,8 +2187,7 @@ namespace TestApp
             }
 
             GetTestSetNewJson();
-            string sgAddress = xinhaoAddress;   // 信号源地址
-            string pmAddress = gonglvAddress; // 功率计地址
+
             if(pointCount <= 0)
             {
                 MessageBox.Show("请先设置点数", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2197,9 +2209,11 @@ namespace TestApp
 
             var signalGen = new ScpiDevice();
             var powerMeter = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
 
-            bool sgConnected = await signalGen.ConnectAsync(sgAddress);
-            bool pmConnected = await powerMeter.ConnectAsync(pmAddress);
+            bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
+            bool pmConnected = await powerMeter.ConnectAsync(gonglvAddress);
+            bool kgConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
 
             if (!sgConnected || !pmConnected)
             {
@@ -2209,6 +2223,10 @@ namespace TestApp
 
             try
             {
+                await kaiguanDevice.SendCommandAsync("CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT PA TX_OUT1/RX_IN1");
+
+
                 await signalGen.EnableOutput(); // 打开信号源输出
                 await signalGen.ModON(); // 打开调制输出
                 rf_checkBox.Checked = true;
@@ -2280,6 +2298,9 @@ namespace TestApp
             }
             finally
             {
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT PA TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 await signalGen.DisableOutput(); // 安全关闭输出
                 await signalGen.ModOFF();
                 rf_checkBox.Checked = false;
@@ -2993,7 +3014,6 @@ namespace TestApp
         {
             try
             {
-                string visaAddress = pinpuAddress;
                 string ch = "";
                 string testType = testType_comboBox.Text;
                 string componentName = componentName_textBox.Text;
@@ -3020,13 +3040,20 @@ namespace TestApp
                     return;
                 }
                 ScpiDevice scpiDevice = new ScpiDevice();
+                ScpiDevice kaiguanDevice = new ScpiDevice();
 
-                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                bool connected = await scpiDevice.ConnectAsync(pinpuAddress);
+                bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
+
                 if (!connected)
                 {
                     LogToConsole("连接失败");
                     return;
                 }
+                await kaiguanDevice.SendCommandAsync("CONNECT SA TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT NG TX_OUT1/RX_IN1");
+                await Task.Delay(500); // 延时保证设备稳定
+
                 int testPoint = 11; // 采集点数
                 string[] freqArray = new string[testPoint];
                 string[] data = await scpiDevice.GetZaoshengData();
@@ -3061,6 +3088,9 @@ namespace TestApp
                 WriteZaoshengToMatchingFrequencyRows(freqArray, data, "测试结果");
                 LogToConsole("噪声采集");
 
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SA TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT NG TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 scpiDevice.Disconnect();
             }
             catch (Exception ex)
@@ -3311,6 +3341,8 @@ namespace TestApp
         private async void start_fasheyizhi_Click(object sender, EventArgs e)
         {
             var signalGen = new ScpiDevice();
+
+            ScpiDevice kaiguanDevice = new ScpiDevice();
             try
             {
                 await ChargeSendPowerON(); // 发射加电
@@ -3320,12 +3352,19 @@ namespace TestApp
                 string[] freqArray = GetFilterFreqArray(pointCount);
                 string[] fasheYizhi = new string[pointCount]; //发射抑制
 
+
                 bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
+                bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
+
                 if (!sgConnected)
                 {
                     LogToConsole("连接失败：信号源无法连接");
                     return;
                 }
+                await kaiguanDevice.SendCommandAsync("CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT SA TX_OUT1/RX_IN1");
+                await Task.Delay(500); // 延时保证设备稳定
+
                 await signalGen.EnableOutput(); // 打开信号源输出
                 rf_checkBox.Checked = true;
                 await signalGen.ModON(); // 打开调制输出
@@ -3353,6 +3392,9 @@ namespace TestApp
             }
             finally
             {
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SA TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 await signalGen.DisableOutput(); // 安全关闭输出
                 await signalGen.ModOFF();
                 rf_checkBox.Checked = false;
@@ -3476,14 +3518,20 @@ namespace TestApp
 
                 ScpiDevice scpiDevice = new ScpiDevice();
                 ScpiDevice vnaDevice = new ScpiDevice();
+                ScpiDevice kaiguanDevice = new ScpiDevice();
                 bool connected = await scpiDevice.ConnectAsync(pinpuAddress);
                 bool sgConnected = await signalGen.ConnectAsync(xinhaoAddress);
                 bool vnaConnected = await vnaDevice.ConnectAsync(vnaAddress);
+                bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
                 if (!connected)
                 {
                     LogToConsole("连接失败：矢网或频谱分析仪无法连接");
                     return;
                 }
+                await kaiguanDevice.SendCommandAsync("CONNECT SIG_1_GELI2 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_GELI1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT SA TX_OUT1/RX_IN1");
+                await Task.Delay(500); // 延时保证设备稳定
 
                 LogToConsole("三阶交调测试");
                 await vnaDevice.LoadStateFile(vnaFilePath);
@@ -3588,7 +3636,10 @@ namespace TestApp
                 WriteSanjieJiaotiaoToMatchingFrequencyRows(freqArray, sanjieJiaotiao, "测试结果");
                 scpiDevice.Disconnect();
                 vnaDevice.Disconnect();
-
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SIG_1_GELI2 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_GELI1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT SA TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
             //}
             //catch (Exception ex)
             //{
@@ -4259,9 +4310,10 @@ namespace TestApp
                 LogToConsole("压缩点测试");
 
                 var scpiDevice = new ScpiDevice();
-                string deviceAddress = vnaAddress;
+                ScpiDevice kaiguanDevice = new ScpiDevice();
 
-                bool deviceConnected = await scpiDevice.ConnectAsync(deviceAddress);
+                bool deviceConnected = await scpiDevice.ConnectAsync(vnaAddress);
+                bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
 
                 if (!deviceConnected)
                 {
@@ -4270,6 +4322,9 @@ namespace TestApp
                 }
 
                 await scpiDevice.LoadStateFile(vnaFilePath);
+                await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("CONNECT VNA_2 TX_OUT1/RX_IN1");
+                await Task.Delay(500); // 延时保证设备稳定
 
                 double startPower = -35;
                 double stopPower = -8;
@@ -4312,6 +4367,9 @@ namespace TestApp
                     }
                 }
 
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2 TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 scpiDevice.Disconnect();
                 await CloseCharge();
 
@@ -4531,15 +4589,20 @@ namespace TestApp
                 ch = $"通道4-{testType}";
             }
 
-            string visaAddress = vnaAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
 
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
+
             if (!connected)
             {
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_2 TX_OUT1/RX_IN1");
+
             await RecieveTestUDP(0, "移相"); // FPGA发码
             await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize();
@@ -4593,7 +4656,9 @@ namespace TestApp
                 // 写入增益
                 WriteArrayToExcelColumn_New(gain, i + 3, "接收寄生调幅");
             }
-
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2 TX_OUT1/RX_IN1");
+            kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
             await CloseFPGA();
             await CloseCharge(); // 电源关电
@@ -4928,15 +4993,20 @@ namespace TestApp
                 ch = $"通道4-{testType}";
             }
 
-            string visaAddress = vnaAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
 
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
+
             if (!connected)
             {
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_2 TX_OUT1/RX_IN1");
+
             await RecieveTestUDP(0, "移相"); // FPGA发码
             await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize();
@@ -4953,6 +5023,9 @@ namespace TestApp
                 WriteArrayToExcelColumn_New(initial, i + 2, "接收寄生调相");
             }
 
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2 TX_OUT1/RX_IN1");
+            kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
             await CloseFPGA();
             await CloseCharge(); // 电源关电
@@ -5015,14 +5088,20 @@ namespace TestApp
                 ch = $"通道4-{testType}";
             }
 
-            string visaAddress = vnaAddress;
-            ScpiDevice scpiDevice = new ScpiDevice();;
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            ScpiDevice scpiDevice = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
             if (!connected)
             {
                 LogToConsole("矢网连接失败");
                 return;
             }
+
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_2_ATT1 TX_OUT1/RX_IN1");
+            await Task.Delay(500); // 等待连接稳定
+
             await scpiDevice.SendGainStart();
 
             await SendTestUDP(); //FPGA发包
@@ -5120,6 +5199,9 @@ namespace TestApp
             }
             finally
             {
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2_ATT1 TX_OUT1/RX_IN1");
+                kaiguanDevice.Disconnect();
                 await scpiDevice.SendCommandAsync(":SENS4:SWE:MODE HOLD");
                 scpiDevice.Disconnect(); // 释放资源
                 await CloseFPGA();
@@ -5174,15 +5256,19 @@ namespace TestApp
                 ch = $"通道4-{testType}";
             }
 
-            string visaAddress = vnaAddress;
             ScpiDevice scpiDevice = new ScpiDevice();
+            ScpiDevice kaiguanDevice = new ScpiDevice();
 
-            bool connected = await scpiDevice.ConnectAsync(visaAddress);
+            bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+            bool kaiguanConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
             if (!connected)
             {
                 LogToConsole("矢网连接失败");
                 return;
             }
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("CONNECT VNA_2_ATT1 TX_OUT1/RX_IN1");
+
             await SendTestUDP(0, "移相"); // FPGA发码
             await Task.Delay(1000);           // 等待设备稳定
             await scpiDevice.SetNormalize_Send();
@@ -5239,6 +5325,9 @@ namespace TestApp
                 WriteArrayToExcelColumn_New(gain, i + 3, "发射寄生调幅");
             }
 
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+            await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_2_ATT1 TX_OUT1/RX_IN1");
+            kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
             await CloseFPGA();
             await CloseCharge(); // 电源关电
@@ -5293,6 +5382,9 @@ namespace TestApp
             this.Close();
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 }

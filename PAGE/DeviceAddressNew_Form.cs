@@ -134,6 +134,10 @@ namespace TestApp.PAGE
             {
                 pinpuName_textBox.Text = await TryConnectAndGetIdnAsync(pinpu_textBox.Text);
             }
+            if (!string.IsNullOrEmpty(kaiguan_textBox.Text))
+            {
+                kaiguanName_textBox.Text = await TryConnectAndGetIdnAsync(kaiguan_textBox.Text);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
