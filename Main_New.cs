@@ -63,7 +63,10 @@ namespace TestApp
         double startFreq = -1;
         double stopFreq = -1;
         int pointCount = -1;
-
+        double ch1_vol = -1;
+        double ch2_vol = -1;
+        double ch1_cur = -1;
+        double ch2_cur = -1;
 
         static ushort srcPort = 8080;
         static ushort dstPort = 8080;
@@ -313,7 +316,31 @@ namespace TestApp
                 data.TryGetValue("power_textBox", out object _power);
                 if (_power != null)
                 {
-                    power = int.Parse(_power.ToString());
+                    power = double.Parse(_power.ToString());
+                }
+
+                data.TryGetValue("ch1_vol_textBox", out object ch1v);
+                if (ch1v != null)
+                {
+                    ch1_vol = double.Parse(ch1v.ToString());
+                }
+
+                data.TryGetValue("ch1_cur_textBox", out object ch1c);
+                if (ch1c != null)
+                {
+                    ch1_cur = double.Parse(ch1c.ToString());
+                }
+
+                data.TryGetValue("ch2_vol_textBox", out object ch2v);
+                if (ch2v != null)
+                {
+                    ch2_vol = double.Parse(ch2v.ToString());
+                }
+
+                data.TryGetValue("ch2_cur_textBox", out object ch2c);
+                if (ch2c != null)
+                {
+                    ch2_cur = double.Parse(ch2c.ToString());
                 }
             }
             catch (Exception ex)
@@ -2444,9 +2471,9 @@ namespace TestApp
                     I_T85 = await GetCurrent(1);
                     I_T5 = await GetCurrent(2);
 
-                    double fenmu1 = 8.5 * I_T85;
-                    double fenmu2 = 5 * (I_T5 - 0.75 * I_DQ5);
-                    double fenmu3 = 0.8 * 5 * (I_R5 - 0.75 * I_DQ5);
+                    double fenmu1 = ch1_vol * I_T85;
+                    double fenmu2 = ch2_vol * (I_T5 - 0.75 * I_DQ5);
+                    double fenmu3 = 0.8 * ch2_vol * (I_R5 - 0.75 * I_DQ5);
 
                     double chargePower = fenmu1 + fenmu2 + fenmu3;
                     xiaolvString[i] = PowerWatt * 0.2 / chargePower * 10 + "%"; // 计算效率百分比
@@ -2520,10 +2547,14 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
+                if (ch2_vol <= 0 || ch2_cur <= 0)
+                {
+                    MessageBox.Show("电压或电流值设置有误，请检查测试设置。");
+                }
                 await scpiDevice.SelectChannel(2);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(5);
-                await scpiDevice.SetCurrent(1.5);
+                await scpiDevice.SetVoltage(ch2_vol);
+                await scpiDevice.SetCurrent(ch2_cur);
                 LogToConsole("接收加电");
                 scpiDevice.Disconnect();
             }
@@ -2548,10 +2579,14 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
+                if (ch2_vol <= 0 || ch2_cur <= 0)
+                {
+                    MessageBox.Show("电压或电流值设置有误，请检查测试设置。");
+                } 
                 await scpiDevice.SelectChannel(2);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(5);
-                await scpiDevice.SetCurrent(1.5);
+                await scpiDevice.SetVoltage(ch2_vol);
+                await scpiDevice.SetCurrent(ch2_cur);
                 LogToConsole("接收加电...");
                 scpiDevice.Disconnect();
             }
@@ -2581,15 +2616,19 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
+                if (ch1_vol <= 0 || ch1_cur <= 0 || ch2_vol <= 0 || ch2_cur <= 0)
+                {
+                    MessageBox.Show("电压或电流值设置有误，请检查测试设置。");
+                }
                 await scpiDevice.SelectChannel(1);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(8.5);
-                await scpiDevice.SetCurrent(3);
+                await scpiDevice.SetVoltage(ch1_vol);
+                await scpiDevice.SetCurrent(ch1_cur);
 
                 await scpiDevice.SelectChannel(2);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(5);
-                await scpiDevice.SetCurrent(1.5);
+                await scpiDevice.SetVoltage(ch2_vol);
+                await scpiDevice.SetCurrent(ch2_cur);
 
                 scpiDevice.Disconnect();
             }
@@ -2615,15 +2654,19 @@ namespace TestApp
                     LogToConsole("连接失败");
                     return;
                 }
+                if (ch1_vol <= 0 || ch1_cur <= 0 || ch2_vol <= 0 || ch2_cur <= 0)
+                {
+                    MessageBox.Show("电压或电流值设置有误，请检查测试设置。");
+                }
                 await scpiDevice.SelectChannel(1);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(8.5);
-                await scpiDevice.SetCurrent(3);
+                await scpiDevice.SetVoltage(ch1_vol);
+                await scpiDevice.SetCurrent(ch1_cur);
 
                 await scpiDevice.SelectChannel(2);
                 await scpiDevice.EnableOutput();
-                await scpiDevice.SetVoltage(5);
-                await scpiDevice.SetCurrent(1.5);
+                await scpiDevice.SetVoltage(ch2_vol);
+                await scpiDevice.SetCurrent(ch2_cur);
 
 
                 scpiDevice.Disconnect();
@@ -2969,8 +3012,28 @@ namespace TestApp
                 Excel.Workbook workbook = excelApp.ActiveWorkbook;
 
                 // 构建保存路径
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string savePath = Path.Combine(excelPath, $"测试结果_{timestamp}{Path.GetExtension(workbook.FullName)}");
+                string testChannel = "";
+                if (ch1_checkBox.Checked)
+                {
+                    testChannel = "ch1";
+                }
+                if (ch2_checkBox.Checked)
+                {
+                    testChannel = "ch2";
+                }
+                if (ch3_checkBox.Checked)
+                {
+                    testChannel = "ch3";
+                }
+                if (ch4_checkBox.Checked)
+                {
+                    testChannel = "ch4";
+                }
+                string testComponent = componentName_textBox.Text;
+                string testType = testType_comboBox.Text;
+                string timestamp = DateTime.Now.ToString("yyyy.MM.dd.HHmmss");
+                string excelPathTemp = Path.GetDirectoryName(excelPath);
+                string savePath = Path.Combine(excelPathTemp, $"{testComponent}{testChannel}_高低温{testType}_{timestamp}{Path.GetExtension(workbook.FullName)}");
 
                 // 保存副本
                 workbook.SaveCopyAs(savePath);

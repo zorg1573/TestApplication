@@ -48,7 +48,7 @@ namespace TestApp.PAGE
 
         private void LoadFromJson()
         {
-            string filePath = "DeviceAddressNew.json";
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew.json");
             if (!File.Exists(filePath))
                 return;
 
