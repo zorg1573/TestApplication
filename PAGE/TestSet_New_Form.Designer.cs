@@ -379,6 +379,7 @@
             this.manual_button.TabIndex = 44;
             this.manual_button.Text = "保存设置";
             this.manual_button.UseVisualStyleBackColor = false;
+            this.manual_button.Click += new System.EventHandler(this.manual_button_Click_1);
             // 
             // TestSet_New_Form
             // 

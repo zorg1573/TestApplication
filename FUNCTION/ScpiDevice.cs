@@ -418,8 +418,8 @@ namespace TestApp.FUNCTION
         }
         public async Task<string[]> GetGain_Yasuodian()
         {
-            await SendCommandAsync(":CALC:PAR:SEL 'TRC1'");
-            await SendCommandAsync(":CALC:FORM MLOG");
+            await SendCommandAsync(":CALC3:PAR:SEL 'TRC7'");
+            await SendCommandAsync(":CALC3:FORM MLOG");
             string data = await QueryAsync(":CALC:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;

@@ -50,12 +50,12 @@ namespace TestApp.PAGE
             }
 
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("DeviceFiles.json", json);
+            File.WriteAllText("DeviceFiles_Ku.json", json);
         }
 
         private void LoadFromJson()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceFiles.json");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceFiles_Ku.json");
             if (!File.Exists(filePath))
                 return;
 

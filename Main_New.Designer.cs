@@ -65,7 +65,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.testType_comboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.person_textBox = new System.Windows.Forms.TextBox();
+            this.operator_textBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.componentName_textBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -80,6 +80,7 @@
             this.chasun_checkBox = new System.Windows.Forms.CheckBox();
             this.console_textBox = new System.Windows.Forms.TextBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.button16 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
@@ -97,6 +98,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -127,6 +129,7 @@
             this.toolStripButton10,
             this.toolStripDropDownButton1,
             this.toolStripButton6,
+            this.toolStripButton2,
             this.toolStripButton9});
             this.toolStrip1.Location = new System.Drawing.Point(20, 60);
             this.toolStrip1.Name = "toolStrip1";
@@ -153,6 +156,7 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(65, 22);
             this.toolStripButton3.Text = "新建Excel";
+            this.toolStripButton3.Visible = false;
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton10
@@ -382,6 +386,7 @@
             this.toolStripButton9.Name = "toolStripButton9";
             this.toolStripButton9.Size = new System.Drawing.Size(60, 22);
             this.toolStripButton9.Text = "测试记录";
+            this.toolStripButton9.Visible = false;
             this.toolStripButton9.Click += new System.EventHandler(this.toolStripButton9_Click);
             // 
             // splitContainer1
@@ -431,7 +436,7 @@
             this.flowLayoutPanel2.Controls.Add(this.label3);
             this.flowLayoutPanel2.Controls.Add(this.testType_comboBox);
             this.flowLayoutPanel2.Controls.Add(this.label4);
-            this.flowLayoutPanel2.Controls.Add(this.person_textBox);
+            this.flowLayoutPanel2.Controls.Add(this.operator_textBox);
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.componentName_textBox);
             this.flowLayoutPanel2.Controls.Add(this.label1);
@@ -483,13 +488,13 @@
             this.label4.TabIndex = 69;
             this.label4.Text = "测试人：";
             // 
-            // person_textBox
+            // operator_textBox
             // 
-            this.person_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.person_textBox.Location = new System.Drawing.Point(243, 3);
-            this.person_textBox.Name = "person_textBox";
-            this.person_textBox.Size = new System.Drawing.Size(74, 29);
-            this.person_textBox.TabIndex = 70;
+            this.operator_textBox.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.operator_textBox.Location = new System.Drawing.Point(243, 3);
+            this.operator_textBox.Name = "operator_textBox";
+            this.operator_textBox.Size = new System.Drawing.Size(74, 29);
+            this.operator_textBox.TabIndex = 70;
             // 
             // label2
             // 
@@ -642,6 +647,7 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.button2);
             this.splitContainer3.Panel1.Controls.Add(this.tableLayoutPanel1);
             // 
             // splitContainer3.Panel2
@@ -650,6 +656,16 @@
             this.splitContainer3.Size = new System.Drawing.Size(1532, 675);
             this.splitContainer3.SplitterDistance = 204;
             this.splitContainer3.TabIndex = 2;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(22, 290);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // tableLayoutPanel1
             // 
@@ -891,6 +907,16 @@
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(65, 22);
+            this.toolStripButton2.Text = "清空Excel";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click_1);
+            // 
             // Main_New
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -903,7 +929,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Main_New";
-            this.Text = "T/R组件测试";
+            this.Text = "T/R组件-Ku测试";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -990,7 +1016,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox testType_comboBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox person_textBox;
+        private System.Windows.Forms.TextBox operator_textBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox componentName_textBox;
         private System.Windows.Forms.Label label1;
@@ -1003,5 +1029,7 @@
         private System.Windows.Forms.CheckBox mod_checkBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox chasun_checkBox;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

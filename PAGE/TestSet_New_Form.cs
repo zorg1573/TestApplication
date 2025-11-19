@@ -86,11 +86,6 @@ namespace TestApp.PAGE
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("TestSetNew.json", json);
         }
-        private void manual_button_Click(object sender, EventArgs e)
-        {
-            SaveToJson();
-            MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
         private void pictureBox3_Click(object sender, EventArgs e)
         {
@@ -112,6 +107,12 @@ namespace TestApp.PAGE
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void manual_button_Click_1(object sender, EventArgs e)
+        {
+            SaveToJson();
+            MessageBox.Show("保存成功", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

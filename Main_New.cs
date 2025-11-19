@@ -28,7 +28,7 @@ namespace TestApp
         private ScpiDevice powerMeterPublic;
         private bool isMeasuring = false;
         #region 变量
-    //DeviceFiles.json
+    //DeviceFiles_Ku.json
         string excelPath = "";
         string vnaFilePath = "";
         string excelMobanPath = "";
@@ -197,7 +197,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = "DeviceFiles.json";
+                string filePath = "DeviceFiles_Ku.json";
                 if (!File.Exists(filePath))
                     return;
 
@@ -261,7 +261,7 @@ namespace TestApp
             }
             catch(Exception ex)
             {
-                MessageBox.Show("加载DeviceFiles.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("加载DeviceFiles_Ku.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void GetTestSetNewJson()
@@ -411,7 +411,7 @@ namespace TestApp
                 _axFramerControl.Titlebar = false;
 
                 // Excel 文件路径
-                excelPath = Path.Combine(excelPath, "测试模板.xls");
+                excelPath = Path.Combine(excelPath, "测试模板Ku.xls");
                 if (File.Exists(excelPath))
                 {
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
@@ -826,7 +826,7 @@ namespace TestApp
                 var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
                 var workbook = excelApp.ActiveWorkbook;
 
-                string personText = person_textBox.Text.Trim();
+                string personText = operator_textBox.Text.Trim();
 
                 // 遍历所有工作表
                 foreach (Excel.Worksheet sheet in workbook.Sheets)
@@ -1390,17 +1390,21 @@ namespace TestApp
             {
                 try
                 {
-                    string ch1send = ch1_checkBox.Checked ? "0" : "1";
-                    string ch2send = ch2_checkBox.Checked ? "0" : "1";
-                    string ch3send = ch3_checkBox.Checked ? "0" : "1";
-                    string ch4send = ch4_checkBox.Checked ? "0" : "1";
-                    string ch1 = "1" + new string('0', 24) + ch1send;
-                    string ch2 = "1" + new string('0', 24) + ch2send;
-                    string ch3 = "1" + new string('0', 24) + ch3send;
-                    string ch4 = "1" + new string('0', 24) + ch4send;
-                    string ch5 = new string('0', 16);
-                    byte[] modelValue = StringToByteArray("01 03 01 00");
-                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+                    string ch1send = ch1_checkBox.Checked ? "1" : "0";
+                    string ch2send = ch2_checkBox.Checked ? "1" : "0";
+                    string ch3send = ch3_checkBox.Checked ? "1" : "0";
+                    string ch4send = ch4_checkBox.Checked ? "1" : "0";
+                    string tr = "0" + ch4send + "0" + ch2send + "0" + ch3send + "0" + ch1send;
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    string model = "00000000";
+                    string buling = new string('0', 8);
+                    modelValue = StringToByteArray("01 03 01 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
+
+
                     string chSum = "";
                     if (ch1_checkBox.Checked)
                     {
@@ -1418,6 +1422,7 @@ namespace TestApp
                     {
                         chSum += " 通道4 ";
                     }
+
                     if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
                     {
                         MessageBox.Show("请至少选择一个通道进行发射测试", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1426,14 +1431,14 @@ namespace TestApp
 
                     LogToConsole("FPGA发包:" + chSum);
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
-                    
-                    operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}", person_textBox.Text);
+
+                    operateLog_DAL.InsertOperateLog_DT("发射测试", $"{ch1send},{ch2send},{ch3send},{ch4send}", operator_textBox.Text);
 
                 }
                 catch (Exception ex)
                 {
                     LogToConsole("发射测试失败: " + ex);
-                    operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), operator_textBox.Text);
                 }
             });
         }
@@ -1458,40 +1463,35 @@ namespace TestApp
                     }
                     string numToString = ToSixBitBinaryString(num);
                     // 分别设置通道值
-                    string ch1send = ch1_checkBox.Checked ? "0" : "1";
-                    string ch2send = ch2_checkBox.Checked ? "0" : "1";
-                    string ch3send = ch3_checkBox.Checked ? "0" : "1";
-                    string ch4send = ch4_checkBox.Checked ? "0" : "1";
+                    string ch1send = ch1_checkBox.Checked ? "1" : "0";
+                    string ch2send = ch2_checkBox.Checked ? "1" : "0";
+                    string ch3send = ch3_checkBox.Checked ? "1" : "0";
+                    string ch4send = ch4_checkBox.Checked ? "1" : "0";
 
-                    string ch1 = "";
-                    string ch2 = "";
-                    string ch3 = "";
-                    string ch4 = "";
-                    if (yixiangOrshuaijian.Equals("移相"))
+                    string tr = "0" + ch4send + "0" + ch2send + "0" + ch3send + "0" + ch1send;
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    if (yixiangOrshuaijian == "移相")
                     {
-                        ch1 = "1" + numToString + "000000" + "000000" + "000000" + ch1send;
-                        ch2 = "1" + numToString + "000000" + "000000" + "000000" + ch2send;
-                        ch3 = "1" + numToString + "000000" + "000000" + "000000" + ch3send;
-                        ch4 = "1" + numToString + "000000" + "000000" + "000000" + ch4send;
+                        tp = numToString + numToString + numToString + numToString;
                     }
-                    if (yixiangOrshuaijian.Equals("衰减"))
+                    else
                     {
-                        ch1 = "1" + "000000" + "000000" + numToString + "000000" + ch1send;
-                        ch2 = "1" + "000000" + "000000" + numToString + "000000" + ch2send;
-                        ch3 = "1" + "000000" + "000000" + numToString + "000000" + ch3send;
-                        ch4 = "1" + "000000" + "000000" + numToString + "000000" + ch4send;
+                        ta = numToString + numToString + numToString + numToString;
                     }
-                    string ch5 = new string('0', 16);
+                    string model = "00000000";
+                    string buling = new string('0', 8);
                     modelValue = StringToByteArray("01 03 01 00");
-                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
-
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
                     LogToConsole(numToString);
                 }
                 catch (Exception ex)
                 {
                     LogToConsole("发射测试失败: " + ex);
-                    operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("发射测试失败", ex.ToString(), operator_textBox.Text);
                 }
             });
         }
@@ -1517,7 +1517,7 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(person_textBox.Text))
+            if (string.IsNullOrEmpty(operator_textBox.Text))
             {
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1549,7 +1549,7 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(person_textBox.Text))
+            if (string.IsNullOrEmpty(operator_textBox.Text))
             {
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1576,17 +1576,20 @@ namespace TestApp
             {
                 try
                 {
-                    string ch1recive = ch1_checkBox.Checked ? "0" : "1";
-                    string ch2recive = ch2_checkBox.Checked ? "0" : "1";
-                    string ch3recive = ch3_checkBox.Checked ? "0" : "1";
-                    string ch4recive = ch4_checkBox.Checked ? "0" : "1";
-                    string ch1 = ch1recive + new string('0', 24) + "1";
-                    string ch2 = ch2recive + new string('0', 24) + "1";
-                    string ch3 = ch3recive + new string('0', 24) + "1";
-                    string ch4 = ch4recive + new string('0', 24) + "1";
-                    string ch5 = new string('0', 16);
-                    byte[] modelValue = StringToByteArray("01 03 02 00");
-                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+                    string ch1recieve = ch1_checkBox.Checked ? "1" : "0";
+                    string ch2recieve = ch2_checkBox.Checked ? "1" : "0";
+                    string ch3recieve = ch3_checkBox.Checked ? "1" : "0";
+                    string ch4recieve = ch4_checkBox.Checked ? "1" : "0";
+                    string tr = ch4recieve + "0" + ch2recieve + "0" + ch3recieve + "0" + ch1recieve + "0";
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    string model = "00000001";
+                    string buling = new string('0', 8);
+                    modelValue = StringToByteArray("01 03 02 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
+
                     string chSum = "";
                     if (ch1_checkBox.Checked)
                     {
@@ -1606,15 +1609,15 @@ namespace TestApp
                     }
 
                     LogToConsole("FPGA发包:" + chSum);
-                    
+
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
 
-                    operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recive},{ch2recive},{ch3recive},{ch4recive}", person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("接收测试", $"{ch1recieve},{ch2recieve},{ch3recieve},{ch4recieve}", operator_textBox.Text);
                 }
                 catch (Exception ex)
                 {
                     LogToConsole("接收测试失败: " + ex);
-                    operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), operator_textBox.Text);
                 }
             });
         }
@@ -1625,20 +1628,22 @@ namespace TestApp
                 try
                 {
                     LogToConsole("切换至负载态");
-                    string ch1 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                    string ch2 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                    string ch3 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                    string ch4 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                    string ch5 = new string('0', 16);
+                    string tr = new string('0', 8);
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    string model = "00000010";
+                    string buling = new string('0', 8);
                     modelValue = StringToByteArray("01 03 03 00");
-                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
 
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
                 }
                 catch (Exception ex)
                 {
                     LogToConsole("切换至负载态失败: " + ex);
-                    operateLog_DAL.InsertOperateLog_DT("切换至负载态失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("切换至负载态失败", ex.ToString(), operator_textBox.Text);
                 }
             });
         }
@@ -1869,7 +1874,7 @@ namespace TestApp
                 {
                     TestType = ch,
                     ComponentName = componentName,
-                    Operator = person_textBox.Text,
+                    Operator = operator_textBox.Text,
                     Description = "自动测试批次",
                     UpdateTime = nowTime
                 };
@@ -1888,7 +1893,7 @@ namespace TestApp
                         InitialPhase = double.Parse(initialFinal[i]),
                         InputSWR = double.Parse(inputVswrFinal[i]),
                         OutputSWR = double.Parse(outputVswrFinal[i]),
-                        Person = person_textBox.Text,
+                        Person = operator_textBox.Text,
                         UpdateTime = nowTime
                     };
 
@@ -1925,28 +1930,31 @@ namespace TestApp
             string testType = testType_comboBox.Text;
             string componentName = componentName_textBox.Text;
             string sheetName = "测试结果";
+            List<int> selectedCHList = new List<int>();
             if (ch1_checkBox.Checked)
             {
                 ch = $"通道1-{testType}";
+                selectedCHList.Add(1);
             }
             if (ch2_checkBox.Checked)
             {
                 ch = $"通道2-{testType}";
+                selectedCHList.Add(2);
             }
             if (ch3_checkBox.Checked)
             {
                 ch = $"通道3-{testType}";
+                selectedCHList.Add(3);
             }
             if (ch4_checkBox.Checked)
             {
                 ch = $"通道4-{testType}";
+                selectedCHList.Add(4);
             }
 
             ScpiDevice scpiDevice = new ScpiDevice();
             ScpiDevice kaiguanDevice = new ScpiDevice();
-            var powerMeter = new ScpiDevice();
 
-            //bool pmConnected = await powerMeter.ConnectAsync(gonglvAddress);
             bool connected = await scpiDevice.ConnectAsync(vnaAddress);
             bool connected2 = await kaiguanDevice.ConnectAsync(kaiguanAddress);
             if (!connected)
@@ -2010,10 +2018,15 @@ namespace TestApp
                 gain = gainPlusChasun; // 替换原有增益数据
             }
 
-            WriteArrayToExcelColumn(gain, 2, sheetName);
-            WriteArrayToExcelColumn(initial, 3, sheetName);
-            WriteArrayToExcelColumn(inputVswr, 4, sheetName);
-            WriteArrayToExcelColumn(outputVswr, 5, sheetName);
+            string[] gain21 = ExtractStep100MHz(gain);
+            string[] initial21 = ExtractStep100MHz(initial);
+            string[] inputVswr21 = ExtractStep100MHz(inputVswr);
+            string[] outputVswr21 = ExtractStep100MHz(outputVswr);
+
+            WriteArrayToExcelColumn(gain21, 2, sheetName);
+            WriteArrayToExcelColumn(initial21, 3, sheetName);
+            WriteArrayToExcelColumn(inputVswr21, 4, sheetName);
+            WriteArrayToExcelColumn(outputVswr21, 5, sheetName);
 
             //if (testType == "常温")
             //{
@@ -2133,7 +2146,7 @@ namespace TestApp
                 {
                     TestType = ch,
                     ComponentName = componentName,
-                    Operator = person_textBox.Text,
+                    Operator = operator_textBox.Text,
                     Description = "自动测试批次",
                     UpdateTime = nowTime
                 };
@@ -2188,6 +2201,28 @@ namespace TestApp
                 recieveWaitForm.Hide(); // 关闭等待界面
             }
 
+        }
+        private string[] ExtractStep100MHz(string[] fullArray)
+        {
+            List<string> result = new List<string>();
+
+            double startGHz = 15.0;
+            double endGHz = 17.0;
+            double fullStepGHz = 0.01;   // 原始步进
+            double targetStepGHz = 0.1;  // 目标步进（0.1GHz）
+
+            int totalPoints = fullArray.Length; // 201
+
+            for (double freq = startGHz; freq <= endGHz + 1e-9; freq += targetStepGHz)
+            {
+                double indexD = (freq - startGHz) / fullStepGHz;
+                int index = (int)Math.Round(indexD);
+
+                if (index >= 0 && index < totalPoints)
+                    result.Add(fullArray[index]);
+            }
+
+            return result.ToArray();
         }
         private async Task GetSendData()
         {
@@ -2561,7 +2596,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), operator_textBox.Text);
             }
 
         }
@@ -2593,7 +2628,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"接收加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("接收加电失败", ex.ToString(), operator_textBox.Text);
             }
         }
         /// <summary>
@@ -2635,7 +2670,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), operator_textBox.Text);
             }
 
         }
@@ -2674,7 +2709,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), operator_textBox.Text);
             }
         }
         private async Task<double> GetRecieveChargePower()
@@ -2702,7 +2737,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"读取电源数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), operator_textBox.Text);
                 return -1;
             }
         }
@@ -2729,7 +2764,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"读取电源数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), operator_textBox.Text);
                 return -1;
             }
         }
@@ -2764,7 +2799,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"读取电源数据失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("读取电源数据失败", ex.ToString(), operator_textBox.Text);
                 return -1;
             }
         }
@@ -2800,7 +2835,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), operator_textBox.Text);
             }
         }
         private async Task CloseCharge()
@@ -2830,7 +2865,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"电源关电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("电源关电失败", ex.ToString(), operator_textBox.Text);
             }
         }
         /// <summary>
@@ -2864,7 +2899,7 @@ namespace TestApp
                     catch (Exception ex)
                     {
                         MessageBox.Show($"创建 Excel 文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString(), person_textBox.Text);
+                        operateLog_DAL.InsertOperateLog_DT("创建 Excel 文件失败", ex.ToString(), operator_textBox.Text);
                     }
                 }
             }
@@ -2892,7 +2927,7 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"打开Excel失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("打开Excel失败", ex.ToString(), operator_textBox.Text);
             }
 
         }
@@ -3159,7 +3194,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"噪声采集失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("噪声采集失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("噪声采集失败", ex.ToString(), operator_textBox.Text);
             }
 
         }
@@ -3187,7 +3222,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), operator_textBox.Text);
             }
         }
 
@@ -3212,7 +3247,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用功率计状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计状态文件失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("调用功率计状态文件失败", ex.ToString(), operator_textBox.Text);
             }
         }
         /// <summary>
@@ -3232,7 +3267,7 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(person_textBox.Text))
+            if (string.IsNullOrEmpty(operator_textBox.Text))
             {
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -3243,6 +3278,7 @@ namespace TestApp
             if (vnaFlag == 0)
             {
                 LoadVNAState(); // 调用矢网文件
+                await Task.Delay(3000); // 延时保证设备稳定
             }
             recieveWaitForm.ChangeLabelText("step1_label", "已完成");
             await ChargeRecievePowerON(); // 接收加电
@@ -3276,7 +3312,7 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(person_textBox.Text))
+            if (string.IsNullOrEmpty(operator_textBox.Text))
             {
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -3451,7 +3487,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), operator_textBox.Text);
             }
             finally
             {
@@ -3518,7 +3554,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), operator_textBox.Text);
             }
             finally
             {
@@ -3558,7 +3594,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用频谱分析仪状态文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("调用频谱分析仪状态文件失败", ex.ToString(), operator_textBox.Text);
             }
         }
 
@@ -3778,35 +3814,34 @@ namespace TestApp
             catch(Exception ex)
             {
                 MessageBox.Show($"UDP发送失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("UDP发送失败", ex.ToString(), operator_textBox.Text);
             }
 
         }
 
         static byte[] GenerateCodeValueFromBits(string[] bitStrings)
         {
-            if (bitStrings.Length != 5)
-                throw new ArgumentException("应包含5个通道的比特串");
-
-            int[] expectedLengths = { 26, 26, 26, 26, 16 };
+            int[] expectedLengths = { 8, 24, 24, 24, 24, 8, 8 };
             string allBits = "";
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 7; i++)
             {
-                var bits = bitStrings[i].Replace(" ", "");
+                string bits = bitStrings[i].Replace(" ", "");
                 if (bits.Length != expectedLengths[i])
-                    throw new ArgumentException($"通道{i + 1} 应为 {expectedLengths[i]} 位，但提供了 {bits.Length} 位");
+                    throw new ArgumentException($"通道 {i + 1} 应为 {expectedLengths[i]} 位，但提供了 {bits.Length} 位");
 
                 allBits += bits;
             }
 
             if (allBits.Length != 120)
-                throw new ArgumentException("总位数应为120");
+                throw new ArgumentException($"总位数应为120，但现在是 {allBits.Length}");
 
+            // 输出 15 字节（120 位）
             byte[] codeBytes = new byte[15];
             for (int i = 0; i < 15; i++)
             {
-                codeBytes[i] = Convert.ToByte(allBits.Substring(i * 8, 8), 2);
+                string byteStr = allBits.Substring(i * 8, 8);
+                codeBytes[i] = Convert.ToByte(byteStr, 2);
             }
 
             return codeBytes;
@@ -3860,7 +3895,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"调用功率计文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("调用功率计文件失败", ex.ToString(), operator_textBox.Text);
             }
         }
         /// <summary>
@@ -3892,7 +3927,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"打开射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("打开射频输出失败", ex.ToString(), operator_textBox.Text);
                 }
             }
             else
@@ -3917,7 +3952,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), operator_textBox.Text);
                 }
             }
         }
@@ -3950,7 +3985,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"启用调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("启用调制功能失败", ex.ToString(), operator_textBox.Text);
                 }
             }
             else
@@ -3975,7 +4010,7 @@ namespace TestApp
                 catch (Exception ex)
                 {
                     MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), operator_textBox.Text);
                 }
             }
         }
@@ -4004,7 +4039,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"关闭射频输出失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("关闭射频输出失败", ex.ToString(), operator_textBox.Text);
             }
         }
         /// <summary>
@@ -4032,7 +4067,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"关闭调制功能失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("关闭调制功能失败", ex.ToString(), operator_textBox.Text);
             }
         }
         private async Task<double> GetFasheyizhi(double freq)
@@ -4137,7 +4172,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), operator_textBox.Text);
                 return 0;
             }
         }
@@ -4260,7 +4295,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"发射抑制测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("发射抑制测试失败", ex.ToString(), operator_textBox.Text);
                 return results.ToArray();
             }
         }
@@ -4287,7 +4322,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"顶降测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("顶降测试失败", ex.ToString(), operator_textBox.Text);
                 return 0;
             }
         }
@@ -4298,15 +4333,26 @@ namespace TestApp
         {
             await Task.Run(() =>
             {
-                string ch1 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                string ch2 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                string ch3 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                string ch4 = "1" + "000000" + "000000" + "000000" + "000000" + "1";
-                string ch5 = new string('0', 16);
-                modelValue = StringToByteArray("01 03 03 00");
-                var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
+                try
+                {
+                    LogToConsole("切换至负载态");
+                    string tr = new string('0', 8);
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    string model = "00000010";
+                    string buling = new string('0', 8);
+                    modelValue = StringToByteArray("01 03 03 00");
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
 
-                SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                    SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
+                }
+                catch (Exception ex)
+                {
+                    LogToConsole("切换至负载态失败: " + ex);
+                    operateLog_DAL.InsertOperateLog_DT("切换至负载态失败", ex.ToString(), operator_textBox.Text);
+                }
             });
         }
         /// <summary>
@@ -4398,9 +4444,9 @@ namespace TestApp
                 bool[] found = new bool[pointCount];
 
                 // 1. 获取参考小信号增益
-                await scpiDevice.SendCommandAsync($":SOUR:POW2:LEV:IMM:AMPL {startPower}");
+                await scpiDevice.SendCommandAsync($":SOUR3:POW2:LEV:IMM:AMPL {startPower}");
                 await Task.Delay(200);
-                await scpiDevice.ScanOnce();
+                await scpiDevice.ScanOnce(3);
                 await Task.Delay(500);
                 string[] refGainStrs = await scpiDevice.GetGain_Yasuodian();
                 refGains = refGainStrs.Select(s => double.TryParse(s, out var d) ? d : double.NaN).ToArray();
@@ -4408,9 +4454,9 @@ namespace TestApp
                 // 2. 增加功率，查找压缩点
                 for (double power = startPower + stepPower; power <= stopPower; power += stepPower)
                 {
-                    await scpiDevice.SendCommandAsync($":SOUR:POW2:LEV:IMM:AMPL {power}");
+                    await scpiDevice.SendCommandAsync($":SOUR3:POW2:LEV:IMM:AMPL {power}");
                     await Task.Delay(200);
-                    await scpiDevice.ScanOnce();
+                    await scpiDevice.ScanOnce(3);
                     await Task.Delay(500);
                     string[] gainStrs = await scpiDevice.GetGain_Yasuodian();
                     double[] gains = gainStrs.Select(s => double.TryParse(s, out var d) ? d : double.NaN).ToArray();
@@ -4442,7 +4488,7 @@ namespace TestApp
             catch (Exception ex)
             {
                 MessageBox.Show($"压缩点测试失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                operateLog_DAL.InsertOperateLog_DT("压缩点测试失败", ex.ToString(), person_textBox.Text);
+                operateLog_DAL.InsertOperateLog_DT("压缩点测试失败", ex.ToString(), operator_textBox.Text);
             }
         }
 
@@ -4627,7 +4673,11 @@ namespace TestApp
             jieshoujingduWaitForm.Show();
             LogToConsole("开始移相精度测试...");
             WritePersonToAllSheets();
-            LoadVNAState(); // 调用矢网文件
+            if (vnaFlag == 0)
+            {
+                LoadVNAState(); // 调用矢网文件
+                await Task.Delay(3000); // 延时保证设备稳定
+            }
             await ChargeRecievePowerON(); // 接收加电
             jieshoujingduWaitForm.ChangeLabelText("step1_label", "已完成");
             jieshoujingduWaitForm.ChangeLabelText("step2_label", "已完成");
@@ -4950,7 +5000,7 @@ namespace TestApp
             return -1; // 未找到
         }
 
-        private async Task RecieveTestUDP(int num,string yixiangOrshuaijian)
+        private async Task RecieveTestUDP(int num, string yixiangOrshuaijian)
         {
             await Task.Run(() =>
             {
@@ -4971,40 +5021,35 @@ namespace TestApp
                     }
                     string numToString = ToSixBitBinaryString(num);
                     // 分别设置通道值
-                    string ch1recive = ch1_checkBox.Checked ? "0" : "1";
-                    string ch2recive = ch2_checkBox.Checked ? "0" : "1";
-                    string ch3recive = ch3_checkBox.Checked ? "0" : "1";
-                    string ch4recive = ch4_checkBox.Checked ? "0" : "1";
+                    string ch1recieve = ch1_checkBox.Checked ? "1" : "0";
+                    string ch2recieve = ch2_checkBox.Checked ? "1" : "0";
+                    string ch3recieve = ch3_checkBox.Checked ? "1" : "0";
+                    string ch4recieve = ch4_checkBox.Checked ? "1" : "0";
 
-                    string ch1 = "";
-                    string ch2 = "";
-                    string ch3 = "";
-                    string ch4 = "";
-                    if (yixiangOrshuaijian.Equals("移相"))
+                    string tr = ch4recieve + "0" + ch2recieve + "0" + ch3recieve + "0" + ch1recieve + "0";
+                    string ta = new string('0', 24);
+                    string tp = new string('0', 24);
+                    string ra = new string('0', 24);
+                    string rp = new string('0', 24);
+                    if (yixiangOrshuaijian == "移相")
                     {
-                        ch1 = ch1recive + "000000" + numToString + "000000" + "000000" + "1";
-                        ch2 = ch2recive + "000000" + numToString + "000000" + "000000" + "1";
-                        ch3 = ch3recive + "000000" + numToString + "000000" + "000000" + "1";
-                        ch4 = ch4recive + "000000" + numToString + "000000" + "000000" + "1";
+                        rp = numToString + numToString + numToString + numToString;
                     }
-                    if(yixiangOrshuaijian.Equals("衰减"))
+                    else
                     {
-                        ch1 = ch1recive + "000000" + "000000" + "000000" + numToString + "1";
-                        ch2 = ch2recive + "000000" + "000000" + "000000" + numToString + "1";
-                        ch3 = ch3recive + "000000" + "000000" + "000000" + numToString + "1";
-                        ch4 = ch4recive + "000000" + "000000" + "000000" + numToString + "1";
+                        ra = numToString + numToString + numToString + numToString;
                     }
-                    string ch5 = new string('0', 16);
+                    string model = "00000001";
+                    string buling = new string('0', 8);
                     modelValue = StringToByteArray("01 03 02 00");
-                    var codeValue = GenerateCodeValueFromBits(new[] { ch1, ch2, ch3, ch4, ch5 });
-
+                    var codeValue = GenerateCodeValueFromBits(new[] { tr, ta, ra, tp, rp, model, buling });
                     SendCustomPacket(headValue, modelValue, emptyValue, codeValue);
                     LogToConsole(numToString);
                 }
                 catch (Exception ex)
                 {
                     LogToConsole("接收测试失败: " + ex);
-                    operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), person_textBox.Text);
+                    operateLog_DAL.InsertOperateLog_DT("接收测试失败", ex.ToString(), operator_textBox.Text);
                 }
             });
         }
@@ -5033,7 +5078,11 @@ namespace TestApp
             }
             LogToConsole("开始衰减精度测试...");
             WritePersonToAllSheets();
-            LoadVNAState(); // 调用矢网文件
+            if (vnaFlag == 0)
+            {
+                LoadVNAState(); // 调用矢网文件
+                await Task.Delay(3000); // 延时保证设备稳定
+            }
             await ChargeRecievePowerON(); // 接收加电
 
             string ch = "";
@@ -5114,14 +5163,18 @@ namespace TestApp
                 MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (string.IsNullOrEmpty(person_textBox.Text))
+            if (string.IsNullOrEmpty(operator_textBox.Text))
             {
                 MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             LogToConsole("开始发射测试|增益...");
             WritePersonToAllSheets();
-            LoadVNAState(); // 调用矢网文件
+            if (vnaFlag == 0)
+            {
+                LoadVNAState(); // 调用矢网文件
+                await Task.Delay(3000); // 延时保证设备稳定
+            }
             //await ChargeSendPowerON(); // 发射加电
             //await SendTestUDP(); //FPGA发包
             //await Task.Delay(500); // 延时保证设备稳定
@@ -5294,7 +5347,11 @@ namespace TestApp
             fashejingduWaitForm.Show();
             LogToConsole("开始移相精度测试...");
             WritePersonToAllSheets();
-            LoadVNAState(); // 调用矢网文件
+            if (vnaFlag == 0)
+            {
+                LoadVNAState(); // 调用矢网文件
+                await Task.Delay(3000); // 延时保证设备稳定
+            }
             await ChargeSendPowerON(); // 发射加电
             fashejingduWaitForm.ChangeLabelText("step1_label", "已完成");
             fashejingduWaitForm.ChangeLabelText("step2_label", "已完成");
@@ -5445,9 +5502,106 @@ namespace TestApp
             this.Close();
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
 
+        private async void button2_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                //string visaAddress = "TCPIP0::192.168.0.8::INSTR";
+                string visaAddress = kaiguanAddress;
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(visaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+
+                await scpiDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+                await scpiDevice.SendCommandAsync("CONNECT VNA_2 TX_OUT1/RX_IN1");
+                //await Task.Delay(500);
+                //LogToConsole("当前频率：" + ans);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), operator_textBox.Text);
+            }
+        }
+
+        private void toolStripButton2_Click_1(object sender, EventArgs e)
+        {
+            dynamic document = _axFramerControl.ActiveDocument;
+            if (document == null)
+            {
+                MessageBox.Show("未能获取 Excel 文档对象");
+                return;
+            }
+
+            Excel.Workbook workbook = (Excel.Workbook)document;
+            Excel.Application excelApp = workbook.Application;
+
+            if (excelApp == null || excelApp.ActiveWindow == null)
+            {
+                MessageBox.Show("Excel 应用或窗口未就绪，跳过操作");
+                return;
+            }
+
+            // 新增：用户确认弹窗
+            DialogResult confirmResult = MessageBox.Show(
+                "⚠️ 确定要清空当前 Excel 文件中的数据吗？\n\n此操作不可恢复！",
+                "确认清空数据",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirmResult != DialogResult.Yes)
+            {
+                MessageBox.Show("操作已取消。", "已取消", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+
+            try
+            {
+                for (int baseIndex = 1; baseIndex <= 28; baseIndex += 7)
+                {
+                    Excel.Worksheet sheet1 = workbook.Worksheets[baseIndex + 0];
+                    sheet1.Range["B8", "Q" + sheet1.Rows.Count].ClearContents();
+
+                    Excel.Worksheet sheet2 = workbook.Worksheets[baseIndex + 1];
+                    sheet2.Range["B4", "BM204"].Value2 = 0;
+                    sheet2.Range["B209", "BM409"].Value2 = 0;
+
+                    Excel.Worksheet sheet3 = workbook.Worksheets[baseIndex + 2];
+                    sheet3.Range["B4", "BM204"].Value2 = 0;
+                    sheet3.Range["B209", "BM409"].Value2 = 0;
+
+                    Excel.Worksheet sheet4 = workbook.Worksheets[baseIndex + 3];
+                    sheet4.Range["B4", "BM204"].Value2 = 0;
+
+                    Excel.Worksheet sheet5 = workbook.Worksheets[baseIndex + 4];
+                    sheet5.Range["B4", "BM204"].Value2 = 0;
+
+                    Excel.Worksheet sheet6 = workbook.Worksheets[baseIndex + 5];
+                    sheet6.Range["B4", "BM204"].Value2 = 0;
+                    sheet6.Range["B209", "BM409"].Value2 = 0;
+
+                    Excel.Worksheet sheet7 = workbook.Worksheets[baseIndex + 6];
+                    sheet7.Range["B4", "BM204"].Value2 = 0;
+                }
+
+                // ---------- 保存 ----------
+                workbook.Save();
+
+                MessageBox.Show("数据已清空并重置成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("操作 Excel 失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
