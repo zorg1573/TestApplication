@@ -1298,6 +1298,11 @@ namespace TestApp
             Form form = new ChargeControl_Form(this);
             form.ShowDialog();
         }
+        private void 开关矩阵设置ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form form = new KaiguanControl_Form(this);
+            form.ShowDialog();
+        }
         /// <summary>
         /// 测试记录
         /// </summary>
@@ -1538,10 +1543,10 @@ namespace TestApp
 
             var xinhaoDevice = new ScpiDevice();
             var powerMeter = new ScpiDevice();
-
+            var kaiguanDevice = new ScpiDevice();
             bool deviceConnected = await xinhaoDevice.ConnectAsync(xinhaoAddress);
             bool pmConnected = await powerMeter.ConnectAsync(gonglvAddress);
-
+            bool kgConnected = await kaiguanDevice.ConnectAsync(kaiguanAddress);
             if (!deviceConnected || !pmConnected)
             {
                 LogToConsole("设备连接失败");
@@ -1594,6 +1599,9 @@ namespace TestApp
 
                 try
                 {
+                    await kaiguanDevice.SendCommandAsync($"CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync($"CONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
+
                     await xinhaoDevice.SetPower(power);
                     await xinhaoDevice.QueryOpc();
                     await xinhaoDevice.EnableOutput();
@@ -1657,11 +1665,14 @@ namespace TestApp
                 }
                 finally
                 {
+                    await kaiguanDevice.SendCommandAsync($"DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync($"DISCONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
                     LogToConsole("发射测试已完成");
                 }
             }
             xinhaoDevice.Disconnect();
             powerMeter.Disconnect();
+            kaiguanDevice.Disconnect();
             await CloseFPGA();
             await CloseCharge(); // 电源关电
 
@@ -3099,9 +3110,9 @@ namespace TestApp
                 WriteArrayToExcelColumn(inputVswr21, 4, sheetName);
                 WriteArrayToExcelColumn(outputVswr21, 5, sheetName);
 
-                LogToConsole("数据读取完成");
+                LogToConsole("数据写入完成");
 
-                //进度条
+/*                //进度条
                 int num = 0;
                 progressBar1.Maximum = pointCount;
                 progressBar1.Value = 0;
@@ -3156,11 +3167,12 @@ namespace TestApp
                 }
                 finally
                 {
-                    await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
-                    await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
 
-                    LogToConsole($"通道{chNum}接收测试已完成");
-                }
+                }*/
+                await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
+
+                LogToConsole($"通道{chNum}接收测试已完成");
             }
             kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
@@ -4732,25 +4744,33 @@ namespace TestApp
                     }
 
                     // 写入增益
-                    WriteArrayToExcelColumn_New(gain, i + 3, $"接收寄生调幅{chNum}");
+                    WriteArrayToExcelColumn_New(gain, i + 2, $"接收寄生调幅{chNum}");
                 }
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
-                LogToConsole("开始写入测试结果");
-                // 写入解包后的初相（第 i + 2 列）
-                for (int i = 0; i < unwrappedPhases.Count; i++)
+                                     // 改成后台任务执行，不阻塞主线程
+                await Task.Run(() =>
                 {
-                    string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
-                    WriteArrayToExcelColumn_New(phaseStrings, i + 3, $"接收通道相移精度测试结果{chNum}");
-                }
-                SubtractStandardAndWriteResult($"接收通道相移精度测试结果{chNum}");
+                    LogToConsole("开始写入测试结果（后台运行）");
 
-                CalculatePhaseAccuracyAndWriteToExcel($"接收通道相移精度测试结果{chNum}", chNum);
+                    // 写入解包后的初相
+                    for (int i = 1; i <= unwrappedPhases.Count; i++)
+                    {
+                        string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
+                        WriteArrayToExcelColumn_New(phaseStrings, i + 2, $"接收通道相移精度测试结果{chNum}");
+                    }
 
-                CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调幅{chNum}", chNum);
-                LogToConsole($"通道{chNum}接收移相精度测试完成");
+                    SubtractStandardAndWriteResult($"接收通道相移精度测试结果{chNum}");
+
+                    CalculatePhaseAccuracyAndWriteToExcel($"接收通道相移精度测试结果{chNum}", chNum);
+
+                    CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调幅{chNum}", chNum);
+
+                    LogToConsole($"通道{chNum}接收移相精度测试完成（后台运行）");
+                });
+
             }
             kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
@@ -4907,7 +4927,7 @@ namespace TestApp
                         double val = 0; // 先初始化
                         if (cell != null && double.TryParse(cell.Value?.ToString(), out val))
                         {
-                                phaseValues.Add(val);
+                            phaseValues.Add(val);
                         }
                     }
 
@@ -5114,10 +5134,13 @@ namespace TestApp
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
 
-                SubtractStandardAndWriteResult($"接收通道衰减精度测试结果{chNum}");
-                CalculatePhaseAccuracyAndWriteToExcel($"接收通道衰减精度测试结果{chNum}", chNum);
-                CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调相{chNum}", chNum);
-                LogToConsole($"通道{chNum}接收衰减精度测试完成");
+                await Task.Run(() =>
+                {
+                    SubtractStandardAndWriteResult($"接收通道衰减精度测试结果{chNum}");
+                    CalculatePhaseAccuracyAndWriteToExcel($"接收通道衰减精度测试结果{chNum}", chNum);
+                    CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调相{chNum}", chNum);
+                    LogToConsole($"通道{chNum}接收衰减精度测试完成");
+                });
             }
             kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
@@ -5391,25 +5414,27 @@ namespace TestApp
                     }
 
                     // 写入增益
-                    WriteArrayToExcelColumn_New(gain, i + 3, $"发射寄生调幅{chNum}");
+                    WriteArrayToExcelColumn_New(gain, i + 2, $"发射寄生调幅{chNum}");
                 }
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
 
-
-                // 写入解包后的初相（第 i + 2 列）
-                for (int i = 0; i < unwrappedPhases.Count; i++)
+                await Task.Run(() =>
                 {
-                    string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
-                    WriteArrayToExcelColumn_New(phaseStrings, i + 3, $"发射通道相移精度测试结果{chNum}");
-                }
+                    // 写入解包后的初相（第 i + 2 列）
+                    for (int i = 1; i <= unwrappedPhases.Count; i++)
+                    {
+                        string[] phaseStrings = unwrappedPhases[i].Select(v => v.ToString()).ToArray();
+                        WriteArrayToExcelColumn_New(phaseStrings, i + 2, $"发射通道相移精度测试结果{chNum}");
+                    }
 
-                SubtractStandardAndWriteResult($"发射通道相移精度测试结果{chNum}");
+                    SubtractStandardAndWriteResult($"发射通道相移精度测试结果{chNum}");
 
-                CalculatePhaseAccuracyAndWriteToExcel($"发射通道相移精度测试结果{chNum}", chNum);
+                    CalculatePhaseAccuracyAndWriteToExcel($"发射通道相移精度测试结果{chNum}", chNum);
 
-                CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"发射寄生调幅{chNum}", chNum);
+                    CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"发射寄生调幅{chNum}", chNum);
+                });
             }
             kaiguanDevice.Disconnect();
             scpiDevice.Disconnect(); // 释放资源
@@ -5541,6 +5566,7 @@ namespace TestApp
                 MessageBox.Show("操作 Excel 失败：" + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
     }
 }
