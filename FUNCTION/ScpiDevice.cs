@@ -305,7 +305,7 @@ namespace TestApp.FUNCTION
             await SendCommandAsync(":MMEM:LOAD:STAT 1,'C:/R_S/Instr/user/QuickSave/zaosheng.dfl'");
             await SendCommandAsync("*OPC");
             await SendCommandAsync("INIT:IMM");
-            await Task.Delay(10000);
+            await Task.Delay(2000);
 
             //string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
             string data = await QueryAsync("TRAC? TRACE1, NOISe");
