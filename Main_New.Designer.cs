@@ -57,6 +57,7 @@
             this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -98,7 +99,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -377,6 +377,16 @@
             this.toolStripButton6.Size = new System.Drawing.Size(77, 22);
             this.toolStripButton6.Text = "另存为Excel";
             this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(65, 22);
+            this.toolStripButton2.Text = "清空Excel";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click_1);
             // 
             // toolStripButton9
             // 
@@ -665,6 +675,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // tableLayoutPanel1
@@ -737,7 +748,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(94, 34);
             this.button5.TabIndex = 81;
-            this.button5.Text = "发射测试\r\n(增益)";
+            this.button5.Text = "发射增益";
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.start_fasheceshiVNA_Click);
             // 
@@ -763,7 +774,7 @@
             this.button18.Name = "button18";
             this.button18.Size = new System.Drawing.Size(95, 34);
             this.button18.TabIndex = 75;
-            this.button18.Text = "发射测试\r\n(功率)";
+            this.button18.Text = "发射功率";
             this.button18.UseVisualStyleBackColor = false;
             this.button18.Click += new System.EventHandler(this.start_fasheceshi_gonglv_Click);
             // 
@@ -906,16 +917,6 @@
             this.pictureBox3.TabIndex = 2;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(65, 22);
-            this.toolStripButton2.Text = "清空Excel";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click_1);
             // 
             // Main_New
             // 

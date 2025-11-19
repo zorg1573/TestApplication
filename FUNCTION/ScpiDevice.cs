@@ -617,7 +617,7 @@ namespace TestApp.FUNCTION
         }
         public async Task<bool> LoadGonglvState()
         {
-            return await SendCommandAsync("*RCL 2");
+            return await SendCommandAsync("*RCL 3");
         }
         public async Task<bool> SaveGonglvState()
         {
