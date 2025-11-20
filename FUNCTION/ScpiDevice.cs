@@ -418,11 +418,16 @@ namespace TestApp.FUNCTION
             await SendCommandAsync(":SENS5:SWE:MODE CONTinuous");
             //await SendCommandAsync(":TRIG:SEQ:SOUR IMMediate");
         }
+        public async Task SendsjjtStart(string ch)
+        {
+            await SendCommandAsync($":SENS{ch}:SWE:MODE CONTinuous");
+            //await SendCommandAsync(":TRIG:SEQ:SOUR IMMediate");
+        }
         public async Task ScanStart()
         {
             await SendCommandAsync("INIT:CONT ON");
         }
-        public async Task SetNormalize()
+/*        public async Task SetNormalize()
         {
             // 触发单次测量
             await ScanOnce(2);
@@ -434,20 +439,46 @@ namespace TestApp.FUNCTION
             // 选中 Trace 4 再 normalize
             await SendCommandAsync(":CALC2:PAR:SEL 'TRC6'");
             await SendCommandAsync(":CALC2:MEAS6:MATH:NORM");
-        }
-
-        public async Task SetNormalize_Send()
+        }*/
+        public async Task SetNormalize(string ch,int trc)
         {
             // 触发单次测量
-            await ScanOnce(4);
+            await ScanOnce(int.Parse(ch));
             await Task.Delay(1000);
             // 选中 Trace 3 再 normalize
-            await SendCommandAsync(":CALC4:PAR:SEL 'TRC8'");
-            await SendCommandAsync(":CALC4:MEAS8:MATH:NORM");
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:MEAS{trc}:MATH:NORM");
 
             // 选中 Trace 4 再 normalize
-            await SendCommandAsync(":CALC4:PAR:SEL 'TRC9'");
-            await SendCommandAsync(":CALC4:MEAS9:MATH:NORM");
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc+1}'");
+            await SendCommandAsync($":CALC{ch}:MEAS{trc+1}:MATH:NORM");
+        }
+
+        /*        public async Task SetNormalize_Send()
+                {
+                    // 触发单次测量
+                    await ScanOnce(4);
+                    await Task.Delay(1000);
+                    // 选中 Trace 3 再 normalize
+                    await SendCommandAsync(":CALC4:PAR:SEL 'TRC8'");
+                    await SendCommandAsync(":CALC4:MEAS8:MATH:NORM");
+
+                    // 选中 Trace 4 再 normalize
+                    await SendCommandAsync(":CALC4:PAR:SEL 'TRC9'");
+                    await SendCommandAsync(":CALC4:MEAS9:MATH:NORM");
+                }*/
+        public async Task SetNormalize_Send(string ch, int trc)
+        {
+            // 触发单次测量
+            await ScanOnce(int.Parse(ch));
+            await Task.Delay(1000);
+            // 选中 Trace 3 再 normalize
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:MEAS{trc}:MATH:NORM");
+
+            // 选中 Trace 4 再 normalize
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc+1}'");
+            await SendCommandAsync($":CALC{ch}:MEAS{trc + 1}:MATH:NORM");
         }
 
         // 获取 S12 增益（对数幅度，dB）
@@ -459,11 +490,27 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetGainStringAsync(string ch,int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM MLOG");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
         public async Task<string[]> GetGain_Yasuodian()
         {
             await SendCommandAsync(":CALC3:PAR:SEL 'TRC7'");
             await SendCommandAsync(":CALC3:FORM MLOG");
             string data = await QueryAsync(":CALC3:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
+        public async Task<string[]> GetGain_Yasuodian(string ch, int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM MLOG");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -475,11 +522,27 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetGain_Send(string ch,int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM MLOG");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
         public async Task<string[]> GetGainStringAsync_New()
         {
             await SendCommandAsync(":CALC2:PAR:SEL 'TRC5'");
             await SendCommandAsync(":CALC2:FORM MLOG");
             string data = await QueryAsync(":CALC2:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
+        public async Task<string[]> GetGainStringAsync_New(string ch, int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM MLOG");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -492,12 +555,28 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetInputVSWRStringAsync(string ch, int trc)
+        {
+            await SendCommandAsync($"CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($"CALC{ch}:FORM SWR");
+            string data = await QueryAsync($"CALC{ch}:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
         // 获取 S22 驻波比（VSWR）
         public async Task<string[]> GetOutputVSWRStringAsync()
         {
             await SendCommandAsync("CALC:PAR:SEL 'TRC4'");
             await SendCommandAsync("CALC:FORM SWR");
             string data = await QueryAsync("CALC:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
+        public async Task<string[]> GetOutputVSWRStringAsync(string ch, int trc)
+        {
+            await SendCommandAsync($"CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($"CALC{ch}:FORM SWR");
+            string data = await QueryAsync($"CALC{ch}:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -510,6 +589,14 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetInitialPhaseStringAsync(string ch, int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM UPH");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
         public async Task<string[]> GetPhase_Send()
         {
             await SendCommandAsync(":CALC4:PAR:SEL 'TRC9'");
@@ -518,11 +605,27 @@ namespace TestApp.FUNCTION
             string[] parts = data?.Split(',');
             return parts;
         }
+        public async Task<string[]> GetPhase_Send(string ch, int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM UPH");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
         public async Task<string[]> GetInitialPhaseStringAsync_New()
         {
             await SendCommandAsync(":CALC2:PAR:SEL 'TRC6'");
             await SendCommandAsync(":CALC2:FORM UPH");
             string data = await QueryAsync(":CALC2:DATA? FDATA");
+            string[] parts = data?.Split(',');
+            return parts;
+        }
+        public async Task<string[]> GetInitialPhaseStringAsync_New(string ch, int trc)
+        {
+            await SendCommandAsync($":CALC{ch}:PAR:SEL 'TRC{trc}'");
+            await SendCommandAsync($":CALC{ch}:FORM UPH");
+            string data = await QueryAsync($":CALC{ch}:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -573,6 +676,10 @@ namespace TestApp.FUNCTION
         public async Task<bool> SetVNACWFreq(double freq)
         {
             return await SendCommandAsync($":SENS5:FREQ:CW {freq}");
+        }
+        public async Task<bool> SetVNACWFreq(double freq, string ch)
+        {
+            return await SendCommandAsync($":SENS{ch}:FREQ:CW {freq}");
         }
         #endregion
 
