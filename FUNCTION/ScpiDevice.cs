@@ -291,48 +291,91 @@ namespace TestApp.FUNCTION
 
         public async Task<string[]> GetZaoshengData()
         {
-            /*            await SendCommandAsync(":INST:SEL NFIGURE");
-                        await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
-                        await SendCommandAsync(":INIT:CONT OFF");
-                        await SendCommandAsync(":INIT:REST");
-                        string opc = await QueryAsync("*OPC?");
+            await SendCommandAsync(":INST:SEL NFIGURE");
+            await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
+            await SendCommandAsync(":INIT:CONT OFF");
+            await SendCommandAsync(":INIT:REST");
+            string opc = await QueryAsync("*OPC?");
 
-                        string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
+            const int maxTry = 50; // 最多尝试次数
+            string[] finalValues = null;
+
+            for (int n = 1; n <= maxTry; n++)
+            {
+                string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
+
+                if (string.IsNullOrWhiteSpace(data))
+                    continue;
+
+                string[] parts = data.Split(',');
+                if (parts.Length == 0)
+                    continue;
+
+                if (finalValues == null)
+                    finalValues = new string[parts.Length];
+
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    string raw = parts[i]?.Trim() ?? "";
+
+                    // ------- 判定是否有效 -------
+                    bool ok = double.TryParse(raw, out double v) &&
+                              !double.IsNaN(v) &&
+                              v != 0 &&
+                              Math.Abs(v - 9.9099995E+37) > 1e30 &&
+                              Math.Abs(v + 9.91E+37) > 1e30;
+
+                    if (ok)
+                        finalValues[i] = v.ToString();
+                }
+
+                // ------- 检查是否全部有效 -------
+                bool allValid = finalValues.All(s =>
+                    double.TryParse(s, out double v) &&
+                    !double.IsNaN(v) &&
+                    v != 0 &&
+                    Math.Abs(v - 9.9099995E+37) > 1e30 &&
+                    Math.Abs(v + 9.91E+37) > 1e30);
+
+                if (allValid)
+                    return finalValues;
+
+                await Task.Delay(500);
+            }
+
+            return finalValues;
+        
+            /*            await SendCommandAsync(":MMEM:LOAD:STAT 1,'C:/R_S/Instr/user/QuickSave/zaosheng.dfl'");
+                        await SendCommandAsync("*OPC");
+                        await SendCommandAsync("INIT:IMM");
+                        await Task.Delay(2000);
+
+                        //string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
+                        string data = await QueryAsync("TRAC? TRACE1, NOISe");
+                        await SendCommandAsync("*OPC");
                         if (string.IsNullOrWhiteSpace(data)) return null;
 
                         string[] parts = data.Split(',');
-                        return parts;*/
-            await SendCommandAsync(":MMEM:LOAD:STAT 1,'C:/R_S/Instr/user/QuickSave/zaosheng.dfl'");
-            await SendCommandAsync("*OPC");
-            await SendCommandAsync("INIT:IMM");
-            await Task.Delay(2000);
 
-            //string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
-            string data = await QueryAsync("TRAC? TRACE1, NOISe");
-            await SendCommandAsync("*OPC");
-            if (string.IsNullOrWhiteSpace(data)) return null;
-
-            string[] parts = data.Split(',');
-
-            // 将每个字符串尝试转换为 double，否则设为 NaN
-            string[] values = parts
-                .Select(p =>
-                {
-                    if (double.TryParse(p, out double val))
-                    {
-                        // 检查是否是无效的特殊值
-                        if (Math.Abs(val - 9.9099995E+37) < 1e30)
-                            return double.NaN.ToString();
-                        else
-                            return val.ToString();
-                    }
-                    else
-                    {
-                        return double.NaN.ToString();
-                    }
-                })
-                .ToArray();
-            return values;
+                        // 将每个字符串尝试转换为 double，否则设为 NaN
+                        string[] values = parts
+                            .Select(p =>
+                            {
+                                if (double.TryParse(p, out double val))
+                                {
+                                    // 检查是否是无效的特殊值
+                                    if (Math.Abs(val - 9.9099995E+37) < 1e30)
+                                        return double.NaN.ToString();
+                                    else
+                                        return val.ToString();
+                                }
+                                else
+                                {
+                                    return double.NaN.ToString();
+                                }
+                            })
+                            .ToArray();
+                        return values;*/
         }
         #endregion
         #region 三阶交调
@@ -420,7 +463,7 @@ namespace TestApp.FUNCTION
         {
             await SendCommandAsync(":CALC3:PAR:SEL 'TRC7'");
             await SendCommandAsync(":CALC3:FORM MLOG");
-            string data = await QueryAsync(":CALC:DATA? FDATA");
+            string data = await QueryAsync(":CALC3:DATA? FDATA");
             string[] parts = data?.Split(',');
             return parts;
         }
@@ -617,7 +660,7 @@ namespace TestApp.FUNCTION
         }
         public async Task<bool> LoadGonglvState()
         {
-            return await SendCommandAsync("*RCL 3");
+            return await SendCommandAsync("*RCL 4");
         }
         public async Task<bool> SaveGonglvState()
         {
