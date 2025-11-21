@@ -196,6 +196,12 @@ namespace TestApp.FUNCTION
             string resp = await QueryAsync(":CALC:MARK:Y?");
             return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
         }
+        public async Task<double?> ReadMarkerPowerAsync(int index)
+        {
+            //string resp = await QueryAsync(":CALC:MARK1:Y?");
+            string resp = await QueryAsync($":CALC:MARK{index}:Y?");
+            return double.TryParse(resp?.Trim(), out double val) ? (double?)val : null;
+        }
         public async Task<double?> ReadPowerAtFrequencyAsync(double freqHz)
         {
             await SendCommandAsync(":CALC:MARK1:STATE ON");
@@ -291,8 +297,7 @@ namespace TestApp.FUNCTION
 
         public async Task<string[]> GetZaoshengData()
         {
-            await SendCommandAsync(":INST:SEL NFIGURE");
-            await SendCommandAsync(":MMEM:LOAD:STATe '/usrdata/Data/1517.sta'");
+
             await SendCommandAsync(":INIT:CONT OFF");
             await SendCommandAsync(":INIT:REST");
             string opc = await QueryAsync("*OPC?");
@@ -407,6 +412,10 @@ namespace TestApp.FUNCTION
         public async Task ScanOnce(int channel)
         {
             await SendCommandAsync($":SENS{channel}:SWE:MODE SINGle");
+        }
+        public async Task ScanOnceString(string ch)
+        {
+            await SendCommandAsync($":SENS{ch}:SWE:MODE SINGle");
         }
         public async Task SendGainStart()
         {
