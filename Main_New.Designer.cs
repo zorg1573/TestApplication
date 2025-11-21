@@ -458,8 +458,8 @@
             this.flowLayoutPanel2.Controls.Add(this.operator_textBox);
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.componentName_textBox);
-            this.flowLayoutPanel2.Controls.Add(this.label1);
             this.flowLayoutPanel2.Controls.Add(this.progressBar1);
+            this.flowLayoutPanel2.Controls.Add(this.label1);
             this.flowLayoutPanel2.Controls.Add(this.ch1_checkBox);
             this.flowLayoutPanel2.Controls.Add(this.ch2_checkBox);
             this.flowLayoutPanel2.Controls.Add(this.ch3_checkBox);
@@ -537,7 +537,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(509, 0);
+            this.label1.Location = new System.Drawing.Point(615, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(26, 17);
             this.label1.TabIndex = 60;
@@ -545,7 +545,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(541, 3);
+            this.progressBar1.Location = new System.Drawing.Point(509, 3);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(100, 20);
             this.progressBar1.TabIndex = 59;
