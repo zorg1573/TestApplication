@@ -4488,7 +4488,7 @@ namespace TestApp
                 }
 
                 WriteArrayToExcelColumn(gain21, 13, sheetName);
-                WriteArrayToExcelColumn(pset21, 14, sheetName);
+                //WriteArrayToExcelColumn(pset21, 14, sheetName);
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
@@ -5496,7 +5496,7 @@ namespace TestApp
                 LoadVNAState(); // 调用矢网文件
                 await Task.Delay(3000); // 延时保证设备稳定
             }
-            await ChargeSendPowerON(); // 发射加电
+            
             //await SendTestUDP(); //FPGA发包
             //await Task.Delay(500); // 延时保证设备稳定
 
@@ -5526,6 +5526,7 @@ namespace TestApp
             }
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
+                await ChargeSendPowerON(); // 发射加电
                 int chNum = selectedCHList[idx];
                 string sheetName = $"测试结果{chNum}";
 
@@ -5538,7 +5539,7 @@ namespace TestApp
                 }
 
                 await SendTestUDP(chNum); //FPGA发包
-                await Task.Delay(250); // 延时保证设备稳定
+                await Task.Delay(1000); // 延时保证设备稳定
 
                 await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
@@ -5599,6 +5600,10 @@ namespace TestApp
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
+                kaiguanDevice.Disconnect();
+                scpiDevice.Disconnect(); // 释放资源
+                await CloseFPGA();
+                await CloseCharge(); // 电源关电
 
                 await Task.Run(() =>
                 {
@@ -5616,10 +5621,7 @@ namespace TestApp
                     CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"发射寄生调幅{chNum}", chNum);
                 });
             }
-            kaiguanDevice.Disconnect();
-            scpiDevice.Disconnect(); // 释放资源
-            await CloseFPGA();
-            await CloseCharge(); // 电源关电
+
 
         }
 
@@ -5832,6 +5834,9 @@ public string[] ApplyNoiseCompensation_FromExcel(
         }
     }
 
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
 
-}
+        }
+    }
 }
