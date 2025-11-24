@@ -1039,7 +1039,7 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int fasheYizhiColumn = 18;  // I列
+                int fasheYizhiColumn = 16;  // I列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -1083,9 +1083,10 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int powerColumn = 19;
-                int xiaolvColumn = 21;
-                int dingJiangColumn = 20;
+                int powerColumn = 17;
+                int dingJiangColumn = 18;
+                int xiaolvColumn = 19;
+
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -1627,7 +1628,7 @@ namespace TestApp
                         ch4send = "1";
                     }
 
-                    string tr = "0" + ch4send + "0" + ch3send + "0" + ch2send + "0" + ch1send;
+                    string tr = "0" + ch4send + "0" + ch2send + "0" + ch3send + "0" + ch1send;
                     string ta = new string('0', 24);
                     string tp = new string('0', 24);
                     string ra = new string('0', 24);
@@ -4424,12 +4425,13 @@ namespace TestApp
                 { 3, ch3chasun },
                 { 4, ch4chasun }
             };
-            double startPower = -35;
-            double stopPower = -8;
+            double startPower = -30;
+            double stopPower = -20;
             double stepPower = (stopPower - startPower) / 200;
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
                 string[] gain21 = new string[pointCount];
+                string[] pset21 = new string[pointCount];
 
                 int chNum = selectedCHList[idx];
                 string sheetName = $"测试结果{chNum}";
@@ -4468,6 +4470,9 @@ namespace TestApp
 
                     for (int p = 1; p < gain.Length; p++)
                     {
+                        if((startPower + p * stepPower) == -20){
+                            pset21[i] = gain[p].ToString();
+                        }
                         if (gain[p] <= g0 - 1.0)   // 1dB 压缩点条件
                         {
                             compressionPower = startPower + p * stepPower;
@@ -4483,7 +4488,7 @@ namespace TestApp
                 }
 
                 WriteArrayToExcelColumn(gain21, 13, sheetName);
-
+                WriteArrayToExcelColumn(pset21, 14, sheetName);
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
@@ -4815,35 +4820,88 @@ namespace TestApp
         }
         public void SubtractStandardAndWriteResult(string sheetName)
         {
-            LogToConsole("开始写入数据差值");
+            /*            LogToConsole("开始写入数据差值");
+                        var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+                        var workbook = excelApp.ActiveWorkbook;
+                        Excel.Worksheet phaseSheet = workbook.Sheets[sheetName];
+
+                        int startCol = 2;  // 从第2列开始
+                        int endCol = 65;
+
+                        for (int col = startCol; col <= endCol; col++)
+                        {
+                            // 获取标准值（第3行）
+                            object standardObj = phaseSheet.Cells[3, col].Value;
+                            if (standardObj == null || !double.TryParse(standardObj.ToString(), out double standardValue))
+                                continue; // 跳过该列
+
+                            // 遍历第4~204行
+                            for (int row = 4; row <= 204; row++)
+                            {
+                                object cellValueObj = phaseSheet.Cells[row, col].Value;
+                                if (cellValueObj != null && double.TryParse(cellValueObj.ToString(), out double measuredValue))
+                                {
+                                    double result = measuredValue - standardValue;
+                                    int targetRow = 209 + (row - 4);
+                                    phaseSheet.Cells[targetRow, col].Value = result;
+                                }
+                            }
+                        }
+
+                        LogToConsole("数据差值写入完成");*/
+            LogToConsole("开始写入数据差值（按目标频率点过滤）");
+
             var excelApp = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
             var workbook = excelApp.ActiveWorkbook;
             Excel.Worksheet phaseSheet = workbook.Sheets[sheetName];
 
-            int startCol = 2;  // 从第2列开始
+            int startCol = 2;
             int endCol = 65;
+
+            // 允许 0.01 GHz 的匹配误差（Excel 精度避免错误）
+            const double tolerance = 0.0001;
+
+            double step = (stopFreq - startFreq) / (pointCount - 1);
+            double[] selectedFreqGHz = Enumerable.Range(0, pointCount).Select(i => (startFreq + i * step) * 1e-9).ToArray();
 
             for (int col = startCol; col <= endCol; col++)
             {
-                // 获取标准值（第3行）
                 object standardObj = phaseSheet.Cells[3, col].Value;
                 if (standardObj == null || !double.TryParse(standardObj.ToString(), out double standardValue))
-                    continue; // 跳过该列
+                    continue;
 
-                // 遍历第4~204行
+                // 遍历所有频率行（第 4 到 204 行）
                 for (int row = 4; row <= 204; row++)
                 {
-                    object cellValueObj = phaseSheet.Cells[row, col].Value;
-                    if (cellValueObj != null && double.TryParse(cellValueObj.ToString(), out double measuredValue))
+                    // A 列（第 1 列）存频率
+                    object freqObj = phaseSheet.Cells[row, 1].Value;
+
+                    if (freqObj == null || !double.TryParse(freqObj.ToString(), out double freqGHz))
+                        continue;
+
+                    // ⭐ 判断该行频率是否在目标频率列表中
+                    bool isTargetFreq =
+                        selectedFreqGHz.Any(f => Math.Abs(f - freqGHz) < tolerance);
+
+                    if (!isTargetFreq)
+                        continue; // 跳过非目标频率
+
+                    // 处理有效相位
+                    object cellValObj = phaseSheet.Cells[row, col].Value;
+
+                    if (cellValObj != null &&
+                        double.TryParse(cellValObj.ToString(), out double measuredValue))
                     {
                         double result = measuredValue - standardValue;
+
+                        // 对应写入 209+(row-4)
                         int targetRow = 209 + (row - 4);
                         phaseSheet.Cells[targetRow, col].Value = result;
                     }
                 }
             }
 
-            LogToConsole("数据差值写入完成");
+            LogToConsole("差值写入完成（已按目标频率点过滤）");
         }
 
 
@@ -4918,7 +4976,7 @@ namespace TestApp
                         }
                         if (sheetName.Equals($"发射通道相移精度测试结果{chNum}"))
                         {
-                            resultSheet.Cells[resultRow, 16].Value = rms.ToString();
+                            resultSheet.Cells[resultRow, 14].Value = rms.ToString();
                         }
                     }
 
@@ -4982,11 +5040,11 @@ namespace TestApp
                         }
                         if (sheetName.Equals($"接收寄生调相{chNum}"))
                         {
-                            resultSheet.Cells[resultRow, 11].Value = rms.ToString();
+                            resultSheet.Cells[resultRow, 10].Value = rms.ToString();
                         }
                         if (sheetName.Equals($"发射寄生调幅{chNum}"))
                         {
-                            resultSheet.Cells[resultRow, 17].Value = rms.ToString();
+                            resultSheet.Cells[resultRow, 15].Value = rms.ToString();
                         }
                     }
 
@@ -5105,7 +5163,7 @@ namespace TestApp
                         ch4recieve = "1";
                     }
 
-                    string tr = ch4recieve + "0" + ch3recieve + "0" + ch2recieve + "0" + ch1recieve + "0";
+                    string tr = ch4recieve + "0" + ch2recieve + "0" + ch3recieve + "0" + ch1recieve + "0";
                     string ta = new string('0', 24);
                     string tp = new string('0', 24);
                     string ra = new string('0', 24);
@@ -5480,7 +5538,7 @@ namespace TestApp
                 }
 
                 await SendTestUDP(chNum); //FPGA发包
-                await Task.Delay(500); // 延时保证设备稳定
+                await Task.Delay(250); // 延时保证设备稳定
 
                 await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");

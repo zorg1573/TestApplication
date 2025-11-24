@@ -70,8 +70,8 @@
             this.operator_textBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.componentName_textBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.label1 = new System.Windows.Forms.Label();
             this.ch1_checkBox = new System.Windows.Forms.CheckBox();
             this.ch2_checkBox = new System.Windows.Forms.CheckBox();
             this.ch3_checkBox = new System.Windows.Forms.CheckBox();
@@ -86,7 +86,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.button16 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.button18 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
@@ -533,6 +532,13 @@
             this.componentName_textBox.Size = new System.Drawing.Size(100, 29);
             this.componentName_textBox.TabIndex = 64;
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(509, 3);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(100, 20);
+            this.progressBar1.TabIndex = 59;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -542,13 +548,6 @@
             this.label1.Size = new System.Drawing.Size(26, 17);
             this.label1.TabIndex = 60;
             this.label1.Text = "0%";
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(509, 3);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(100, 20);
-            this.progressBar1.TabIndex = 59;
             // 
             // ch1_checkBox
             // 
@@ -692,11 +691,7 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.button16, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.button10, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.button5, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.button18, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.button11, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.button15, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.button17, 1, 1);
@@ -704,6 +699,9 @@
             this.tableLayoutPanel1.Controls.Add(this.button19, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.button21, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.button18, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.button10, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.button16, 0, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -723,10 +721,10 @@
             this.button16.BackColor = System.Drawing.Color.White;
             this.button16.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button16.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button16.Location = new System.Drawing.Point(105, 233);
+            this.button16.Location = new System.Drawing.Point(4, 233);
             this.button16.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(95, 35);
+            this.button16.Size = new System.Drawing.Size(94, 35);
             this.button16.TabIndex = 76;
             this.button16.Text = "发射抑制";
             this.button16.UseVisualStyleBackColor = false;
@@ -737,28 +735,14 @@
             this.button10.BackColor = System.Drawing.Color.White;
             this.button10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button10.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button10.Location = new System.Drawing.Point(4, 233);
+            this.button10.Location = new System.Drawing.Point(105, 189);
             this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(94, 35);
+            this.button10.Size = new System.Drawing.Size(95, 34);
             this.button10.TabIndex = 82;
             this.button10.Text = "FS移相精度";
             this.button10.UseVisualStyleBackColor = false;
             this.button10.Click += new System.EventHandler(this.start_fasheyixiang_test_Click);
-            // 
-            // button5
-            // 
-            this.button5.BackColor = System.Drawing.Color.White;
-            this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button5.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button5.Location = new System.Drawing.Point(4, 189);
-            this.button5.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(94, 34);
-            this.button5.TabIndex = 81;
-            this.button5.Text = "发射增益";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.start_fasheceshiVNA_Click);
             // 
             // label5
             // 
@@ -777,10 +761,10 @@
             this.button18.BackColor = System.Drawing.Color.White;
             this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button18.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button18.Location = new System.Drawing.Point(105, 189);
+            this.button18.Location = new System.Drawing.Point(4, 189);
             this.button18.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(95, 34);
+            this.button18.Size = new System.Drawing.Size(94, 34);
             this.button18.TabIndex = 75;
             this.button18.Text = "发射功率";
             this.button18.UseVisualStyleBackColor = false;
@@ -1004,7 +988,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadPinpudwyz_ToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Button button15;
