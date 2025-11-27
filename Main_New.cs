@@ -4,6 +4,7 @@ using MetroFramework.Forms;
 using PacketDotNet;
 using SharpPcap;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -29,8 +30,9 @@ namespace TestApp
         private Timer measureTimer;
         private ScpiDevice powerMeterPublic;
         private bool isMeasuring = false;
+        private readonly BlockingCollection<Func<Task>> _excelTaskQueue = new BlockingCollection<Func<Task>>();
         #region 变量
-    //DeviceFiles_Ku.json
+        //DeviceFiles_Ku.json
         string excelPath = "";
         string vnaFilePath = "";
         string excelMobanPath = "";
@@ -113,8 +115,25 @@ namespace TestApp
             GetTestSetNewJson();
             LoadVNAState();
             InitializeDSO();
+            StartExcelWorker();
         }
         #region 通用方法
+
+        private void StartExcelWorker()
+        {
+            Task.Run(async () =>
+            {
+                foreach (var task in _excelTaskQueue.GetConsumingEnumerable())
+                {
+                    // 回 UI 线程执行 Excel 操作
+                    await this.InvokeAsync(async () =>
+                    {
+                        await task();
+                    });
+                }
+            });
+        }
+
         private void GetAddress()
         {
             try
@@ -789,6 +808,7 @@ namespace TestApp
         {
             try
             {
+                LogToConsole("开始写入采集结果");
                 // 去除每个字符串的空格
                 string[] cleanedData = data.Select(s => s.Replace("\n", "")).ToArray();
 
@@ -4794,25 +4814,27 @@ namespace TestApp
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
                                      // 改成后台任务执行，不阻塞主线程
-                await Task.Run(() =>
+                _excelTaskQueue.Add(async () =>
                 {
-                    LogToConsole("开始写入测试结果（后台运行）");
+                    LogToConsole($"开始后台写入通道{chNum}结果");
 
-                    // 写入解包后的初相
+                    // 写入解包后的相位
                     for (int i = 1; i <= unwrappedPhases.Count; i++)
                     {
-                        string[] phaseStrings = unwrappedPhases[i-1].Select(v => v.ToString()).ToArray();
+                        string[] phaseStrings = unwrappedPhases[i - 1]
+                            .Select(v => v.ToString()).ToArray();
+
                         WriteArrayToExcelColumn_New(phaseStrings, i + 2, $"接收通道相移精度测试结果{chNum}");
                     }
 
+                    // 计算结果
                     SubtractStandardAndWriteResult($"接收通道相移精度测试结果{chNum}");
-
                     CalculatePhaseAccuracyAndWriteToExcel($"接收通道相移精度测试结果{chNum}", chNum);
-
                     CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调幅{chNum}", chNum);
 
-                    LogToConsole($"通道{chNum}接收移相精度测试完成（后台运行）");
+                    LogToConsole($"通道{chNum} 写入与计算完成（后台 UI）");
                 });
+
 
             }
             kaiguanDevice.Disconnect();
@@ -5296,7 +5318,7 @@ namespace TestApp
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
 
-                await Task.Run(() =>
+                _excelTaskQueue.Add(async () =>
                 {
                     SubtractStandardAndWriteResult($"接收通道衰减精度测试结果{chNum}");
                     CalculatePhaseAccuracyAndWriteToExcel($"接收通道衰减精度测试结果{chNum}", chNum);
@@ -5605,7 +5627,7 @@ namespace TestApp
                 await CloseFPGA();
                 await CloseCharge(); // 电源关电
 
-                await Task.Run(() =>
+                _excelTaskQueue.Add(async () =>
                 {
                     // 写入解包后的初相（第 i + 2 列）
                     for (int i = 1; i <= unwrappedPhases.Count; i++)
@@ -5644,6 +5666,7 @@ namespace TestApp
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            _excelTaskQueue.CompleteAdding();
             this.Close();
         }
 

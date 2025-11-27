@@ -224,6 +224,7 @@
     <Compile Include="DAL\DbConfigHelper.cs" />
     <Compile Include="DAL\Main_DAL.cs" />
     <Compile Include="DAL\OperateLog_DAL.cs" />
+    <Compile Include="MODEL\ControlExtensions.cs" />
     <Compile Include="MODEL\DbConfig.cs" />
     <Compile Include="MODEL\MeasurementBatch.cs" />
     <Compile Include="MODEL\MeasurementResult.cs" />
