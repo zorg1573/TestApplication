@@ -20,11 +20,13 @@ namespace TestApp.PAGE
     public partial class DeviceAddressNew_Form : MetroForm
     {
         private Main_New mainForm;
-        public DeviceAddressNew_Form(Main_New mainForm)
-        {
+        private string _deviceAddressPath;
+        public DeviceAddressNew_Form(Main_New mainForm,string deviceAddressPath)
+        {            
             InitializeComponent();
             this.Load += DeviceAddressNew_Form_Load;
             this.mainForm = mainForm;
+            _deviceAddressPath = deviceAddressPath;
         }
         private void DeviceAddressNew_Form_Load(object sender, EventArgs e)
         {
@@ -43,12 +45,12 @@ namespace TestApp.PAGE
             }
 
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("DeviceAddressNew_KU.json", json);
+            File.WriteAllText("DeviceAddress_KU.json", json);
         }
 
         private void LoadFromJson()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew_KU.json");
+            string filePath = _deviceAddressPath;
             if (!File.Exists(filePath))
                 return;
 

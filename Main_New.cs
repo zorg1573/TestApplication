@@ -114,6 +114,7 @@ namespace TestApp
             this.testType_comboBox.SelectedIndex = 0;
             this.operator_textBox.Text = "操作员";
             this.componentName_textBox.Text = "Ku";
+            GetJsonPath();
             GetAddress();
             GetDeviceFilesJson();
             GetTestSetNewJson();
@@ -481,6 +482,7 @@ namespace TestApp
 
                 // Excel 文件路径
                 excelPath = Path.Combine(excelPath, "测试模板Ku.xls");
+                LogToConsole("打开文件：" + excelPath);
                 if (File.Exists(excelPath))
                 {
                     _axFramerControl.Open(excelPath, false, "Excel.Sheet", "", "");
@@ -1295,7 +1297,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void device_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new DeviceAddressNew_Form(this);
+            Form form = new DeviceAddressNew_Form(this, deviceAddressPath);
             form.ShowDialog();
         }
         /// <summary>
@@ -1305,7 +1307,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void deviceFile_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new DeviceFiles_Form();
+            Form form = new DeviceFiles_Form(deviceFilesPath);
             form.ShowDialog();
         }
         /// <summary>
@@ -1315,7 +1317,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void testSet_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new TestSet_New_Form();
+            Form form = new TestSet_New_Form(testSetPath);
             form.ShowDialog();
         }
         /// <summary>

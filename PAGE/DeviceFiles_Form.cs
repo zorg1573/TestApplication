@@ -15,10 +15,12 @@ namespace TestApp.PAGE
 {
     public partial class DeviceFiles_Form : MetroForm
     {
-        public DeviceFiles_Form()
+        private string _deviceFilesPath;
+        public DeviceFiles_Form(string deviceFilesPath)
         {
             InitializeComponent();
             this.Load += DeviceFiles_Form_Load;
+            _deviceFilesPath = deviceFilesPath;
         }
         private void DeviceFiles_Form_Load(object sender, EventArgs e)
         {
@@ -55,7 +57,7 @@ namespace TestApp.PAGE
 
         private void LoadFromJson()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceFiles_Ku.json");
+            string filePath = _deviceFilesPath;
             if (!File.Exists(filePath))
                 return;
 
