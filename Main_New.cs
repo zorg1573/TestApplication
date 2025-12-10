@@ -32,6 +32,10 @@ namespace TestApp
         private bool isMeasuring = false;
         private readonly BlockingCollection<Func<Task>> _excelTaskQueue = new BlockingCollection<Func<Task>>();
         #region 变量
+        //JsonSet_DBF.json
+        string deviceAddressPath = "";
+        string deviceFilesPath = "";
+        string testSetPath = "";
         //DeviceFiles_Ku.json
         string excelPath = "";
         string vnaFilePath = "";
@@ -44,7 +48,7 @@ namespace TestApp
         //string vnaSjjtPath = "";
 
 
-    //DeviceAddressNew.json
+    //DeviceAddressNew_KU.json
         string chargeAddress = "";
         string vnaAddress = "";
         string gonglvAddress = "";
@@ -62,7 +66,7 @@ namespace TestApp
         //static string srcIpStr = "192.168.0.3";
         //static string dstIpStr = "192.168.0.2";
 
-    //TestSetNew.json
+    //TestSet_KU.json
         double power = -1;
         double startFreq = -1;
         double stopFreq = -1;
@@ -133,12 +137,47 @@ namespace TestApp
                 }
             });
         }
+        private void GetJsonPath()
+        {
+            try
+            {
+                string filePath = "JsonSet_KU.json";
+                if (!File.Exists(filePath))
+                    return;
 
+                string json = File.ReadAllText(filePath);
+                var data = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                data.TryGetValue("deviceAddress_textBox", out object path1);
+                if (path1 != null)
+                {
+                    deviceAddressPath = path1.ToString();
+                }
+
+                data.TryGetValue("deviceFiles_textBox", out object path2);
+                if (path2 != null)
+                {
+                    deviceFilesPath = path2.ToString();
+                }
+
+                data.TryGetValue("testSet_textBox", out object path3);
+                if (path3 != null)
+                {
+                    testSetPath = path3.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载JsonSet_KU.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
         private void GetAddress()
         {
             try
             {
-                string filePath = "DeviceAddressNew.json";
+                string filePath = deviceAddressPath;
                 if (!File.Exists(filePath))
                     return;
 
@@ -222,7 +261,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = "DeviceFiles_Ku.json";
+                string filePath = deviceFilesPath;
                 if (!File.Exists(filePath))
                     return;
 
@@ -293,7 +332,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = "TestSetNew.json";
+                string filePath = testSetPath;
                 if (!File.Exists(filePath))
                     return;
 
@@ -375,7 +414,7 @@ namespace TestApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("加载TestSetNew.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("加载TestSet_KU.json失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         /*        private void InitializeDSO()
@@ -5772,94 +5811,103 @@ namespace TestApp
             }
         }
 
-public string[] ApplyNoiseCompensation_FromExcel(
-    string[] noiseValues,
-    int channel
-)
-    {
-        if (noiseValues == null || noiseValues.Length != 21)
-            throw new Exception("噪声数据必须是 21 个点！");
-
-            Excel.Application excelApp = new Excel.Application();
-            string excelP = buchangFilePath;
-            Excel.Workbook workbook = excelApp.Workbooks.Open(excelP);
-            Excel.Worksheet sheet = workbook.Worksheets[1]; ;
-
-        try
-        {
-
-            List<double> freqList = new List<double>();
-            List<double> compList = new List<double>();
-
-            // ---------- 1. 读取补偿表 ----------
-            int row = 3; // A3 开始为频率点
-
-            while (true)
+        public string[] ApplyNoiseCompensation_FromExcel(
+            string[] noiseValues,
+            int channel
+        )
             {
-                var freqObj = sheet.Cells[row, 1].Value2; // A列
-                if (freqObj == null)
-                    break;
+                if (noiseValues == null || noiseValues.Length != 21)
+                    throw new Exception("噪声数据必须是 21 个点！");
 
-                double freq = Convert.ToDouble(freqObj);
-                freqList.Add(freq);
+                    Excel.Application excelApp = new Excel.Application();
+                    string excelP = buchangFilePath;
+                    Excel.Workbook workbook = excelApp.Workbooks.Open(excelP);
+                    Excel.Worksheet sheet = workbook.Worksheets[1]; ;
 
-                // B=2 C=3 D=4 E=5
-                double comp = Convert.ToDouble(sheet.Cells[row, 1 + channel].Value2);
-                compList.Add(comp);
-
-                row++;
-            }
-
-            if (freqList.Count != 201)
-                throw new Exception("补偿表不是 201 行，请检查 Excel 表是否正确！");
-
-            string[] resultString = new string[21];
-            double[] result = new double[21];
-
-                // ---------- 2. 对齐 21 点噪声频率并补偿 ----------
-            for (int i = 0; i < 21; i++)
-            {
-                double freq = 15.0 + i * 0.1; // 15GHz → 17GHz
-
-                // 找补偿表中最接近的频率点
-                int nearestIndex = 0;
-                double minDiff = double.MaxValue;
-
-                for (int k = 0; k < freqList.Count; k++)
+                try
                 {
-                    double diff = Math.Abs(freqList[k] - freq);
-                    if (diff < minDiff)
+
+                    List<double> freqList = new List<double>();
+                    List<double> compList = new List<double>();
+
+                    // ---------- 1. 读取补偿表 ----------
+                    int row = 3; // A3 开始为频率点
+
+                    while (true)
                     {
-                        minDiff = diff;
-                        nearestIndex = k;
+                        var freqObj = sheet.Cells[row, 1].Value2; // A列
+                        if (freqObj == null)
+                            break;
+
+                        double freq = Convert.ToDouble(freqObj);
+                        freqList.Add(freq);
+
+                        // B=2 C=3 D=4 E=5
+                        double comp = Convert.ToDouble(sheet.Cells[row, 1 + channel].Value2);
+                        compList.Add(comp);
+
+                        row++;
                     }
+
+                    if (freqList.Count != 201)
+                        throw new Exception("补偿表不是 201 行，请检查 Excel 表是否正确！");
+
+                    string[] resultString = new string[21];
+                    double[] result = new double[21];
+
+                        // ---------- 2. 对齐 21 点噪声频率并补偿 ----------
+                    for (int i = 0; i < 21; i++)
+                    {
+                        double freq = 15.0 + i * 0.1; // 15GHz → 17GHz
+
+                        // 找补偿表中最接近的频率点
+                        int nearestIndex = 0;
+                        double minDiff = double.MaxValue;
+
+                        for (int k = 0; k < freqList.Count; k++)
+                        {
+                            double diff = Math.Abs(freqList[k] - freq);
+                            if (diff < minDiff)
+                            {
+                                minDiff = diff;
+                                nearestIndex = k;
+                            }
+                        }
+
+                        double compensation = compList[nearestIndex];
+
+                        // 噪声 + 补偿
+                        result[i] = double.Parse(noiseValues[i]) + compensation;
+                        resultString[i] = result[i].ToString();
+                    }
+
+                    return resultString;
                 }
-
-                double compensation = compList[nearestIndex];
-
-                // 噪声 + 补偿
-                result[i] = double.Parse(noiseValues[i]) + compensation;
-                resultString[i] = result[i].ToString();
-            }
-
-            return resultString;
+                finally
+                {
+                    // 关闭Excel
+                    if (workbook != null)
+                    {
+                            workbook.Close(false);
+                        Marshal.ReleaseComObject(workbook);
+                    }
+                    excelApp.Quit();
+                    Marshal.ReleaseComObject(excelApp);
+                }
         }
-        finally
+
+
+        private void 配置文件设置ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // 关闭Excel
-            if (workbook != null)
-            {
-                    workbook.Close(false);
-                Marshal.ReleaseComObject(workbook);
-            }
-            excelApp.Quit();
-            Marshal.ReleaseComObject(excelApp);
+            Form form = new JsonSet_Form();
+            form.ShowDialog();
         }
-    }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        private void 配置刷新ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            GetAddress();
+            GetDeviceFilesJson();
+            GetTestSetNewJson();
         }
     }
 }

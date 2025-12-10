@@ -38,7 +38,7 @@ namespace TestApp.PAGE
         }
         private void LoadFromJson()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestSetNew.json");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestSet_KU.json");
             if (!File.Exists(filePath))
                 return;
 
@@ -84,7 +84,7 @@ namespace TestApp.PAGE
             }
 
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("TestSetNew.json", json);
+            File.WriteAllText("TestSet_KU.json", json);
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)

@@ -43,12 +43,12 @@ namespace TestApp.PAGE
             }
 
             string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("DeviceAddressNew.json", json);
+            File.WriteAllText("DeviceAddressNew_KU.json", json);
         }
 
         private void LoadFromJson()
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew.json");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew_KU.json");
             if (!File.Exists(filePath))
                 return;
 

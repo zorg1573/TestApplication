@@ -62,7 +62,7 @@ namespace TestApp.PAGE
         {
             try
             {
-                string filePath = "DeviceAddressNew.json";
+                string filePath = "DeviceAddressNew_KU.json";
                 if (!File.Exists(filePath))
                     return;
 
