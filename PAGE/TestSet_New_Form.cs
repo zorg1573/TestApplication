@@ -15,8 +15,7 @@ namespace TestApp.PAGE
 {
     public partial class TestSet_New_Form : MetroForm
     {
-        private string _testSetPath;
-        public TestSet_New_Form(string testSetPath)
+        public TestSet_New_Form()
         {
             InitializeComponent();
             this.Load += TestSet_New_Form_Load;
@@ -39,7 +38,7 @@ namespace TestApp.PAGE
         }
         private void LoadFromJson()
         {
-            string filePath = _testSetPath;
+            string filePath = "TestSet_KU.json";
             if (!File.Exists(filePath))
                 return;
 

@@ -20,13 +20,11 @@ namespace TestApp.PAGE
     public partial class DeviceAddressNew_Form : MetroForm
     {
         private Main_New mainForm;
-        private string _deviceAddressPath;
-        public DeviceAddressNew_Form(Main_New mainForm,string deviceAddressPath)
+        public DeviceAddressNew_Form(Main_New mainForm)
         {            
             InitializeComponent();
             this.Load += DeviceAddressNew_Form_Load;
             this.mainForm = mainForm;
-            _deviceAddressPath = deviceAddressPath;
         }
         private void DeviceAddressNew_Form_Load(object sender, EventArgs e)
         {
@@ -50,7 +48,7 @@ namespace TestApp.PAGE
 
         private void LoadFromJson()
         {
-            string filePath = _deviceAddressPath;
+            string filePath = "DeviceAddress_KU.json";
             if (!File.Exists(filePath))
                 return;
 

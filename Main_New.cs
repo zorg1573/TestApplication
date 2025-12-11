@@ -114,7 +114,7 @@ namespace TestApp
             this.testType_comboBox.SelectedIndex = 0;
             this.operator_textBox.Text = "操作员";
             this.componentName_textBox.Text = "Ku";
-            GetJsonPath();
+            //GetJsonPath();
             GetAddress();
             GetDeviceFilesJson();
             GetTestSetNewJson();
@@ -178,7 +178,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = deviceAddressPath;
+                string filePath = "DeviceAddress_KU.json";
                 if (!File.Exists(filePath))
                     return;
 
@@ -262,7 +262,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = deviceFilesPath;
+                string filePath = "DeviceFiles_Ku.json";
                 if (!File.Exists(filePath))
                     return;
 
@@ -333,7 +333,7 @@ namespace TestApp
         {
             try
             {
-                string filePath = testSetPath;
+                string filePath = "TestSet_KU.json";
                 if (!File.Exists(filePath))
                     return;
 
@@ -1297,7 +1297,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void device_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new DeviceAddressNew_Form(this, deviceAddressPath);
+            Form form = new DeviceAddressNew_Form(this);
             form.ShowDialog();
         }
         /// <summary>
@@ -1307,7 +1307,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void deviceFile_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new DeviceFiles_Form(deviceFilesPath);
+            Form form = new DeviceFiles_Form();
             form.ShowDialog();
         }
         /// <summary>
@@ -1317,7 +1317,7 @@ namespace TestApp
         /// <param name="e"></param>
         private void testSet_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form form = new TestSet_New_Form(testSetPath);
+            Form form = new TestSet_New_Form();
             form.ShowDialog();
         }
         /// <summary>
