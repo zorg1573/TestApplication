@@ -1,6 +1,8 @@
 ﻿using AxDSOFramer;
 using ExcelDataReader;
 using MetroFramework.Forms;
+using NPOI.SS.Formula.Functions;
+using NPOI.XWPF.UserModel;
 using PacketDotNet;
 using SharpPcap;
 using System;
@@ -48,7 +50,7 @@ namespace TestApp
         //string vnaSjjtPath = "";
 
 
-    //DeviceAddressNew_KU.json
+    //DeviceAddress_KU.json
         string chargeAddress = "";
         string vnaAddress = "";
         string gonglvAddress = "";
@@ -114,7 +116,6 @@ namespace TestApp
             this.testType_comboBox.SelectedIndex = 0;
             this.operator_textBox.Text = "操作员";
             this.componentName_textBox.Text = "Ku";
-            //GetJsonPath();
             GetAddress();
             GetDeviceFilesJson();
             GetTestSetNewJson();
@@ -123,7 +124,56 @@ namespace TestApp
             StartExcelWorker();
         }
         #region 通用方法
+        private void SafeSetProgressBarMaximum(int maximum, int value = 0)
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                progressBar1.Invoke(new Action(() => SafeSetProgressBarMaximum(maximum, value)));
+                return;
+            }
 
+            try
+            {
+                if (maximum < progressBar1.Minimum)
+                    maximum = progressBar1.Minimum;
+
+                progressBar1.Maximum = maximum;
+
+                if (value < progressBar1.Minimum)
+                    value = progressBar1.Minimum;
+                else if (value > progressBar1.Maximum)
+                    value = progressBar1.Maximum;
+
+                progressBar1.Value = value;
+            }
+            catch (Exception ex)
+            {
+                // 记录错误但不中断程序
+                LogToConsole($"进度条设置最大值错误: {ex.Message}");
+            }
+        }
+        private void SafeIncrementProgressBar()
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                progressBar1.Invoke(new Action(SafeIncrementProgressBar));
+                return;
+            }
+
+            try
+            {
+                int newValue = progressBar1.Value + 1;
+                if (newValue > progressBar1.Maximum)
+                    newValue = progressBar1.Maximum;
+
+                progressBar1.Value = newValue;
+            }
+            catch (Exception ex)
+            {
+                // 记录错误但不中断程序
+                LogToConsole($"进度条递增错误: {ex.Message}");
+            }
+        }
         private void StartExcelWorker()
         {
             Task.Run(async () =>
@@ -849,7 +899,6 @@ namespace TestApp
         {
             try
             {
-                LogToConsole("开始写入采集结果");
                 // 去除每个字符串的空格
                 string[] cleanedData = data.Select(s => s.Replace("\n", "")).ToArray();
 
@@ -1056,7 +1105,7 @@ namespace TestApp
                 string[] cleanedData = sanjieJiaotiao.Select(s => s.Replace("\n", "")).ToArray();
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int sanjieJiaotiaoColumn = 12;  // K列
+                int sanjieJiaotiaoColumn = 11;  // K列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -1827,8 +1876,7 @@ namespace TestApp
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
                 int num = 0;
-                progressBar1.Maximum = pointCount;
-                progressBar1.Value = 0;
+                SafeSetProgressBarMaximum(pointCount, 0);
 
                 int chNum = selectedCHList[idx];
                 string sheetName = $"测试结果{chNum}";
@@ -1893,9 +1941,9 @@ namespace TestApp
                         xiaolvString[i] = PowerWatt * 0.2 / chargePower * 10 + "%"; // 计算效率百分比
 
                         num++;
-                        progressBar1.Value++;
-                        label1.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
-                        label1.Refresh();
+                        SafeIncrementProgressBar();
+                        label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
+                        label6.Refresh();
 
                         //main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
                     }
@@ -2265,8 +2313,8 @@ namespace TestApp
                     await Task.Delay(500);
                     num++;
                     progressBar1.Value += 1;
-                    label1.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
-                    label1.Refresh();
+                    label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
+                    label6.Refresh();
 
                     //main_DAL.UpdateTestDataFreq_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(compensatedPowerString[i]));
                 }
@@ -2763,8 +2811,8 @@ namespace TestApp
 
                 num++;
                 progressBar1.Value += 1;
-                label1.Text = ((double)num / _pointCount * 100).ToString("f2") + "%";
-                label1.Refresh();
+                label6.Text = ((double)num / _pointCount * 100).ToString("f2") + "%";
+                label6.Refresh();
             }
 
             WriteShiWangChaSunToExcel(freqArray, 1);
@@ -2902,6 +2950,9 @@ namespace TestApp
             {
                 try
                 {
+                    int num = 0;
+                    SafeSetProgressBarMaximum(pointCount, 0);
+
                     int chNum = selectedCHList[idx];
                     string sheetName = $"测试结果{chNum}";
                     string[] chasun = chasunMap[chNum];
@@ -2946,6 +2997,10 @@ namespace TestApp
                     await kaiguanDevice.SendCommandAsync("DISCONNECT SA TX_IN/RX_OUT");
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT NG TX_OUT{chNum}/RX_IN{chNum}");
 
+                    num++;
+                    SafeIncrementProgressBar();
+                    label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
+                    label6.Refresh();
                 }
                 catch (Exception ex)
                 {
@@ -3340,8 +3395,7 @@ namespace TestApp
             {
 
                 int num = 0;
-                progressBar1.Maximum = pointCount * 3;
-                progressBar1.Value = 0;
+                SafeSetProgressBarMaximum(pointCount*3, 0);
 
                 string ch = "";
                 string testType = testType_comboBox.Text;
@@ -3454,9 +3508,9 @@ namespace TestApp
                         zhupuP[i] = power;
 
                         num++;
-                        progressBar1.Value += 1;
-                        label1.Text = ((double)num / pointCount * 3 * 100).ToString("f2") + "%";
-                        label1.Refresh();
+                        SafeIncrementProgressBar();
+                        label6.Text = ((double)num / (pointCount*3) * 100).ToString("f2") + "%";
+                        label6.Refresh();
                     }
                     // 1. 加载状态文件
                     await pinpuDevice.LoadPinpuStateAsync(pinpuDaiwaiyizhiPath);
@@ -3492,9 +3546,9 @@ namespace TestApp
                         dwyzP[i] = Math.Max(power1, power2);
 
                         num++;
-                        progressBar1.Value += 1;
-                        label1.Text = ((double)num / pointCount * 3 * 100).ToString("f2") + "%";
-                        label1.Refresh();
+                        SafeIncrementProgressBar();
+                        label6.Text = ((double)num / (pointCount * 3) * 100).ToString("f2") + "%";
+                        label6.Refresh();
                     }
                     for (int i = 0; i < pointCount; i++)
                     {
@@ -3503,9 +3557,9 @@ namespace TestApp
                         LogToConsole("发射抑制测试:" + freqArray[i] + ": " + zhupuP[i] + " - " + dwyzP[i] + " = " + result);
 
                         num++;
-                        progressBar1.Value += 1;
-                        label1.Text = ((double)num / pointCount * 3 * 100).ToString("f2") + "%";
-                        label1.Refresh();
+                        SafeIncrementProgressBar();
+                        label6.Text = ((double)num / (pointCount * 3) * 100).ToString("f2") + "%";
+                        label6.Refresh();
                     }
 
                     //fasheYizhi = await GetFasheyizhiAsync(freqArray);
@@ -3627,7 +3681,7 @@ namespace TestApp
             }
 
             LogToConsole("三阶交调测试");
-
+            await scpiDevice.SendCommandAsync(":INST:SEL SA");
             await scpiDevice.LoadPinpuStateAsync(sanjieJiaotiaoPath);
 
             await signalGen.EnableOutput(); // 打开信号源输出
@@ -4491,6 +4545,8 @@ namespace TestApp
             double stepPower = (stopPower - startPower) / 200;
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
+                int num = 0;
+                SafeSetProgressBarMaximum(pointCount, 0);
                 string[] gain21 = new string[pointCount];
                 string[] pset21 = new string[pointCount];
 
@@ -4546,6 +4602,11 @@ namespace TestApp
                         compressionPower = stopPower;
 
                     gain21[i] = (double.Parse(chasun[i]) + compressionPower).ToString("F2");
+
+                    num++;
+                    SafeIncrementProgressBar();
+                    label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
+                    label6.Refresh();
                 }
 
                 WriteArrayToExcelColumn(gain21, 13, sheetName);
@@ -4785,6 +4846,9 @@ namespace TestApp
             }
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
+                int num = 0;
+                SafeSetProgressBarMaximum(63, 0);
+
                 await ChargeRecievePowerON(); // 接收加电
                 int chNum = selectedCHList[idx];
 
@@ -4849,6 +4913,11 @@ namespace TestApp
 
                     // 写入增益
                     WriteArrayToExcelColumn_New(gain, i + 2, $"接收寄生调幅{chNum}");
+
+                    num++;
+                    SafeIncrementProgressBar();
+                    label6.Text = ((double)num / 63 * 100).ToString("f2") + "%";
+                    label6.Refresh();
                 }
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
@@ -4873,7 +4942,7 @@ namespace TestApp
                     CalculatePhaseAccuracyAndWriteToExcel($"接收通道相移精度测试结果{chNum}", chNum);
                     CalculatePhaseAccuracyAndWriteToExcel_Jisheng($"接收寄生调幅{chNum}", chNum);
 
-                    LogToConsole($"通道{chNum} 写入与计算完成（后台 UI）");
+                    LogToConsole($"通道{chNum} 写入与计算完成");
                 });
 
 
@@ -5322,6 +5391,9 @@ namespace TestApp
             }
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
+                int num = 0;
+                SafeSetProgressBarMaximum(64, 0);
+
                 await ChargeRecievePowerON(); // 接收加电
 
                 int chNum = selectedCHList[idx];
@@ -5352,6 +5424,11 @@ namespace TestApp
 
                     WriteArrayToExcelColumn_New(gain, i + 2, $"接收通道衰减精度测试结果{chNum}");
                     WriteArrayToExcelColumn_New(initial, i + 2, $"接收寄生调相{chNum}");
+
+                    num++;
+                    SafeIncrementProgressBar();
+                    label6.Text = ((double)num / 64 * 100).ToString("f2") + "%";
+                    label6.Refresh();
                 }
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
@@ -5589,6 +5666,9 @@ namespace TestApp
             }
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
+                int num = 0;
+                SafeSetProgressBarMaximum(63, 0);
+
                 await ChargeSendPowerON(); // 发射加电
                 int chNum = selectedCHList[idx];
                 string sheetName = $"测试结果{chNum}";
@@ -5659,6 +5739,11 @@ namespace TestApp
 
                     // 写入增益
                     WriteArrayToExcelColumn_New(gain, i + 2, $"发射寄生调幅{chNum}");
+
+                    num++;
+                    SafeIncrementProgressBar();
+                    label6.Text = ((double)num / 63 * 100).ToString("f2") + "%";
+                    label6.Refresh();
                 }
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
@@ -5714,30 +5799,44 @@ namespace TestApp
 
         private async void button2_Click_1(object sender, EventArgs e)
         {
-            /*            try
-                        {
-                            ScpiDevice scpiDevice = new ScpiDevice();
-                            ScpiDevice kaiguan = new ScpiDevice();
-                            bool connected = await scpiDevice.ConnectAsync(pinpuAddress);
-                            bool connected2 = await kaiguan.ConnectAsync(kaiguanAddress);
-                            if (!connected)
-                            {
-                                LogToConsole("连接失败");
-                                return;
-                            }
-                            await scpiDevice.SendCommandAsync(":INST:SEL SA");
-                            //await pinpuDevice.LoadPinpuStateAsync(pinpuZhupuStatePath);
-                            await scpiDevice.SendCommandAsync($":MMEM:LOAD:STATe '{pinpuZhupuStatePath}'");
-                            //await pinpuDevice.LoadPinpuStateAsync(pinpuDaiwaiyizhiPath);
-                            LogToConsole("");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), operator_textBox.Text);
-                        }*/
-            CalculatePhaseAccuracyAndWriteToExcel($"发射通道相移精度测试结果3", 3);
-            CalculatePhaseAccuracyAndWriteToExcel($"发射通道相移精度测试结果4", 4);
+            try
+            {
+                ScpiDevice scpiDevice = new ScpiDevice();
+                ScpiDevice kaiguan = new ScpiDevice();
+                bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+                if (!connected)
+                {
+                    LogToConsole("连接失败");
+                    return;
+                }
+/*                string resp = await scpiDevice.QueryAsync(":CALC1:PAR:CAT?");
+                string[] items = resp.Replace("\"", "").Split(',');
+
+                string[] desired = { "S11", "S12", "S21", "S22" };
+
+                for (int i = 0; i < desired.Length; i++)
+                {
+                    string oldName = items[i * 2];
+                    string type = items[i * 2 + 1];
+                    string newName = $"TRC{i + 1}";
+
+                    //await scpiDevice.SendCommandAsync($":CALC1:PAR:DEL '{oldName}'");
+                    await scpiDevice.SendCommandAsync($":CALC1:PAR:DEF '{newName}','{type}'");
+                    //await scpiDevice.SendCommandAsync($":DISP:WIND1:TRAC:FEED '{newName}'");
+                }*/
+                string ans = await scpiDevice.QueryAsync(":CALC1:PAR:CAT?");
+                LogToConsole(ans);
+                await scpiDevice.SendCommandAsync($":CALC1:PAR:SEL 'TRC1'");
+                await scpiDevice.SendCommandAsync($":CALC1:FORM MLOG");
+                string data = await scpiDevice.QueryAsync($":CALC1:DATA? FDATA");
+                string[] parts = data?.Split(',');
+                LogToConsole(parts[1]);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"发射加电失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                operateLog_DAL.InsertOperateLog_DT("发射加电失败", ex.ToString(), operator_textBox.Text);
+            }
         }
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)

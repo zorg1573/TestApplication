@@ -43,7 +43,7 @@ namespace TestApp.PAGE
         {
             try
             {
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddressNew_KU.json");
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceAddress_KU.json");
                 if (!File.Exists(filePath))
                     return;
 

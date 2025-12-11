@@ -57,6 +57,8 @@
             this.deviceFile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SqlSet_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.配置文件设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.配置刷新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
@@ -71,7 +73,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.componentName_textBox = new System.Windows.Forms.TextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.ch1_checkBox = new System.Windows.Forms.CheckBox();
             this.ch2_checkBox = new System.Windows.Forms.CheckBox();
             this.ch3_checkBox = new System.Windows.Forms.CheckBox();
@@ -91,7 +93,7 @@
             this.button20 = new System.Windows.Forms.Button();
             this.button19 = new System.Windows.Forms.Button();
             this.button21 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.button18 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
@@ -99,8 +101,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.配置文件设置ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.配置刷新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -355,30 +355,44 @@
             // device_ToolStripMenuItem
             // 
             this.device_ToolStripMenuItem.Name = "device_ToolStripMenuItem";
-            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.device_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.device_ToolStripMenuItem.Text = "仪表地址设置";
             this.device_ToolStripMenuItem.Click += new System.EventHandler(this.device_ToolStripMenuItem_Click);
             // 
             // deviceFile_ToolStripMenuItem
             // 
             this.deviceFile_ToolStripMenuItem.Name = "deviceFile_ToolStripMenuItem";
-            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deviceFile_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.deviceFile_ToolStripMenuItem.Text = "调用文件设置";
             this.deviceFile_ToolStripMenuItem.Click += new System.EventHandler(this.deviceFile_ToolStripMenuItem_Click);
             // 
             // testSet_ToolStripMenuItem
             // 
             this.testSet_ToolStripMenuItem.Name = "testSet_ToolStripMenuItem";
-            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.testSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.testSet_ToolStripMenuItem.Text = "测试设置";
             this.testSet_ToolStripMenuItem.Click += new System.EventHandler(this.testSet_ToolStripMenuItem_Click);
             // 
             // SqlSet_ToolStripMenuItem
             // 
             this.SqlSet_ToolStripMenuItem.Name = "SqlSet_ToolStripMenuItem";
-            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SqlSet_ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.SqlSet_ToolStripMenuItem.Text = "数据库设置";
             this.SqlSet_ToolStripMenuItem.Click += new System.EventHandler(this.SqlSet_ToolStripMenuItem_Click);
+            // 
+            // 配置文件设置ToolStripMenuItem
+            // 
+            this.配置文件设置ToolStripMenuItem.Name = "配置文件设置ToolStripMenuItem";
+            this.配置文件设置ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.配置文件设置ToolStripMenuItem.Text = "配置文件设置";
+            this.配置文件设置ToolStripMenuItem.Click += new System.EventHandler(this.配置文件设置ToolStripMenuItem_Click);
+            // 
+            // 配置刷新ToolStripMenuItem
+            // 
+            this.配置刷新ToolStripMenuItem.Name = "配置刷新ToolStripMenuItem";
+            this.配置刷新ToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.配置刷新ToolStripMenuItem.Text = "配置刷新";
+            this.配置刷新ToolStripMenuItem.Click += new System.EventHandler(this.配置刷新ToolStripMenuItem_Click);
             // 
             // toolStripButton6
             // 
@@ -462,7 +476,7 @@
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.componentName_textBox);
             this.flowLayoutPanel2.Controls.Add(this.progressBar1);
-            this.flowLayoutPanel2.Controls.Add(this.label1);
+            this.flowLayoutPanel2.Controls.Add(this.label6);
             this.flowLayoutPanel2.Controls.Add(this.ch1_checkBox);
             this.flowLayoutPanel2.Controls.Add(this.ch2_checkBox);
             this.flowLayoutPanel2.Controls.Add(this.ch3_checkBox);
@@ -543,15 +557,15 @@
             this.progressBar1.Size = new System.Drawing.Size(100, 20);
             this.progressBar1.TabIndex = 59;
             // 
-            // label1
+            // label6
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(615, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(26, 17);
-            this.label1.TabIndex = 60;
-            this.label1.Text = "0%";
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label6.Location = new System.Drawing.Point(615, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(26, 17);
+            this.label6.TabIndex = 60;
+            this.label6.Text = "0%";
             // 
             // ch1_checkBox
             // 
@@ -703,7 +717,7 @@
             this.tableLayoutPanel1.Controls.Add(this.button20, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.button19, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.button21, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.button18, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.button10, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.button16, 0, 6);
@@ -816,17 +830,17 @@
             this.button21.UseVisualStyleBackColor = false;
             this.button21.Click += new System.EventHandler(this.start_zaosheng_test_Click);
             // 
-            // label6
+            // label1
             // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.label6.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.label6, 2);
-            this.label6.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(77, 158);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(50, 24);
-            this.label6.TabIndex = 83;
-            this.label6.Text = "发射";
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.label1.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.label1, 2);
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(77, 158);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(50, 24);
+            this.label1.TabIndex = 83;
+            this.label1.Text = "发射";
             // 
             // button18
             // 
@@ -914,20 +928,6 @@
             this.pictureBox3.TabIndex = 2;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
-            // 
-            // 配置文件设置ToolStripMenuItem
-            // 
-            this.配置文件设置ToolStripMenuItem.Name = "配置文件设置ToolStripMenuItem";
-            this.配置文件设置ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.配置文件设置ToolStripMenuItem.Text = "配置文件设置";
-            this.配置文件设置ToolStripMenuItem.Click += new System.EventHandler(this.配置文件设置ToolStripMenuItem_Click);
-            // 
-            // 配置刷新ToolStripMenuItem
-            // 
-            this.配置刷新ToolStripMenuItem.Name = "配置刷新ToolStripMenuItem";
-            this.配置刷新ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.配置刷新ToolStripMenuItem.Text = "配置刷新";
-            this.配置刷新ToolStripMenuItem.Click += new System.EventHandler(this.配置刷新ToolStripMenuItem_Click);
             // 
             // Main_New
             // 
@@ -1018,7 +1018,7 @@
         private System.Windows.Forms.Button button21;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
@@ -1030,7 +1030,7 @@
         private System.Windows.Forms.TextBox operator_textBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox componentName_textBox;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.CheckBox ch1_checkBox;
         private System.Windows.Forms.CheckBox ch2_checkBox;
