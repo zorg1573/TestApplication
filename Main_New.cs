@@ -4609,8 +4609,8 @@ namespace TestApp
                     label6.Refresh();
                 }
 
-                WriteArrayToExcelColumn(gain21, 13, sheetName);
-                //WriteArrayToExcelColumn(pset21, 14, sheetName);
+                WriteArrayToExcelColumn(gain21, 12, sheetName);
+                WriteArrayToExcelColumn(pset21, 13, sheetName);
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
