@@ -3487,7 +3487,7 @@ namespace TestApp
                         await pinpuDevice.SetCenterFrequencyAsync(center);
 
                         // 4. 启用 Marker 并设置频率位置
-                        await pinpuDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                        //await pinpuDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
 
                         double power = double.NaN;
 
@@ -3526,8 +3526,8 @@ namespace TestApp
                         await Task.Delay(1000); // 延时保证设备稳定
 
                         // 2. 开启 marker 并设置位置
-                        await pinpuDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
-                        await pinpuDevice.SendCommandAsync(":CALC:MARK2:STATE ON");
+                        //await pinpuDevice.SendCommandAsync(":CALC:MARK1:STATE ON");
+                        //await pinpuDevice.SendCommandAsync(":CALC:MARK2:STATE ON");
                         //double freq1 = freq - 0.3 * 1e9;
                         double rbw = 300 * 1e6;
                         double freq1 = freqHz - rbw;
@@ -3681,7 +3681,7 @@ namespace TestApp
             }
 
             LogToConsole("三阶交调测试");
-            await scpiDevice.SendCommandAsync(":INST:SEL SA");
+            await scpiDevice.SendCommandAsync(":CONFigure:TOI");
             await scpiDevice.LoadPinpuStateAsync(sanjieJiaotiaoPath);
 
             await signalGen.EnableOutput(); // 打开信号源输出
@@ -3708,9 +3708,6 @@ namespace TestApp
                 await kaiguanDevice.SendCommandAsync($"CONNECT SA TX_OUT{chNum}/RX_IN{chNum}");
                 await Task.Delay(500); // 延时保证设备稳定
 
-                int maxRetryCount = 10; // 测量次数
-                double toiDefault = -90; // 默认最小值，保证后续比较时不会误判为最大
-
                 for (int i = 0; i < pointCount; i++)
                 {
                     double freqHz = double.Parse(freqArray[i]) * 1e9;
@@ -3718,81 +3715,20 @@ namespace TestApp
                     double freqHz3 = freqHz + 0.0005 * 1e9;
 
                     await vnaDevice.SetVNACWFreq(freqHz2,ch_vna);
+
                     await signalGen.SetFrequency(freqHz);
                     await signalGen.QueryOpc();
-                    await signalGen.SetPower(-34);
+                    await signalGen.SetPower(power);
                     await signalGen.QueryOpc();
 
-
-                    await scpiDevice.SendCommandAsync(":CALC:MARK1:FUNC:TOI:STAT ON");
-                    await scpiDevice.SendCommandAsync(":CALC:MARK2:FUNC:TOI:STAT ON");
-                    await scpiDevice.SendCommandAsync(":CALC:MARK3:FUNC:TOI:STAT ON");
-                    await scpiDevice.SendCommandAsync(":CALC:MARK4:FUNC:TOI:STAT ON");
-                    await scpiDevice.SendCommandAsync(":CALC1:MARK1:FUNC:TOI:SEAR ONCE");
-                    await scpiDevice.SendCommandAsync(":CALC1:MARK2:FUNC:TOI:SEAR ONCE");
-                    await scpiDevice.SendCommandAsync(":CALC1:MARK3:FUNC:TOI:SEAR ONCE");
-                    await scpiDevice.SendCommandAsync(":CALC1:MARK4:FUNC:TOI:SEAR ONCE");
                     await scpiDevice.SendCommandAsync($":SENS:FREQ:CENT {freqHz3}");
-
-                    double maxToi = toiDefault;
-                    double result = 0;
-
-                    for (int attempt = 0; attempt < maxRetryCount; attempt++)
-                    {
-                        await Task.Delay(200); // 等待设备稳定
-
-                        //string ip3Str = await scpiDevice.QueryAsync(":CALC:MARK:FUNC:TOI:RES:MIN?");
-                        await scpiDevice.SendCommandAsync(":CALC1:MARK1:FUNC:TOI:SEAR ONCE");
-                        await scpiDevice.SendCommandAsync(":CALC1:MARK2:FUNC:TOI:SEAR ONCE");
-                        await scpiDevice.SendCommandAsync(":CALC1:MARK3:FUNC:TOI:SEAR ONCE");
-                        await scpiDevice.SendCommandAsync(":CALC1:MARK4:FUNC:TOI:SEAR ONCE");
-                        string m1 = await scpiDevice.QueryAsync(":CALC:MARK1:Y?");
-                        string m2 = await scpiDevice.QueryAsync(":CALC:MARK2:Y?");
-                        string m3 = await scpiDevice.QueryAsync(":CALC:MARK3:Y?");
-                        string m4 = await scpiDevice.QueryAsync(":CALC:MARK4:Y?");
-                        double m1D = 0;
-                        double m2D = 0;
-                        double m3D = 0;
-                        double m4D = 0;
-                        if (m1 != null)
-                        {
-                            m1D = double.Parse(m1);
-                        }
-                        if (m2 != null)
-                        {
-                            m2D = double.Parse(m2);
-                        }
-                        if (m3 != null)
-                        {
-                            m3D = double.Parse(m3);
-                        }
-                        if (m4 != null)
-                        {
-                            m4D = double.Parse(m4);
-                        }
-                        double res1 = m1D - m3D;
-                        double res2 = m2D - m4D;
-
-                        if (res1 >= res2)
-                        {
-                            result = res2;
-                        }
-                        else
-                        {
-                            result = res1;
-                        }
-                        //if (double.TryParse(ip3Str, out double val))
-                        //{
-                        //    if (val > maxToi)
-                        //    {
-                        //        maxToi = val;
-                        //    }
-                        //}
-                    }
-
-                    // 保存最大值，若始终无效则为默认值
-                    //sanjieJiaotiao[i] = maxToi == toiDefault ? toiDefault.ToString() : maxToi.ToString();
-                    sanjieJiaotiao[i] = result.ToString();
+                    await scpiDevice.SendCommandAsync($":INITiate:CONTinuous OFF");
+                    await scpiDevice.SendCommandAsync($":INITiate:IMMediate");
+                    await scpiDevice.QueryAsync($"*OPC?");
+                    await scpiDevice.SendCommandAsync($":INITiate:CONTinuous ON");
+                    string data = await scpiDevice.QueryAsync($":FETCh:TOI2?");
+                    string[] parts = data?.Split(',');
+                    sanjieJiaotiao[i] = parts[2];
                 }
                 WriteSanjieJiaotiaoToMatchingFrequencyRows(freqArray, sanjieJiaotiao, sheetName);
                 await kaiguanDevice.SendCommandAsync("DISCONNECT SIG_1_GELI2 TX_IN/RX_OUT");
