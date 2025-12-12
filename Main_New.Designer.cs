@@ -650,6 +650,7 @@
             this.button1.TabIndex = 62;
             this.button1.Text = "更新矢网差损";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
             // 
             // chasun_checkBox
             // 
@@ -662,6 +663,7 @@
             this.chasun_checkBox.TabIndex = 68;
             this.chasun_checkBox.Text = "测试结果加上差损";
             this.chasun_checkBox.UseVisualStyleBackColor = true;
+            this.chasun_checkBox.Visible = false;
             // 
             // console_textBox
             // 
@@ -793,6 +795,7 @@
             // 
             this.button20.BackColor = System.Drawing.Color.White;
             this.button20.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button20.Enabled = false;
             this.button20.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button20.Location = new System.Drawing.Point(105, 120);
             this.button20.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
@@ -874,6 +877,7 @@
             // 
             this.button16.BackColor = System.Drawing.Color.White;
             this.button16.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button16.Enabled = false;
             this.button16.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button16.Location = new System.Drawing.Point(4, 233);
             this.button16.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
