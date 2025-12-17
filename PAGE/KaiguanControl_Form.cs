@@ -150,6 +150,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 1");
             await scpiDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"发射S参数(S21)通路{chNum}已开启");
 
@@ -166,6 +167,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 0");
             await scpiDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"发射S参数(S21)通路{chNum}已关闭");
 
@@ -296,6 +298,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync($"CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 1");
             await scpiDevice.SendCommandAsync($"CONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"发射功率通路{chNum}已开启");
 
@@ -312,6 +315,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync($"DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 0");
             await scpiDevice.SendCommandAsync($"DISCONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"发射功率通路{chNum}已关闭");
 
@@ -440,6 +444,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync("CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 1");
             await scpiDevice.SendCommandAsync($"CONNECT SA TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"频谱测杂散通路{chNum}已开启");
 
@@ -456,6 +461,7 @@ namespace TestApp.PAGE
                 return;
             }
             await scpiDevice.SendCommandAsync("DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+            await scpiDevice.SendCommandAsync("AMP AMP1 0");
             await scpiDevice.SendCommandAsync($"DISCONNECT SA TX_OUT{chNum}/RX_IN{chNum}");
             mainForm.LogToConsole($"频谱测杂散通路{chNum}已关闭");
 

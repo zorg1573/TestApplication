@@ -1895,6 +1895,7 @@ namespace TestApp
                 try
                 {
                     await kaiguanDevice.SendCommandAsync($"CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 1");
                     await kaiguanDevice.SendCommandAsync($"CONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
 
                     await xinhaoDevice.SetPower(power);
@@ -1962,6 +1963,7 @@ namespace TestApp
                 finally
                 {
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 0");
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT PA TX_OUT{chNum}/RX_IN{chNum}");
                     LogToConsole("发射测试已完成");
                 }
@@ -3455,6 +3457,7 @@ namespace TestApp
                     await SendTestUDP(chNum); //FPGA发包
 
                     await kaiguanDevice.SendCommandAsync("CONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 1");
                     await kaiguanDevice.SendCommandAsync($"CONNECT SA TX_OUT{chNum}/RX_IN{chNum}");
                     await Task.Delay(500); // 等待连接稳定
 
@@ -3566,6 +3569,7 @@ namespace TestApp
                     WriteFasheyizhiToMatchingFrequencyRows(freqArray, fasheYizhi, sheetName);
 
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT SIG_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 0");
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT SA TX_OUT{chNum}/RX_IN{chNum}");
                 }
 
@@ -5468,6 +5472,7 @@ namespace TestApp
                 }
 
                 await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("AMP AMP1 1");
                 await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
                 await Task.Delay(500); // 等待连接稳定
 
@@ -5524,6 +5529,7 @@ namespace TestApp
                 LogToConsole("开始写入数据...");
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("AMP AMP1 0");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
 
                 await scpiDevice.SendCommandAsync($":SENS{ch_vna}:SWE:MODE HOLD");
@@ -5621,6 +5627,7 @@ namespace TestApp
                 await Task.Delay(1000); // 延时保证设备稳定
 
                 await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("AMP AMP1 1");
                 await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
 
                 await SendTestUDP(0, "移相", chNum); // FPGA发码
@@ -5683,6 +5690,7 @@ namespace TestApp
                 }
 
                 await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                await kaiguanDevice.SendCommandAsync("AMP AMP1 0");
                 await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
                 kaiguanDevice.Disconnect();
                 scpiDevice.Disconnect(); // 释放资源
