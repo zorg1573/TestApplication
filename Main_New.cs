@@ -4481,7 +4481,7 @@ namespace TestApp
                 { 4, ch4chasun }
             };
             double startPower = -30;
-            double stopPower = -20;
+            double stopPower = -15;
             double stepPower = (stopPower - startPower) / 200;
             for (int idx = 0; idx < selectedCHList.Count; idx++)
             {
