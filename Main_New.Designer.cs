@@ -92,6 +92,8 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.fsCharge_checkBox = new System.Windows.Forms.CheckBox();
+            this.jsCharge_checkBox = new System.Windows.Forms.CheckBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -110,8 +112,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.jsCharge_checkBox = new System.Windows.Forms.CheckBox();
-            this.fsCharge_checkBox = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -214,34 +214,34 @@
             this.SendPower_ToolStripMenuItem,
             this.ClosePower_ToolStripMenuItem});
             this.电源设置ToolStripMenuItem.Name = "电源设置ToolStripMenuItem";
-            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.电源设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.电源设置ToolStripMenuItem.Text = "电源设置";
             // 
             // ChargeSet_ToolStripMenuItem
             // 
             this.ChargeSet_ToolStripMenuItem.Name = "ChargeSet_ToolStripMenuItem";
-            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ChargeSet_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.ChargeSet_ToolStripMenuItem.Text = "参数设置";
             this.ChargeSet_ToolStripMenuItem.Click += new System.EventHandler(this.ChargeSet_ToolStripMenuItem_Click);
             // 
             // RecievePower_ToolStripMenuItem
             // 
             this.RecievePower_ToolStripMenuItem.Name = "RecievePower_ToolStripMenuItem";
-            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RecievePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.RecievePower_ToolStripMenuItem.Text = "接收加电";
             this.RecievePower_ToolStripMenuItem.Click += new System.EventHandler(this.RecievePower_ToolStripMenuItem_Click);
             // 
             // SendPower_ToolStripMenuItem
             // 
             this.SendPower_ToolStripMenuItem.Name = "SendPower_ToolStripMenuItem";
-            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.SendPower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.SendPower_ToolStripMenuItem.Text = "发射加电";
             this.SendPower_ToolStripMenuItem.Click += new System.EventHandler(this.SendPower_ToolStripMenuItem_Click);
             // 
             // ClosePower_ToolStripMenuItem
             // 
             this.ClosePower_ToolStripMenuItem.Name = "ClosePower_ToolStripMenuItem";
-            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ClosePower_ToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.ClosePower_ToolStripMenuItem.Text = "关电";
             this.ClosePower_ToolStripMenuItem.Click += new System.EventHandler(this.ClosePower_ToolStripMenuItem_Click);
             // 
@@ -252,7 +252,7 @@
             this.toolStripButton5,
             this.toolStripButton8});
             this.矢网设置ToolStripMenuItem.Name = "矢网设置ToolStripMenuItem";
-            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.矢网设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.矢网设置ToolStripMenuItem.Text = "矢网设置";
             // 
             // vnaFile_ToolStripMenuItem
@@ -289,7 +289,7 @@
             this.loadState_ToolStripMenuItem,
             this.loadPinpudwyz_ToolStripMenuItem});
             this.频谱分析仪设置ToolStripMenuItem.Name = "频谱分析仪设置ToolStripMenuItem";
-            this.频谱分析仪设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.频谱分析仪设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.频谱分析仪设置ToolStripMenuItem.Text = "频谱分析仪设置";
             // 
             // pinpuSet_ToolStripMenuItem
@@ -319,7 +319,7 @@
             this.gonglvSet_ToolStripMenuItem,
             this.loadGonglvState_ToolStripMenuItem});
             this.功率计设置ToolStripMenuItem.Name = "功率计设置ToolStripMenuItem";
-            this.功率计设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.功率计设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.功率计设置ToolStripMenuItem.Text = "功率计设置";
             this.功率计设置ToolStripMenuItem.Visible = false;
             // 
@@ -343,14 +343,14 @@
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(184, 26);
+            this.toolStripButton4.Size = new System.Drawing.Size(160, 22);
             this.toolStripButton4.Text = "信号发生器设置";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // 开关矩阵设置ToolStripMenuItem
             // 
             this.开关矩阵设置ToolStripMenuItem.Name = "开关矩阵设置ToolStripMenuItem";
-            this.开关矩阵设置ToolStripMenuItem.Size = new System.Drawing.Size(184, 26);
+            this.开关矩阵设置ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.开关矩阵设置ToolStripMenuItem.Text = "开关矩阵设置";
             this.开关矩阵设置ToolStripMenuItem.Click += new System.EventHandler(this.开关矩阵设置ToolStripMenuItem_Click);
             // 
@@ -804,6 +804,30 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "电源状态";
             // 
+            // fsCharge_checkBox
+            // 
+            this.fsCharge_checkBox.AutoSize = true;
+            this.fsCharge_checkBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fsCharge_checkBox.Location = new System.Drawing.Point(121, 21);
+            this.fsCharge_checkBox.Name = "fsCharge_checkBox";
+            this.fsCharge_checkBox.Size = new System.Drawing.Size(97, 25);
+            this.fsCharge_checkBox.TabIndex = 73;
+            this.fsCharge_checkBox.Text = "发射加电";
+            this.fsCharge_checkBox.UseVisualStyleBackColor = true;
+            this.fsCharge_checkBox.CheckedChanged += new System.EventHandler(this.fsCharge_checkBox_CheckedChanged);
+            // 
+            // jsCharge_checkBox
+            // 
+            this.jsCharge_checkBox.AutoSize = true;
+            this.jsCharge_checkBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.jsCharge_checkBox.Location = new System.Drawing.Point(13, 21);
+            this.jsCharge_checkBox.Name = "jsCharge_checkBox";
+            this.jsCharge_checkBox.Size = new System.Drawing.Size(97, 25);
+            this.jsCharge_checkBox.TabIndex = 72;
+            this.jsCharge_checkBox.Text = "接收加电";
+            this.jsCharge_checkBox.UseVisualStyleBackColor = true;
+            this.jsCharge_checkBox.CheckedChanged += new System.EventHandler(this.jsCharge_checkBox_CheckedChanged);
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.button2);
@@ -823,6 +847,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // tableLayoutPanel1
@@ -1051,30 +1076,6 @@
             this.pictureBox3.TabIndex = 2;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
-            // 
-            // jsCharge_checkBox
-            // 
-            this.jsCharge_checkBox.AutoSize = true;
-            this.jsCharge_checkBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jsCharge_checkBox.Location = new System.Drawing.Point(13, 21);
-            this.jsCharge_checkBox.Name = "jsCharge_checkBox";
-            this.jsCharge_checkBox.Size = new System.Drawing.Size(97, 25);
-            this.jsCharge_checkBox.TabIndex = 72;
-            this.jsCharge_checkBox.Text = "接收加电";
-            this.jsCharge_checkBox.UseVisualStyleBackColor = true;
-            this.jsCharge_checkBox.CheckedChanged += new System.EventHandler(this.jsCharge_checkBox_CheckedChanged);
-            // 
-            // fsCharge_checkBox
-            // 
-            this.fsCharge_checkBox.AutoSize = true;
-            this.fsCharge_checkBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fsCharge_checkBox.Location = new System.Drawing.Point(121, 21);
-            this.fsCharge_checkBox.Name = "fsCharge_checkBox";
-            this.fsCharge_checkBox.Size = new System.Drawing.Size(97, 25);
-            this.fsCharge_checkBox.TabIndex = 73;
-            this.fsCharge_checkBox.Text = "发射加电";
-            this.fsCharge_checkBox.UseVisualStyleBackColor = true;
-            this.fsCharge_checkBox.CheckedChanged += new System.EventHandler(this.fsCharge_checkBox_CheckedChanged);
             // 
             // Main_New
             // 

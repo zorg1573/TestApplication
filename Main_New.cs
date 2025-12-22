@@ -659,7 +659,7 @@ namespace TestApp
             bool connected = await scpiDevice.ConnectAsync(visaAddress);
             if (!connected)
             {
-                LogToConsole("连接失败");
+                LogToConsole("矢网连接失败");
                 return;
             }
             GetDeviceFilesJson();
@@ -2169,7 +2169,7 @@ namespace TestApp
             bool connected = await scpiDevice.ConnectAsync(visaAddress);
             if (!connected)
             {
-                LogToConsole("连接失败");
+                LogToConsole("矢网连接失败");
                 MessageBox.Show("矢网连接失败,加载矢网状态文件失败,请手动调用。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -2249,7 +2249,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return;
                 }
                 if (ch2_vol <= 0 || ch2_cur <= 0)
@@ -2293,7 +2293,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return;
                 }
                 if (ch1_vol <= 0 || ch1_cur <= 0 || ch2_vol <= 0 || ch2_cur <= 0)
@@ -2332,7 +2332,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return -1;
                 }
                 await scpiDevice.SelectChannel(2);
@@ -2361,7 +2361,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return -1;
                 }
                 await scpiDevice.SelectChannel(channel);
@@ -2388,7 +2388,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return -1;
                 }
                 await scpiDevice.SelectChannel(1);
@@ -2432,7 +2432,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("电源连接失败");
                     return;
                 }
                 await scpiDevice.SelectChannel(1);
@@ -2690,7 +2690,7 @@ namespace TestApp
 
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("频谱仪连接失败");
                     return;
                 }
 
@@ -2837,7 +2837,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("频谱仪连接失败");
                     return;
                 }
                 LogToConsole("调用频谱分析仪状态文件");
@@ -2862,7 +2862,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("功率计连接失败");
                     return;
                 }
                 LogToConsole("调用功率计状态文件");
@@ -3433,7 +3433,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("频谱仪连接失败");
                     return;
                 }
                 LogToConsole("调用频谱分析仪状态文件");
@@ -3714,7 +3714,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("功率计连接失败");
                     return;
                 }
                 bool state = await scpiDevice.LoadGonglvState();
@@ -3749,7 +3749,7 @@ namespace TestApp
                     bool connected = await scpiDevice.ConnectAsync(visaAddress);
                     if (!connected)
                     {
-                        LogToConsole("连接失败");
+                        LogToConsole("信号源连接失败");
                         return;
                     }
                     await scpiDevice.EnableOutput();
@@ -3775,7 +3775,7 @@ namespace TestApp
                     bool connected = await scpiDevice.ConnectAsync(visaAddress);
                     if (!connected)
                     {
-                        LogToConsole("连接失败");
+                        LogToConsole("信号源连接失败");
                         return;
                     }
                     await scpiDevice.DisableOutput();
@@ -3808,7 +3808,7 @@ namespace TestApp
                     bool connected = await scpiDevice.ConnectAsync(visaAddress);
                     if (!connected)
                     {
-                        LogToConsole("连接失败");
+                        LogToConsole("信号源连接失败");
                         return;
                     }
                     await scpiDevice.ModON();
@@ -3834,7 +3834,7 @@ namespace TestApp
                     bool connected = await scpiDevice.ConnectAsync(visaAddress);
                     if (!connected)
                     {
-                        LogToConsole("连接失败");
+                        LogToConsole("信号源连接失败");
                         return;
                     }
                     await scpiDevice.ModOFF();
@@ -3863,7 +3863,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("信号源连接失败");
                     return;
                 }
                 await scpiDevice.DisableOutput();
@@ -3891,7 +3891,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("信号源连接失败");
                     return;
                 }
                 await scpiDevice.ModOFF();
@@ -3916,7 +3916,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("频谱仪连接失败");
                     return 0;
                 }
 
@@ -4023,7 +4023,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("频谱仪连接失败");
                     return results.ToArray();
                 }
 
@@ -4145,7 +4145,7 @@ namespace TestApp
                 bool connected = await scpiDevice.ConnectAsync(visaAddress);
                 if (!connected)
                 {
-                    LogToConsole("连接失败");
+                    LogToConsole("功率计连接失败");
                     return 0;
                 }
                 await Task.Delay(500); // 延时保证设备稳定
