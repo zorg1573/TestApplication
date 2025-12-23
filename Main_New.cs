@@ -2753,7 +2753,7 @@ namespace TestApp
                     {
                         int num = 0;
                         SafeSetProgressBarMaximum(pointCount, 0);
-
+                        label6.Text = "0%";
                         int chNum = selectedCHList[idx];
                         string sheetName = $"测试结果{chNum}";
                         string[] chasun = chasunMap[chNum];
@@ -2774,34 +2774,19 @@ namespace TestApp
                             double freqHz = startFreq + step * i;
                             double freqGHz = freqHz / 1e9;
                             freqArray[i] = freqGHz.ToString("F6");
-                            /*                       double freqHz = startFreq + step * i;
-                                                   double freqGHz = freqHz / 1e9;
-                                                   freqArray[i] = freqGHz.ToString("F6");
 
-                                                   // 判断是否为仪表无效值或无法解析
-                                                   if (data[i] == "NaN" || data[i] == null)
-                                                   {
-                                                       // 插入 NULL
-                                                       main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, freqGHz, null);
-                                                   }
-                                                   else
-                                                   {
-                                                       // 正常插入数值
-                                                       main_DAL.UpdateTestDataZaosheng_DT(ch, componentName, double.Parse(freqArray[i]), double.Parse(data[i]));
-                                                   }*/
                             data[i] = (double.Parse(data[i]) + double.Parse(chasun[i])).ToString();
 
+                            num++;
+                            SafeIncrementProgressBar();
+                            label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
+                            label6.Refresh();
                         }
                         WriteZaoshengToMatchingFrequencyRows(freqArray, data, sheetName);
                         LogToConsole($"通道{chNum}噪声采集完成");
 
                         await kaiguanDevice.SendCommandAsync("DISCONNECT SA TX_IN/RX_OUT");
                         await kaiguanDevice.SendCommandAsync($"DISCONNECT NG TX_OUT{chNum}/RX_IN{chNum}");
-
-                        num++;
-                        SafeIncrementProgressBar();
-                        label6.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
-                        label6.Refresh();
                     }
                     catch (Exception ex)
                     {
@@ -4342,18 +4327,34 @@ namespace TestApp
                         double g0 = gain[0];     // 小信号增益参考
                         double compressionPower = double.NaN;
 
+                        double targetPower = -20;
+                        double minDiff = double.MaxValue;
+                        int closestIndex = -1;
+
                         for (int p = 1; p < gain.Length; p++)
                         {
-                            if ((startPower + p * stepPower) == -20)
+                            double currentPower = startPower + p * stepPower;
+                            double diff = Math.Abs(currentPower - targetPower);
+
+                            if (diff < minDiff)
                             {
-                                pset21[i] = gain[p].ToString();
+                                minDiff = diff;
+                                closestIndex = p;
                             }
-                            if (gain[p] <= g0 - 1.0)   // 1dB 压缩点条件
+
+                            // 原 1dB 压缩判断不变
+                            if (gain[p] <= g0 - 1.0 && double.IsNaN(compressionPower))
                             {
-                                compressionPower = startPower + p * stepPower;
-                                break;
+                                compressionPower = currentPower;
                             }
                         }
+
+                        // ⭐ 取最接近 -20 dBm 的点
+                        if (closestIndex >= 0)
+                        {
+                            pset21[i] = gain[closestIndex].ToString("F2");
+                        }
+
 
                         // 如果扫到最大功率仍未压缩
                         if (double.IsNaN(compressionPower))

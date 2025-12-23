@@ -297,35 +297,6 @@ namespace TestApp.FUNCTION
 
         public async Task<string[]> GetZaoshengData()
         {
-            /*            await SendCommandAsync(":INIT:CONT OFF");
-                        await SendCommandAsync(":INIT:REST");
-                        string opc = await QueryAsync("*OPC?");
-
-                        string data = await QueryAsync(":FETCH:CORR:NFIG? DB");
-                        await SendCommandAsync("*OPC");
-                        if (string.IsNullOrWhiteSpace(data)) return null;
-
-                        string[] parts = data.Split(',');
-
-                        // 将每个字符串尝试转换为 double，否则设为 NaN
-                        string[] values = parts
-                            .Select(p =>
-                            {
-                                if (double.TryParse(p, out double val))
-                                {
-                                    // 检查是否是无效的特殊值
-                                    if (Math.Abs(val - 9.9099995E+37) < 1e30)
-                                        return double.NaN.ToString();
-                                    else
-                                        return val.ToString();
-                                }
-                                else
-                                {
-                                    return double.NaN.ToString();
-                                }
-                            })
-                            .ToArray();
-                        return values;*/
             await SendCommandAsync(":INIT:CONT OFF");
             await SendCommandAsync(":INIT:REST");
             string opc = await QueryAsync("*OPC?");
@@ -366,7 +337,7 @@ namespace TestApp.FUNCTION
                 bool allValid = finalValues.All(s =>
                     double.TryParse(s, out double v) &&
                     !double.IsNaN(v) &&
-                    v > 0 && v < 7 && 
+                    v > 0 && v < 10 && 
                     Math.Abs(v - 9.9099995E+37) > 1e30 &&
                     Math.Abs(v + 9.91E+37) > 1e30)
                     ;
@@ -378,38 +349,6 @@ namespace TestApp.FUNCTION
             }
 
             return finalValues;
-
-            /*            await SendCommandAsync(":MMEM:LOAD:STAT 1,'C:/R_S/Instr/user/QuickSave/zaosheng.dfl'");
-                        await SendCommandAsync("*OPC");
-                        await SendCommandAsync("INIT:IMM");
-                        await Task.Delay(2000);
-
-                        //string data = await QueryAsync("RESULTS:TRACe1:DATA? TRAC1,NOISe");
-                        string data = await QueryAsync("TRAC? TRACE1, NOISe");
-                        await SendCommandAsync("*OPC");
-                        if (string.IsNullOrWhiteSpace(data)) return null;
-
-                        string[] parts = data.Split(',');
-
-                        // 将每个字符串尝试转换为 double，否则设为 NaN
-                        string[] values = parts
-                            .Select(p =>
-                            {
-                                if (double.TryParse(p, out double val))
-                                {
-                                    // 检查是否是无效的特殊值
-                                    if (Math.Abs(val - 9.9099995E+37) < 1e30)
-                                        return double.NaN.ToString();
-                                    else
-                                        return val.ToString();
-                                }
-                                else
-                                {
-                                    return double.NaN.ToString();
-                                }
-                            })
-                            .ToArray();
-                        return values;*/
         }
         #endregion
         #region 三阶交调
