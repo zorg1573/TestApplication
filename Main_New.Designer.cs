@@ -112,6 +112,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -864,9 +865,10 @@
             this.tableLayoutPanel1.Controls.Add(this.button19, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.button21, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.button16, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.button10, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.button18, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.button3, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.button16, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.button10, 0, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -995,10 +997,10 @@
             this.button16.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button16.Enabled = false;
             this.button16.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button16.Location = new System.Drawing.Point(4, 283);
+            this.button16.Location = new System.Drawing.Point(105, 283);
             this.button16.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(94, 46);
+            this.button16.Size = new System.Drawing.Size(95, 46);
             this.button16.TabIndex = 76;
             this.button16.Text = "发射抑制";
             this.button16.UseVisualStyleBackColor = false;
@@ -1009,10 +1011,10 @@
             this.button10.BackColor = System.Drawing.Color.White;
             this.button10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button10.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button10.Location = new System.Drawing.Point(4, 229);
+            this.button10.Location = new System.Drawing.Point(4, 283);
             this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(94, 44);
+            this.button10.Size = new System.Drawing.Size(94, 46);
             this.button10.TabIndex = 82;
             this.button10.Text = "FS移相精度";
             this.button10.UseVisualStyleBackColor = false;
@@ -1076,6 +1078,20 @@
             this.pictureBox3.TabIndex = 2;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.White;
+            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button3.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button3.Location = new System.Drawing.Point(4, 229);
+            this.button3.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(94, 44);
+            this.button3.TabIndex = 84;
+            this.button3.Text = "发射相位";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Main_New
             // 
@@ -1211,5 +1227,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.CheckBox fsCharge_checkBox;
         private System.Windows.Forms.CheckBox jsCharge_checkBox;
+        private System.Windows.Forms.Button button3;
     }
 }

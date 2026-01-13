@@ -1177,7 +1177,7 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int fasheYizhiColumn = 16;  // I列
+                int fasheYizhiColumn = 17;  // I列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -1221,9 +1221,9 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int powerColumn = 17;
-                int dingJiangColumn = 18;
-                int xiaolvColumn = 19;
+                int powerColumn = 18;
+                int dingJiangColumn = 19;
+                int xiaolvColumn = 20;
 
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
@@ -5046,7 +5046,7 @@ namespace TestApp
                 else if (sheetName.Contains("接收通道衰减"))
                     resultSheet.Cells[resultRow, 9].Value2 = rms;
                 else if (sheetName.Contains("发射通道相移"))
-                    resultSheet.Cells[resultRow, 14].Value2 = rms;
+                    resultSheet.Cells[resultRow, 15].Value2 = rms;
             }
 
             workbook.Save();
@@ -5191,7 +5191,7 @@ namespace TestApp
                     }
                     else if (sheetName.Equals($"发射寄生调幅{chNum}"))
                     {
-                        resultSheet.Cells[resultRow, 15].Value2 = rms;
+                        resultSheet.Cells[resultRow, 16].Value2 = rms;
                     }
                 }
 
@@ -6081,5 +6081,128 @@ namespace TestApp
             }
         }
 
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            if (testType_comboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("请选择测试类型", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!ch1_checkBox.Checked && !ch2_checkBox.Checked && !ch3_checkBox.Checked && !ch4_checkBox.Checked)
+            {
+                MessageBox.Show("请选择一个通道", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(operator_textBox.Text))
+            {
+                MessageBox.Show("请填写测试人员", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LogToConsole("开始发射相位测试...");
+            //WritePersonToAllSheets();
+            try
+            {
+                kaiguanQuanzhibiao = this.comboBox1.SelectedItem.ToString();
+
+                if (vnaFlag == 0)
+                {
+                    LoadVNAState(); // 调用矢网文件
+                    await Task.Delay(3000); // 延时保证设备稳定
+                }
+
+                await ChargeSendPowerON(); // 接收加电
+
+                //jieshouChargePower = await GetRecieveChargePower();// 获取接收电源功率
+
+                ScpiDevice scpiDevice = new ScpiDevice();
+                ScpiDevice kaiguanDevice = new ScpiDevice();
+
+                bool connected = await scpiDevice.ConnectAsync(vnaAddress);
+                bool connected2 = await kaiguanDevice.ConnectAsync(kaiguanAddress);
+                if (!connected)
+                {
+                    LogToConsole("矢网连接失败");
+                    return;
+                }
+
+                string ch = "";
+                string testType = testType_comboBox.Text;
+                string componentName = componentName_textBox.Text;
+
+                List<int> selectedCHList = new List<int>();
+                if (ch1_checkBox.Checked)
+                {
+                    ch = $"通道1-{testType}";
+                    selectedCHList.Add(1);
+                }
+                if (ch2_checkBox.Checked)
+                {
+                    ch = $"通道2-{testType}";
+                    selectedCHList.Add(2);
+                }
+                if (ch3_checkBox.Checked)
+                {
+                    ch = $"通道3-{testType}";
+                    selectedCHList.Add(3);
+                }
+                if (ch4_checkBox.Checked)
+                {
+                    ch = $"通道4-{testType}";
+                    selectedCHList.Add(4);
+                }
+                for (int idx = 0; idx < selectedCHList.Count; idx++)
+                {
+                    int chNum = selectedCHList[idx];
+                    string sheetName = $"测试结果{chNum}";
+
+                    string ch_vna = "1";
+                    int trc_vna = 1;
+
+                    if (chNum != 1)
+                    {
+                        ch_vna = (double.Parse(ch_vna) + ((chNum - 1) * 5)).ToString();
+                        trc_vna = (chNum - 1) * 10 + trc_vna;
+                    }
+                    else
+                    {
+                        ch_vna = "";
+                    }
+
+                    await SendTestUDP(chNum); //FPGA发包
+
+                    await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
+                    await Task.Delay(1000);
+
+                    await scpiDevice.ScanOnceString(ch_vna);
+                    await Task.Delay(500);
+                    string[] initial = await scpiDevice.GetInitialPhaseStringAsync(ch_vna, trc_vna + 1);    // 初相（°）
+
+                    string[] initial21 = ExtractStep100MHz(initial);
+
+                    WriteArrayToExcelColumn(initial21, 14, sheetName);
+
+                    LogToConsole("数据写入完成");
+
+                    await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
+
+                    LogToConsole($"通道{chNum}发射相位测试已完成");
+                }
+                kaiguanDevice.Disconnect();
+                scpiDevice.Disconnect(); // 释放资源
+                await CloseFPGA();
+                if (kaiguanQuanzhibiao == "单指标开关")
+                {
+                    await CloseCharge(); // 电源关电
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("发射相位测试失败: " + ex.ToString());
+                return;
+            }
+
+        }
     }
 }
