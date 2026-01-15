@@ -105,14 +105,14 @@
             this.button19 = new System.Windows.Forms.Button();
             this.button21 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.button18 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
-            this.button18 = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -905,7 +905,7 @@
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(94, 44);
             this.button11.TabIndex = 74;
-            this.button11.Text = "接收测试";
+            this.button11.Text = "JS增益相位";
             this.button11.UseVisualStyleBackColor = false;
             this.button11.Click += new System.EventHandler(this.start_recieve_test_Click);
             // 
@@ -991,6 +991,34 @@
             this.label1.TabIndex = 83;
             this.label1.Text = "发射";
             // 
+            // button18
+            // 
+            this.button18.BackColor = System.Drawing.Color.White;
+            this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button18.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button18.Location = new System.Drawing.Point(105, 229);
+            this.button18.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(95, 44);
+            this.button18.TabIndex = 75;
+            this.button18.Text = "发射功率";
+            this.button18.UseVisualStyleBackColor = false;
+            this.button18.Click += new System.EventHandler(this.start_fasheceshi_gonglv_Click);
+            // 
+            // button3
+            // 
+            this.button3.BackColor = System.Drawing.Color.White;
+            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button3.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button3.Location = new System.Drawing.Point(4, 229);
+            this.button3.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(94, 44);
+            this.button3.TabIndex = 84;
+            this.button3.Text = "FS增益相位";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // button16
             // 
             this.button16.BackColor = System.Drawing.Color.White;
@@ -1019,20 +1047,6 @@
             this.button10.Text = "FS移相精度";
             this.button10.UseVisualStyleBackColor = false;
             this.button10.Click += new System.EventHandler(this.start_fasheyixiang_test_Click);
-            // 
-            // button18
-            // 
-            this.button18.BackColor = System.Drawing.Color.White;
-            this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button18.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button18.Location = new System.Drawing.Point(105, 229);
-            this.button18.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(95, 44);
-            this.button18.TabIndex = 75;
-            this.button18.Text = "发射功率";
-            this.button18.UseVisualStyleBackColor = false;
-            this.button18.Click += new System.EventHandler(this.start_fasheceshi_gonglv_Click);
             // 
             // flowLayoutPanel1
             // 
@@ -1078,20 +1092,6 @@
             this.pictureBox3.TabIndex = 2;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
-            // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.Color.White;
-            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button3.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button3.Location = new System.Drawing.Point(4, 229);
-            this.button3.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 44);
-            this.button3.TabIndex = 84;
-            this.button3.Text = "发射相位";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Main_New
             // 

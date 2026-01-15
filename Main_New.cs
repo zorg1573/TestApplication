@@ -1,4 +1,5 @@
 ﻿using AxDSOFramer;
+using Excel;
 using ExcelDataReader;
 using MetroFramework.Forms;
 using NPOI.SS.Formula.Functions;
@@ -24,6 +25,7 @@ using TestApp.FUNCTION;
 using TestApp.MODEL;
 using TestApp.PAGE;
 using TestApp.PAGE.WaitForm;
+using static NPOI.SS.Formula.PTG.ArrayPtg;
 
 
 namespace TestApp
@@ -101,7 +103,9 @@ namespace TestApp
         double I_T85 = 0;
         double I_T5 = 0;
         double I_DQ5 = 0;
+        double I_DQ85 = 0;
         double I_R5 = 0;
+        double I_R85 = 0;
 
         int vnaFlag = 0; // 矢网标志位，0表示未调用矢网文件，1表示已调用矢网文件
         //int fpgaFlag = 0;
@@ -1177,7 +1181,7 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int fasheYizhiColumn = 17;  // I列
+                int fasheYizhiColumn = 18;  // I列
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
 
@@ -1221,9 +1225,9 @@ namespace TestApp
 
                 int startRow = 8;
                 int freqColumn = 1;   // A列
-                int powerColumn = 18;
-                int dingJiangColumn = 19;
-                int xiaolvColumn = 20;
+                int powerColumn = 19;
+                int dingJiangColumn = 20;
+                int xiaolvColumn = 21;
 
 
                 int usedRowCount = worksheet.UsedRange.Rows.Count;
@@ -1830,7 +1834,12 @@ namespace TestApp
                 string[] dingJiang = new string[pointCount]; //顶降
                 string[] shangshengyan = new string[pointCount];
                 string[] xiajiangyan = new string[pointCount];
+                string[] fs_5v = new string[pointCount];
 
+                string[] fz_5v = new string[pointCount];
+                string[] fs_85v = new string[pointCount];
+
+                string[] fz_85v = new string[pointCount];
                 string[] compensatedPowerString = new string[pointCount];
 
                 var xinhaoDevice = new ScpiDevice();
@@ -1915,10 +1924,13 @@ namespace TestApp
                     await CloseFPGA();
                     await Task.Delay(500);
                     I_DQ5 = await GetCurrent(2);
+                    I_DQ85 = await GetCurrent(1);
+                    fz_5v[0] = I_DQ5.ToString();
+                    fz_85v[0] = I_DQ85.ToString();
                     await RecieveTestUDP(chNum);
                     await Task.Delay(500);
                     I_R5 = await GetCurrent(2);
-
+                    I_R85 = await GetCurrent(1);
                     await SendTestUDP(chNum); //FPGA发包
                     await Task.Delay(500); // 延时保证设备稳定
 
@@ -1964,6 +1976,8 @@ namespace TestApp
                             compensatedPowerString[i] = (double.Parse(compensatedPowerString[i]) - double.Parse(chasun[i])).ToString();
                             I_T85 = await GetCurrent(1);
                             I_T5 = await GetCurrent(2);
+                            fs_85v[i] = I_T85.ToString();
+                            fs_5v[i] = I_T5.ToString();
 
                             double fenmu1 = ch1_vol * I_T85;
                             double fenmu2 = ch2_vol * (I_T5 - 0.75 * I_DQ5);
@@ -1983,6 +1997,10 @@ namespace TestApp
                         rf_checkBox.Checked = false;
                         //WriteArrayToExcelColumn(freqArray, 7, ch);
                         //WriteArrayToExcelColumn(compensatedPowerString, 8, ch);
+                        WriteArrayToExcelColumn(fs_85v, 23, sheetName);
+                        WriteArrayToExcelColumn(fs_5v, 22, sheetName);
+                        WriteArrayToExcelColumn(fz_85v, 26, sheetName);
+                        WriteArrayToExcelColumn(fz_5v, 27, sheetName);
                         WritePeakPowerToMatchingFrequencyRows_New(freqArray, compensatedPowerString, xiaolvString, dingJiang, sheetName);
 
                         LogToConsole("Excel写入完成");
@@ -3012,63 +3030,6 @@ namespace TestApp
 
                     LogToConsole("数据写入完成");
 
-                    /*                //进度条
-                                    int num = 0;
-                                    progressBar1.Maximum = pointCount;
-                                    progressBar1.Value = 0;
-
-
-                                    // 写入数据库
-                                    try
-                                    {
-                                        int batchId = main_DAL.GetBatchId(ch, componentName);
-                                        string nowTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                                        var batch = new MeasurementBatch
-                                        {
-                                            TestType = ch,
-                                            ComponentName = componentName,
-                                            Operator = operator_textBox.Text,
-                                            Description = "自动测试批次",
-                                            UpdateTime = nowTime
-                                        };
-                                        main_DAL.InsertTestBatch_DT(batch);
-
-                                        for (int i = 0; i < gain.Length; i++)
-                                        {
-                                            //var result = new MeasurementResult
-                                            //{
-                                            //    TestType = ch,
-                                            //    ComponentName = componentName,
-                                            //    BatchId = batchId + 1,
-                                            //    PointIndex = i,
-                                            //    PointFreq = double.Parse(freqArray[i]),
-                                            //    Gain = double.Parse(gainFinal[i]),
-                                            //    InitialPhase = double.Parse(initialFinal[i]),
-                                            //    InputSWR = double.Parse(inputVswrFinal[i]),
-                                            //    OutputSWR = double.Parse(outputVswrFinal[i]),
-                                            //    Person = person_textBox.Text,
-                                            //    UpdateTime = nowTime
-                                            //};
-
-                                            //main_DAL.InsertTestData_DT(result);
-
-                                            num++;
-                                            progressBar1.Value += 1;
-                                            label1.Text = ((double)num / pointCount * 100).ToString("f2") + "%";
-                                            label1.Refresh();
-                                        }
-                                        LogToConsole("写入数据库完成");
-                                        recieveWaitForm.ChangeLabelText("step6_label", "已完成");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        LogToConsole("写入数据库出错: " + ex.Message);
-                                    }
-                                    finally
-                                    {
-
-                                    }*/
                     await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
 
@@ -4243,6 +4204,8 @@ namespace TestApp
                 string ch = "";
                 string testType = testType_comboBox.Text;
                 string componentName = componentName_textBox.Text;
+                string[] js_5v = new string[pointCount];
+                string[] js_85v = new string[pointCount];
 
                 List<int> selectedCHList = new List<int>();
                 if (ch1_checkBox.Checked)
@@ -4313,6 +4276,11 @@ namespace TestApp
                     double step = (stopFreq - startFreq) / (pointCount - 1);
                     for (int i = 0; i < pointCount; i++)
                     {
+                        I_R5 = await GetCurrent(2);
+                        I_R85 = await GetCurrent(1);
+                        js_5v[i] = I_R5.ToString();
+                        js_85v[i] = I_R85.ToString();
+
                         double freqHz = startFreq + step * i;
                         double freqGHz = Math.Round(freqHz / 1e9, 3);
 
@@ -4370,7 +4338,8 @@ namespace TestApp
 
                     WriteArrayToExcelColumn(gain21, 12, sheetName);
                     WriteArrayToExcelColumn(pset21, 13, sheetName);
-
+                    WriteArrayToExcelColumn(js_85v, 25, sheetName);
+                    WriteArrayToExcelColumn(js_5v, 24, sheetName);
                     await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
                     await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
 
@@ -5046,7 +5015,7 @@ namespace TestApp
                 else if (sheetName.Contains("接收通道衰减"))
                     resultSheet.Cells[resultRow, 9].Value2 = rms;
                 else if (sheetName.Contains("发射通道相移"))
-                    resultSheet.Cells[resultRow, 15].Value2 = rms;
+                    resultSheet.Cells[resultRow, 16].Value2 = rms;
             }
 
             workbook.Save();
@@ -5191,7 +5160,7 @@ namespace TestApp
                     }
                     else if (sheetName.Equals($"发射寄生调幅{chNum}"))
                     {
-                        resultSheet.Cells[resultRow, 16].Value2 = rms;
+                        resultSheet.Cells[resultRow, 17].Value2 = rms;
                     }
                 }
 
@@ -5906,32 +5875,25 @@ namespace TestApp
 
             try
             {
-                for (int baseIndex = 1; baseIndex <= 28; baseIndex += 7)
+                foreach (Excel.Worksheet sheet in workbook.Worksheets)
                 {
-                    Excel.Worksheet sheet1 = workbook.Worksheets[baseIndex + 0];
-                    sheet1.Range["B8", "U" + sheet1.Rows.Count].ClearContents();
+                    string sheetName = sheet.Name;
 
-                    Excel.Worksheet sheet2 = workbook.Worksheets[baseIndex + 1];
-                    sheet2.Range["B4", "BM204"].Value2 = 0;
-                    sheet2.Range["B209", "BM409"].Value2 = 0;
-
-                    Excel.Worksheet sheet3 = workbook.Worksheets[baseIndex + 2];
-                    sheet3.Range["B4", "BM204"].Value2 = 0;
-                    sheet3.Range["B209", "BM409"].Value2 = 0;
-
-                    Excel.Worksheet sheet4 = workbook.Worksheets[baseIndex + 3];
-                    sheet4.Range["B4", "BM204"].Value2 = 0;
-
-                    Excel.Worksheet sheet5 = workbook.Worksheets[baseIndex + 4];
-                    sheet5.Range["B4", "BM204"].Value2 = 0;
-
-                    Excel.Worksheet sheet6 = workbook.Worksheets[baseIndex + 5];
-                    sheet6.Range["B4", "BM204"].Value2 = 0;
-                    sheet6.Range["B209", "BM409"].Value2 = 0;
-
-                    Excel.Worksheet sheet7 = workbook.Worksheets[baseIndex + 6];
-                    sheet7.Range["B4", "BM204"].Value2 = 0;
+                    if (sheetName.StartsWith("测试结果"))
+                    {
+                        sheet.Range["B8", "U" + sheet.Rows.Count].ClearContents();
+                    }
+                    else if (sheetName.Contains("精度测试结果"))
+                    {
+                        sheet.Range["B4", "BM204"].Value2 = 0;
+                        sheet.Range["B209", "BM409"].Value2 = 0;
+                    }
+                    else if (sheetName.Contains("寄生"))
+                    {
+                        sheet.Range["B4", "BM204"].Value2 = 0;
+                    }
                 }
+
 
                 // ---------- 保存 ----------
                 workbook.Save();
@@ -6170,22 +6132,62 @@ namespace TestApp
 
                     await SendTestUDP(chNum); //FPGA发包
 
-                    await kaiguanDevice.SendCommandAsync("CONNECT VNA_1 TX_IN/RX_OUT");
-                    await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
+                    await kaiguanDevice.SendCommandAsync("CONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 1");
+                    await kaiguanDevice.SendCommandAsync($"CONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
                     await Task.Delay(1000);
 
                     await scpiDevice.ScanOnceString(ch_vna);
                     await Task.Delay(500);
+                    string[] gain = await scpiDevice.GetGainStringAsync(ch_vna, trc_vna);               // 增益（dB）
                     string[] initial = await scpiDevice.GetInitialPhaseStringAsync(ch_vna, trc_vna + 1);    // 初相（°）
 
+                    if (chasun_checkBox.Checked)
+                    {
+                        string[] gainPlusChasun = null;
+                        string[] gainChasun = null;
+                        if (ch.Contains("通道1"))
+                        {
+                            gainChasun = ReadChaSunData("Sheet2", 2);
+                        }
+                        if (ch.Contains("通道2"))
+                        {
+                            gainChasun = ReadChaSunData("Sheet2", 3);
+                        }
+                        if (ch.Contains("通道3"))
+                        {
+                            gainChasun = ReadChaSunData("Sheet2", 4);
+                        }
+                        if (ch.Contains("通道4"))
+                        {
+                            gainChasun = ReadChaSunData("Sheet2", 5);
+                        }
+
+                        int len = gain.Length;
+
+                        // 初始化差值数组
+                        gainPlusChasun = new string[len];
+
+                        for (int i = 0; i < len; i++)
+                        {
+                            double g = Parse(gain[i]);
+                            double gN = Parse(gainChasun[i]);
+                            gainPlusChasun[i] = (g - gN).ToString();
+                        }
+                        gain = gainPlusChasun; // 替换原有增益数据
+                    }
+
+                    string[] gain21 = ExtractStep100MHz(gain);
                     string[] initial21 = ExtractStep100MHz(initial);
 
-                    WriteArrayToExcelColumn(initial21, 14, sheetName);
+                    WriteArrayToExcelColumn(gain21, 14, sheetName);
+                    WriteArrayToExcelColumn(initial21, 15, sheetName);
 
                     LogToConsole("数据写入完成");
 
-                    await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1 TX_IN/RX_OUT");
-                    await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2 TX_OUT{chNum}/RX_IN{chNum}");
+                    await kaiguanDevice.SendCommandAsync("DISCONNECT VNA_1_AMP1 TX_IN/RX_OUT");
+                    await kaiguanDevice.SendCommandAsync("AMP AMP1 0");
+                    await kaiguanDevice.SendCommandAsync($"DISCONNECT VNA_2_ATT1 TX_OUT{chNum}/RX_IN{chNum}");
 
                     LogToConsole($"通道{chNum}发射相位测试已完成");
                 }
