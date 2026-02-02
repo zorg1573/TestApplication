@@ -865,10 +865,10 @@
             this.tableLayoutPanel1.Controls.Add(this.button19, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.button21, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.button18, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.button3, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.button16, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.button10, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.button18, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.button10, 1, 5);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -996,10 +996,10 @@
             this.button18.BackColor = System.Drawing.Color.White;
             this.button18.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button18.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button18.Location = new System.Drawing.Point(105, 229);
+            this.button18.Location = new System.Drawing.Point(4, 283);
             this.button18.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(95, 44);
+            this.button18.Size = new System.Drawing.Size(94, 46);
             this.button18.TabIndex = 75;
             this.button18.Text = "发射功率";
             this.button18.UseVisualStyleBackColor = false;
@@ -1039,10 +1039,10 @@
             this.button10.BackColor = System.Drawing.Color.White;
             this.button10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button10.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button10.Location = new System.Drawing.Point(4, 283);
+            this.button10.Location = new System.Drawing.Point(105, 229);
             this.button10.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(94, 46);
+            this.button10.Size = new System.Drawing.Size(95, 44);
             this.button10.TabIndex = 82;
             this.button10.Text = "FS移相精度";
             this.button10.UseVisualStyleBackColor = false;

@@ -1920,16 +1920,20 @@ namespace TestApp
                     int chNum = selectedCHList[idx];
                     string sheetName = $"测试结果{chNum}";
                     string[] chasun = chasunMap[chNum];
-
                     await CloseFPGA();
                     await Task.Delay(500);
-                    I_DQ5 = await GetCurrent(2);
-                    I_DQ85 = await GetCurrent(1);
-                    fz_5v[0] = I_DQ5.ToString();
-                    fz_85v[0] = I_DQ85.ToString();
+                    for (int i = 0; i < pointCount; i++)
+                    {
+                        I_DQ5 = await GetCurrent(2);
+                        await Task.Delay(100);
+                        I_DQ85 = await GetCurrent(1);
+                        fz_85v[i] = (I_DQ85 * 1000).ToString();
+                        fz_5v[i] = (I_DQ5 * 1000).ToString();
+                    }
                     await RecieveTestUDP(chNum);
                     await Task.Delay(500);
                     I_R5 = await GetCurrent(2);
+                    await Task.Delay(100);
                     I_R85 = await GetCurrent(1);
                     await SendTestUDP(chNum); //FPGA发包
                     await Task.Delay(500); // 延时保证设备稳定
@@ -1975,9 +1979,10 @@ namespace TestApp
                             compensatedPowerString[i] = compensatedPower.ToString();
                             compensatedPowerString[i] = (double.Parse(compensatedPowerString[i]) - double.Parse(chasun[i])).ToString();
                             I_T85 = await GetCurrent(1);
+                            await Task.Delay(100);
                             I_T5 = await GetCurrent(2);
-                            fs_85v[i] = I_T85.ToString();
-                            fs_5v[i] = I_T5.ToString();
+                            fs_85v[i] = (I_T85*1000).ToString();
+                            fs_5v[i] = (I_T5*1000).ToString();
 
                             double fenmu1 = ch1_vol * I_T85;
                             double fenmu2 = ch2_vol * (I_T5 - 0.75 * I_DQ5);
@@ -4278,8 +4283,8 @@ namespace TestApp
                     {
                         I_R5 = await GetCurrent(2);
                         I_R85 = await GetCurrent(1);
-                        js_5v[i] = I_R5.ToString();
-                        js_85v[i] = I_R85.ToString();
+                        js_5v[i] = (I_R5*1000).ToString();
+                        js_85v[i] = (I_R85*1000).ToString();
 
                         double freqHz = startFreq + step * i;
                         double freqGHz = Math.Round(freqHz / 1e9, 3);
@@ -6117,17 +6122,12 @@ namespace TestApp
                     int chNum = selectedCHList[idx];
                     string sheetName = $"测试结果{chNum}";
 
-                    string ch_vna = "1";
-                    int trc_vna = 1;
-
+                    string ch_vna = "4";
+                    int trc_vna = 8;
                     if (chNum != 1)
                     {
                         ch_vna = (double.Parse(ch_vna) + ((chNum - 1) * 5)).ToString();
                         trc_vna = (chNum - 1) * 10 + trc_vna;
-                    }
-                    else
-                    {
-                        ch_vna = "";
                     }
 
                     await SendTestUDP(chNum); //FPGA发包
