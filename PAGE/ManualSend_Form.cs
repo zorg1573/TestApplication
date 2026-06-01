@@ -259,6 +259,12 @@ namespace TestApp.PAGE
                     PayloadPacket = ipPacket
                 };
 
+                ipPacket.UpdateCalculatedValues();
+                udpPacket.UpdateCalculatedValues();
+                udpPacket.UpdateUdpChecksum();
+                ipPacket.UpdateIPChecksum();
+                ethernetPacket.UpdateCalculatedValues();
+
                 // 选择接口
                 var devices = CaptureDeviceList.Instance;
                 var device = CaptureDeviceList.Instance.FirstOrDefault(d => d.Name == ifaceName);
